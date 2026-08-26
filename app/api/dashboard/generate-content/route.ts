@@ -9,13 +9,22 @@ import {
 } from "@/lib/ai-services";
 import { postToAllPlatforms } from "@/lib/social-media";
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_KEY!
-);
+// Create Supabase client at runtime, not build time
+function getSupabaseClient() {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const supabaseKey = process.env.SUPABASE_SERVICE_KEY;
+  
+  if (!supabaseUrl || !supabaseKey) {
+    throw new Error("Missing Supabase configuration");
+  }
+  
+  return createClient(supabaseUrl, supabaseKey);
+}
 
 export async function POST(request: NextRequest) {
   try {
+    const supabase = getSupabaseClient();
+    
     const body = await request.json();
     const {
       type, // "text", "image", "video", "carousel"
@@ -158,6 +167,8 @@ export async function POST(request: NextRequest) {
 // GET - Fetch generated posts
 export async function GET(request: NextRequest) {
   try {
+    const supabase = getSupabaseClient();
+    
     const userId = request.headers.get("x-user-id");
     if (!userId) {
       return NextResponse.json(
