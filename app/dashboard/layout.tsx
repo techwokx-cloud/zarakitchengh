@@ -13,6 +13,7 @@ import {
   LogOut,
   Menu,
   X,
+  type LucideIcon,
 } from 'lucide-react'
 
 export default function DashboardLayout({
@@ -122,7 +123,7 @@ function SidebarLink({
   label,
 }: {
   href: string
-  icon: React.ComponentType<{ size: number }>
+  icon: LucideIcon
   label: string
 }) {
   return (
