@@ -22,19 +22,22 @@ export default function Header() {
 
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-8">
-          <a href="#home" className="text-zara-gold hover:text-white transition">
+          <a href="/" className="text-zara-gold hover:text-white transition font-bold">
             Home
           </a>
-          <a href="#menu" className="text-white hover:text-zara-gold transition">
+          <a href="/menu" className="text-white hover:text-zara-gold transition">
             Menu
           </a>
-          <a href="#about" className="text-white hover:text-zara-gold transition">
+          <a href="/about" className="text-white hover:text-zara-gold transition">
             About
           </a>
-          <a href="#gallery" className="text-white hover:text-zara-gold transition">
+          <a href="/gallery" className="text-white hover:text-zara-gold transition">
             Gallery
           </a>
-          <a href="#contact" className="text-white hover:text-zara-gold transition">
+          <a href="/catering" className="text-white hover:text-zara-gold transition">
+            Catering
+          </a>
+          <a href="/contact" className="text-white hover:text-zara-gold transition">
             Contact
           </a>
         </nav>
@@ -42,13 +45,13 @@ export default function Header() {
         {/* CTA Buttons */}
         <div className="hidden md:flex items-center gap-3">
           <a
-            href="tel:+233241234567"
+            href="/menu"
             className="btn-primary text-sm"
           >
             🛒 Order Online
           </a>
           <a
-            href="https://wa.me/233241234567"
+            href="https://wa.me/233243637122"
             target="_blank"
             rel="noopener noreferrer"
             className="btn-secondary text-sm"
@@ -70,17 +73,18 @@ export default function Header() {
       {isOpen && (
         <div className="md:hidden bg-black bg-opacity-90 border-t border-zara-gold">
           <nav className="flex flex-col gap-4 p-4">
-            <a href="#home" className="text-zara-gold">Home</a>
-            <a href="#menu" className="text-white">Menu</a>
-            <a href="#about" className="text-white">About</a>
-            <a href="#gallery" className="text-white">Gallery</a>
-            <a href="#contact" className="text-white">Contact</a>
+            <a href="/" className="text-zara-gold font-bold">Home</a>
+            <a href="/menu" className="text-white">Menu</a>
+            <a href="/about" className="text-white">About</a>
+            <a href="/gallery" className="text-white">Gallery</a>
+            <a href="/catering" className="text-white">Catering</a>
+            <a href="/contact" className="text-white">Contact</a>
             <div className="border-t border-gray-700 pt-4 flex flex-col gap-2">
-              <a href="tel:+233241234567" className="btn-primary text-sm text-center">
+              <a href="/menu" className="btn-primary text-sm text-center">
                 🛒 Order Online
               </a>
               <a
-                href="https://wa.me/233241234567"
+                href="https://wa.me/233243637122"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn-secondary text-sm text-center"
