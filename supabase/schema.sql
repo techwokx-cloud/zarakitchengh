@@ -149,9 +149,106 @@ CREATE INDEX idx_ghana_holidays_date ON ghana_holidays(date);
 CREATE INDEX idx_leads_created_at ON leads(created_at);
 CREATE INDEX idx_analytics_post_id ON analytics(post_id);
 
+-- 11. Menu Items (Dynamic Menu Management)
+CREATE TABLE menu_items (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  category VARCHAR(100) NOT NULL, -- Breakfast, Appetizers, Salads, Mains, etc
+  name VARCHAR(255) NOT NULL,
+  description TEXT,
+  price DECIMAL(10,2) NOT NULL, -- In GHS
+  currency VARCHAR(10) DEFAULT 'GHS',
+  image_url VARCHAR(500),
+  image_alt_text VARCHAR(255),
+  is_available BOOLEAN DEFAULT TRUE,
+  is_popular BOOLEAN DEFAULT FALSE,
+  is_spicy BOOLEAN DEFAULT FALSE,
+  is_vegetarian BOOLEAN DEFAULT FALSE,
+  is_vegan BOOLEAN DEFAULT FALSE,
+  created_by UUID REFERENCES admin_users(id),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 12. Menu Categories
+CREATE TABLE menu_categories (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name VARCHAR(100) NOT NULL,
+  emoji VARCHAR(10),
+  description TEXT,
+  display_order INT DEFAULT 0,
+  is_active BOOLEAN DEFAULT TRUE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 13. Catering Packages
+CREATE TABLE catering_packages (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name VARCHAR(255) NOT NULL, -- e.g., "Corporate Lunch Bundle", "Executive Dinner"
+  description TEXT,
+  package_type VARCHAR(50), -- corporate, wedding, birthday, conference, custom
+  min_guests INT DEFAULT 10,
+  max_guests INT DEFAULT 500,
+  price_per_head DECIMAL(10,2) NOT NULL, -- In GHS
+  includes TEXT, -- JSON array of what's included
+  menu_items TEXT, -- JSON array of item IDs
+  setup_fee DECIMAL(10,2) DEFAULT 0,
+  service_charge_percentage DECIMAL(5,2) DEFAULT 10, -- 10% service charge
+  image_url VARCHAR(500),
+  is_popular BOOLEAN DEFAULT FALSE,
+  is_active BOOLEAN DEFAULT TRUE,
+  created_by UUID REFERENCES admin_users(id),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 14. Event Bookings/Catering Requests
+CREATE TABLE event_bookings (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  booking_reference VARCHAR(50) UNIQUE,
+  client_name VARCHAR(255) NOT NULL,
+  client_email VARCHAR(255),
+  client_phone VARCHAR(20),
+  event_date DATE NOT NULL,
+  event_time TIME,
+  event_location VARCHAR(255),
+  event_type VARCHAR(50), -- corporate, wedding, birthday, conference, etc
+  number_of_guests INT,
+  catering_package_id UUID REFERENCES catering_packages(id),
+  special_requests TEXT,
+  budget DECIMAL(10,2),
+  estimated_cost DECIMAL(10,2),
+  status VARCHAR(50) DEFAULT 'pending', -- pending, confirmed, catering-assigned, completed, cancelled
+  payment_status VARCHAR(50) DEFAULT 'unpaid', -- unpaid, partial, paid
+  assigned_to UUID REFERENCES admin_users(id),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 15. Gallery Images
+CREATE TABLE gallery_images (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  category VARCHAR(50), -- food, ambiance, events, kitchen, team
+  title VARCHAR(255),
+  image_url VARCHAR(500) NOT NULL,
+  image_alt_text VARCHAR(255),
+  description TEXT,
+  menu_item_id UUID REFERENCES menu_items(id), -- If it's a food image
+  display_order INT DEFAULT 0,
+  is_featured BOOLEAN DEFAULT FALSE,
+  created_by UUID REFERENCES admin_users(id),
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Indexes for Performance
+CREATE INDEX idx_menu_items_category ON menu_items(category);
+CREATE INDEX idx_menu_items_is_available ON menu_items(is_available);
+CREATE INDEX idx_catering_packages_type ON catering_packages(package_type);
+CREATE INDEX idx_event_bookings_status ON event_bookings(status);
+CREATE INDEX idx_event_bookings_date ON event_bookings(event_date);
+CREATE INDEX idx_gallery_images_category ON gallery_images(category);
+
 -- Policies (Row Level Security)
 -- Only admin can see/edit posts
-ALTER TABLE posts ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Admin can view all posts"
   ON posts FOR SELECT
