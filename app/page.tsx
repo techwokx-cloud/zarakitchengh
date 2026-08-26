@@ -1,11 +1,12 @@
 import Header from '@/components/Header'
 import HeroSection from '@/components/HeroSection'
 import MenuCategories from '@/components/MenuCategories'
+import OrderSection from '@/components/OrderSection'
 import Footer from '@/components/Footer'
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-white">
+    <main className="min-h-screen bg-black">
       {/* Header Navigation */}
       <Header />
 
@@ -15,35 +16,38 @@ export default function Home() {
       {/* Menu Categories */}
       <MenuCategories />
 
+      {/* Order Your Way Section */}
+      <OrderSection />
+
       {/* About Section */}
-      <section id="about" className="py-12 md:py-16 px-4 bg-gradient-to-r from-zara-gold/5 to-zara-orange/5">
+      <section id="about" className="py-12 md:py-16 px-4 bg-gradient-to-r from-gray-900 to-black">
         <div className="container-wide">
           <div className="grid md:grid-cols-2 gap-8 items-center">
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold text-black mb-4">
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
                 About Zara Kitchen
               </h2>
-              <p className="text-gray-700 mb-4 leading-relaxed">
+              <p className="text-gray-300 mb-4 leading-relaxed">
                 Welcome to Zara Kitchen, where authentic Ghanaian and continental cuisine meet passion and care. 
                 Every dish is prepared fresh with love, using the finest ingredients to deliver an unforgettable 
                 dining experience.
               </p>
-              <p className="text-gray-700 mb-6 leading-relaxed">
+              <p className="text-gray-300 mb-6 leading-relaxed">
                 Whether you're craving traditional Ghanaian favorites like waakye, fufu, and palava sauce, or 
                 international delights from our continental menu, we've got something special for everyone.
               </p>
               <div className="space-y-2">
                 <div className="flex items-center gap-3">
-                  <span className="text-2xl">✓</span>
-                  <span className="text-gray-700">Fresh, Quality Ingredients</span>
+                  <span className="text-2xl text-zara-gold">✓</span>
+                  <span className="text-gray-300">Fresh, Quality Ingredients</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-2xl">✓</span>
-                  <span className="text-gray-700">Made with Love & Care</span>
+                  <span className="text-2xl text-zara-gold">✓</span>
+                  <span className="text-gray-300">Made with Love & Care</span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="text-2xl">✓</span>
-                  <span className="text-gray-700">Fast & Reliable Delivery</span>
+                  <span className="text-2xl text-zara-gold">✓</span>
+                  <span className="text-gray-300">Fast & Reliable Delivery</span>
                 </div>
               </div>
             </div>
@@ -64,9 +68,9 @@ export default function Home() {
       </section>
 
       {/* Why Choose Us */}
-      <section className="py-12 md:py-16 px-4 bg-white">
+      <section className="py-12 md:py-16 px-4 bg-gray-900 border-t border-gray-800">
         <div className="container-wide">
-          <h2 className="text-3xl md:text-4xl font-bold text-center text-black mb-12">
+          <h2 className="text-3xl md:text-4xl font-bold text-center text-white mb-12">
             Why Choose Zara Kitchen?
           </h2>
 
@@ -93,10 +97,10 @@ export default function Home() {
                 desc: 'Authentic flavors that satisfy every craving'
               },
             ].map((item, i) => (
-              <div key={i} className="bg-gray-50 p-6 rounded-lg text-center hover:shadow-lg transition">
+              <div key={i} className="bg-gray-800 border border-gray-700 p-6 rounded-lg text-center hover:border-zara-gold transition">
                 <div className="text-4xl mb-3">{item.icon}</div>
-                <h3 className="font-bold text-black mb-2 text-lg">{item.title}</h3>
-                <p className="text-gray-600 text-sm">{item.desc}</p>
+                <h3 className="font-bold text-white mb-2 text-lg">{item.title}</h3>
+                <p className="text-gray-400 text-sm">{item.desc}</p>
               </div>
             ))}
           </div>
