@@ -1,7 +1,7 @@
 // AI Services Integration Layer
 // Supports: DALL-E 3, Stable Diffusion (FAL AI), Groq, Google AI, Genspark
 
-import Anthropic from "@anthropic-sdk/sdk";
+import Anthropic from "@anthropic-ai/sdk";
 
 // Initialize AI Clients
 const anthropic = new Anthropic({
