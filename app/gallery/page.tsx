@@ -171,7 +171,7 @@ export default function GalleryPage() {
       <section className="relative py-12 md:py-20 px-4 bg-gradient-to-r from-gray-900 to-black border-b border-gray-800">
         <div className="container-wide">
           <div className="max-w-2xl">
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+            <h1 className="font-display text-4xl md:text-5xl font-semibold text-white mb-4">
               Gallery <span className="text-zara-gold">❤️</span>
             </h1>
             <p className="text-xl text-gray-300 mb-4">A Glimpse of Zara Kitchen</p>
@@ -244,7 +244,7 @@ export default function GalleryPage() {
       {/* Events & Catering CTA */}
       <section className="py-12 px-4 bg-gradient-to-r from-zara-gold/10 to-zara-orange/10 border-t border-gray-800">
         <div className="container-wide text-center">
-          <h2 className="text-3xl font-bold text-white mb-4">
+          <h2 className="font-display text-3xl font-semibold text-white mb-4">
             Ready for Your Special Event?
           </h2>
           <p className="text-gray-300 mb-6 max-w-2xl mx-auto">

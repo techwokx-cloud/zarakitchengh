@@ -73,19 +73,15 @@ export default function HeroSection() {
         {/* Hero Text & Widget */}
         <div className="absolute inset-0 flex items-center justify-between px-4 md:px-8 z-20">
           {/* Left Content */}
-          <div className="text-white max-w-md">
-            <p className="text-sm md:text-base text-gray-300 mb-2">
-              Authentic Ghanaian & Continental Cuisine
+          <div className="text-white max-w-lg">
+            <p className="text-sm md:text-base tracking-wide text-gray-300 mb-3">
+              Authentic Ghanaian &amp; Continental Cuisine
             </p>
-            <h1 className="text-4xl md:text-6xl font-bold mb-2">
-              <span>Zara</span>
-              <span className="text-zara-gold"> Kitchen</span>
+            <h1 className="font-display text-5xl md:text-7xl font-semibold leading-[0.95] mb-4">
+              Zara Kitchen
             </h1>
-            <p className="text-xl md:text-2xl italic text-gray-200 mb-2">
-              Made with Love ❤️
-            </p>
-            <p className="text-sm md:text-base text-gray-300 mb-8">
-              Fresh. Tasty. Satisfying.
+            <p className="font-display italic text-xl md:text-2xl text-zara-gold mb-6">
+              Made with love, served fresh
             </p>
 
             <div className="flex gap-3">
@@ -177,10 +173,9 @@ export default function HeroSection() {
         </button>
 
         {/* Delicious Meals Badge */}
-        <div className="absolute bottom-8 right-8 bg-zara-gold text-black px-6 py-4 rounded-lg shadow-lg max-w-xs">
-          <p className="text-2xl font-bold italic">Delicious</p>
-          <p className="text-2xl font-bold italic">Meals</p>
-          <p className="text-sm">Made for You ❤️</p>
+        <div className="hidden md:block absolute bottom-8 right-8 bg-zara-gold text-black px-6 py-4 rounded-lg shadow-lg max-w-xs">
+          <p className="font-display text-2xl font-semibold italic leading-tight">Delicious Meals</p>
+          <p className="text-sm mt-1">Made for you, every time</p>
         </div>
       </div>
     </section>

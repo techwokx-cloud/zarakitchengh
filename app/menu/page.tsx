@@ -908,7 +908,7 @@ export default function MenuPage() {
       {/* Hero Section */}
       <section className="relative py-12 md:py-16 px-4 bg-gradient-to-r from-gray-900 to-black border-b border-gray-800">
         <div className="container-wide">
-          <h1 className="text-4xl md:text-5xl font-bold text-white mb-2">Our Menu</h1>
+          <h1 className="font-display text-4xl md:text-5xl font-semibold text-white mb-2">Our Menu</h1>
           <p className="text-xl text-gray-300">Authentic Ghanaian & Continental Cuisine</p>
         </div>
       </section>
@@ -960,7 +960,7 @@ export default function MenuPage() {
         <div className="flex-1">
           {/* Active Category Display */}
           <div className="mb-8">
-            <h2 className="text-3xl font-bold text-white mb-2">{activeCategory}</h2>
+            <h2 className="font-display text-3xl font-semibold text-white mb-2">{activeCategory}</h2>
             <p className="text-gray-400">
               {filteredItems.length} {filteredItems.length === 1 ? 'item' : 'items'} found
             </p>
@@ -1037,7 +1037,7 @@ export default function MenuPage() {
       {/* CTA Section */}
       <section className="py-12 px-4 bg-gradient-to-r from-zara-gold/10 to-zara-orange/10 border-t border-gray-800">
         <div className="container-wide text-center">
-          <h2 className="text-3xl font-bold text-white mb-4">Ready to Order?</h2>
+          <h2 className="font-display text-3xl font-semibold text-white mb-4">Ready to Order?</h2>
           <p className="text-gray-300 mb-6">Choose your favorite dishes and place your order now!</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a href="tel:+233243637122" className="btn-primary text-lg px-8 py-4">

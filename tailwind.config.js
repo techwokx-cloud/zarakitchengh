@@ -15,6 +15,7 @@ module.exports = {
       },
       fontFamily: {
         'sans': ['system-ui', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'sans-serif'],
+        'display': ['Georgia', 'Iowan Old Style', 'Palatino Linotype', 'URW Palladio L', 'P052', 'serif'],
       },
     },
   },

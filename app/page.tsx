@@ -24,7 +24,7 @@ export default function Home() {
         <div className="container-wide">
           <div className="grid md:grid-cols-2 gap-8 items-center">
             <div>
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+              <h2 className="font-display text-3xl md:text-4xl font-semibold text-white mb-4">
                 About Zara Kitchen
               </h2>
               <p className="text-gray-300 mb-4 leading-relaxed">
@@ -70,7 +70,7 @@ export default function Home() {
       {/* Why Choose Us */}
       <section className="py-12 md:py-16 px-4 bg-gray-900 border-t border-gray-800">
         <div className="container-wide">
-          <h2 className="text-3xl md:text-4xl font-bold text-center text-white mb-12">
+          <h2 className="font-display text-3xl md:text-4xl font-semibold text-center text-white mb-12">
             Why Choose Zara Kitchen?
           </h2>
 
@@ -110,7 +110,7 @@ export default function Home() {
       {/* CTA Section */}
       <section className="py-12 md:py-16 px-4 bg-gradient-to-r from-black via-gray-900 to-black text-white">
         <div className="container-wide text-center">
-          <h2 className="text-3xl md:text-4xl font-bold mb-6">
+          <h2 className="font-display text-3xl md:text-4xl font-semibold mb-6">
             Ready for Delicious Food?
           </h2>
           <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">

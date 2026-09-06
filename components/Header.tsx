@@ -15,8 +15,8 @@ export default function Header() {
             Z
           </div>
           <div className="hidden sm:block">
-            <h1 className="text-white font-bold text-lg">Zara Kitchen</h1>
-            <p className="text-yellow-500 text-xs">Good Food, Good Mood</p>
+            <h1 className="font-display text-white font-semibold text-lg leading-none">Zara Kitchen</h1>
+            <p className="text-yellow-500 text-xs mt-0.5">Good Food, Good Mood</p>
           </div>
         </div>
 
