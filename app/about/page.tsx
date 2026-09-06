@@ -5,114 +5,104 @@ import Footer from '@/components/Footer'
 import { CheckCircle } from 'lucide-react'
 
 export default function AboutPage() {
-  const achievements = [
-    {
-      icon: '👨‍🍳',
-      title: 'Expert Chefs',
-      desc: 'Our culinary team brings 25+ years of international experience to every dish.',
-    },
-    {
-      icon: '🌿',
-      title: 'Fresh Ingredients',
-      desc: 'We source only the freshest ingredients daily for quality assurance.',
-    },
-    {
-      icon: '⭐',
-      title: 'Award Winning',
-      desc: 'Recognized for quality food and excellent service in Accra.',
-    },
-    {
-      icon: '👥',
-      title: 'Dedicated Team',
-      desc: 'Professional staff committed to making your experience memorable.',
-    },
-  ]
-
   return (
     <main className="min-h-screen bg-black">
       <Header />
 
-      {/* Hero Section */}
-      <section className="relative py-12 md:py-20 px-4 bg-gradient-to-r from-gray-900 to-black border-b border-gray-800">
-        <div className="container-wide">
-          <div className="max-w-2xl">
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-              About Zara Kitchen <span className="text-zara-gold">❤️</span>
+      {/* Hero: script "About" + bold "Zara Kitchen", description left; restaurant photo right */}
+      <section className="relative bg-black border-b border-gray-800">
+        <div className="container-wide grid lg:grid-cols-2">
+          <div className="py-10 md:py-16 px-4">
+            <p className="font-display italic text-3xl md:text-4xl text-white mb-1">About</p>
+            <h1 className="font-display text-4xl md:text-6xl font-semibold text-zara-gold mb-4">
+              Zara Kitchen <span className="text-white">❤️</span>
             </h1>
-            <p className="text-xl text-gray-300">Authentic Ghanaian & Continental Cuisine Made with Love</p>
+            <p className="text-gray-300 leading-relaxed max-w-xl">
+              Zara Kitchen is a restaurant situated at 64 Patrice Lumumba St, Accra, Ghana. It offers a variety
+              of dishes, including Beef Shawarma, fries with guacamole, Frappuccino, pies, and Nasi Goreng.
+              The establishment is praised for its great service, natural juices made upon request, and
+              affordability. However, some reviews mention longer wait times, so ordering ahead is recommended.
+            </p>
+          </div>
+          <div className="relative h-56 md:h-auto min-h-[280px]">
+            <img
+              src="/images/about/restaurant-interior.png"
+              alt="Zara Kitchen restaurant interior"
+              className="absolute inset-0 w-full h-full object-cover"
+            />
           </div>
         </div>
       </section>
 
-      {/* Story Section */}
-      <section className="py-12 md:py-16 px-4 bg-gradient-to-b from-black to-gray-900">
-        <div className="container-wide grid md:grid-cols-2 gap-8 items-center">
-          {/* Left - Text */}
+      {/* Our Story + photo */}
+      <section className="py-12 md:py-16 px-4 bg-[#FFF8E7]">
+        <div className="container-wide grid lg:grid-cols-2 gap-10 items-start">
           <div>
-            <h2 className="text-3xl md:text-4xl font-bold text-white mb-6">Our Story</h2>
-
-            <p className="text-gray-300 mb-4 leading-relaxed">
-              Zara Kitchen is a restaurant situated at 64 Patrice Lumumba Street in the Airport Residential Area, Accra. 
-              It offers a variety of dishes including Beef Shawarma, fries with guacamole, Frappuccino, pies, and Nasi Goreng.
+            <h2 className="font-display text-3xl md:text-4xl font-semibold text-black mb-4">Our Story</h2>
+            <p className="text-gray-700 mb-4 leading-relaxed text-sm">
+              At Zara Kitchen, you are treated to a menu of Ghanaian and Continental dishes that will no doubt
+              leave your palate satisfied and your tummy filled.
             </p>
-
-            <p className="text-gray-300 mb-4 leading-relaxed">
-              The establishment is praised for its great service, natural juices made upon request, and affordability. 
-              With its fresh, innovative international cuisine and sleek modern decor, Zara Restaurant & Bar is a dining experience 
-              that shouldn't be missed.
+            <p className="text-gray-700 mb-4 leading-relaxed text-sm">
+              With its fresh, innovative international cuisine and sleek modern decor, Zara Restaurant &amp; Bar
+              is a dining experience that shouldn&apos;t be missed. Join us for breakfast, lunch, dinner or a
+              late-night treat. Our award-winning chef and professional staff are dedicated to creating the
+              perfect dining experience for your senses. Imagination is the key ingredient in this kitchen!
             </p>
-
-            <p className="text-gray-300 mb-4 leading-relaxed">
-              Our passionate chef and professional staff are dedicated to creating the perfect dining experience for our guests. 
-              Imagination is the key ingredient in this kitchen, where we bring your culinary dreams to life.
+            <p className="text-gray-700 mb-6 leading-relaxed text-sm">
+              Zara Kitchen is a delightful culinary gem that promises an exceptional dining experience. Known
+              for its attentive service and welcoming atmosphere, this spot offers a range of delicious dishes
+              made with fresh ingredients. Guests rave about the natural juices prepared on request, ensuring
+              every sip is pure bliss. The menu features enticing options like Nasi Goreng, beef shawarma, and
+              flavorful fried rice—though it&apos;s wise to place your order in advance as it can take some time
+              to prepare.
             </p>
+          </div>
 
-            <p className="text-gray-300 mb-6 leading-relaxed">
-              Zara Kitchen is a delightful culinary gem that promises an exceptional dining experience. 
-              Known for its attentive service and welcoming atmosphere, this spot offers a range of delicious dishes made with fresh ingredients. 
-              Guests rave about the natural juices prepared on request, ensuring every sip is refreshing and healthy.
-            </p>
+          <div className="rounded-xl overflow-hidden shadow-lg">
+            <img
+              src="/images/hero/jollof-grilled-chicken.jpg"
+              alt="Grilled chicken and jollof rice bowl"
+              className="w-full h-auto"
+            />
+          </div>
+        </div>
 
+        {/* Why you should go / Know before you go */}
+        <div className="container-wide grid md:grid-cols-2 gap-10 mt-10">
+          <div>
+            <h3 className="font-display text-2xl font-semibold text-black mb-4">Why you should go</h3>
             <div className="space-y-3">
               {[
-                '🎯 Quality ingredients',
-                '👨‍🍳 Expert preparation',
-                '💚 Made with love',
-                '⚡ Fresh daily',
-              ].map((item, idx) => (
-                <div key={idx} className="flex items-center gap-3 text-gray-300">
-                  <CheckCircle size={20} className="text-zara-gold flex-shrink-0" />
-                  {item}
+                'Enjoy natural and additive-free juices made upon request',
+                'Affordable prices for quality food',
+                'Experience the enticing aroma and flavors of dishes like Nasi Goreng',
+              ].map((item, i) => (
+                <div key={i} className="flex gap-3">
+                  <span className="w-6 h-6 rounded-full bg-zara-gold text-black font-bold text-xs flex items-center justify-center flex-shrink-0">
+                    {i + 1}
+                  </span>
+                  <p className="text-gray-700 text-sm">{item}</p>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Right - Image */}
-          <div className="relative h-96 rounded-lg overflow-hidden border border-gray-800">
-            <img
-              src="https://images.unsplash.com/photo-1517457373614-b7152f800fd1?w=600&h=600&fit=crop"
-              alt="Zara Kitchen Restaurant"
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
-          </div>
-        </div>
-      </section>
-
-      {/* Achievements */}
-      <section className="py-12 px-4 bg-gray-900 border-t border-gray-800">
-        <div className="container-wide">
-          <h2 className="text-3xl font-bold text-white text-center mb-12">Why You Should Choose Us</h2>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {achievements.map((achievement, idx) => (
-              <div key={idx} className="bg-black border border-gray-800 rounded-lg p-6 text-center hover:border-zara-gold transition">
-                <div className="text-5xl mb-4">{achievement.icon}</div>
-                <h3 className="font-bold text-white mb-2">{achievement.title}</h3>
-                <p className="text-gray-400 text-sm">{achievement.desc}</p>
-              </div>
-            ))}
+          <div>
+            <h3 className="font-display text-2xl font-semibold text-black mb-4">Know before you go</h3>
+            <div className="space-y-3">
+              {[
+                'Order ahead of time to avoid long wait times',
+                'Try the fried rice which is highly recommended by reviewers',
+                "Don't miss out on their Pina Colada drink that's worth a visit",
+                'Consider tipping Ishmael for excellent customer service',
+              ].map((item, i) => (
+                <div key={i} className="flex gap-3">
+                  <CheckCircle size={20} className="text-zara-gold flex-shrink-0 mt-0.5" />
+                  <p className="text-gray-700 text-sm">{item}</p>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -128,81 +118,83 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Service Details */}
-      <section className="py-12 px-4 bg-gray-900 border-t border-gray-800">
-        <div className="container-wide grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {/* Operating Hours */}
-          <div className="bg-black border border-gray-800 rounded-lg p-6">
-            <h3 className="text-xl font-bold text-white mb-4">🕐 Opening Hours</h3>
-            <div className="space-y-2 text-sm">
-              <div className="flex justify-between"><span className="text-gray-400">Monday</span><span className="text-white">08:00 AM - 06:00 PM</span></div>
-              <div className="flex justify-between"><span className="text-gray-400">Tuesday</span><span className="text-white">08:00 AM - 06:00 PM</span></div>
-              <div className="flex justify-between"><span className="text-gray-400">Wednesday</span><span className="text-white">08:00 AM - 06:00 PM</span></div>
-              <div className="flex justify-between"><span className="text-gray-400">Thursday</span><span className="text-white">08:00 AM - 06:00 PM</span></div>
-              <div className="flex justify-between"><span className="text-gray-400">Friday</span><span className="text-white">08:00 AM - 07:00 PM</span></div>
-              <div className="flex justify-between"><span className="text-gray-400">Saturday</span><span className="text-white">09:00 AM - 05:00 PM</span></div>
-              <div className="flex justify-between"><span className="text-red-400">Sunday</span><span className="text-red-400">Closed</span></div>
-            </div>
-          </div>
-
-          {/* Coverage -- mockup asset used as-is */}
-          <div className="bg-black border border-gray-800 rounded-lg p-6 flex items-center">
+      {/* Buffet photo + Opening Hours + Coverage + Details + Contact info */}
+      <section className="py-12 px-4 bg-[#FFF8E7]">
+        <div className="container-wide grid md:grid-cols-2 lg:grid-cols-5 gap-6">
+          <div className="lg:col-span-1 rounded-lg overflow-hidden">
             <img
-              src="/images/assets/coverage.png"
-              alt="Coverage: Walk in, Delivery, Corporate, Outdoor Catering Events"
-              className="w-full h-auto"
+              src="/images/about/buffet-spread.png"
+              alt="Zara Kitchen buffet spread"
+              className="w-full h-full object-cover"
             />
           </div>
 
-          {/* Services */}
-          <div className="bg-black border border-gray-800 rounded-lg p-6">
-            <h3 className="text-xl font-bold text-white mb-4">🎯 Services Available</h3>
-            <ul className="space-y-2 text-gray-400 text-sm">
-              <li className="flex items-center gap-2"><span className="text-zara-gold">✓</span> All You Can Eat</li>
-              <li className="flex items-center gap-2"><span className="text-zara-gold">✓</span> Happy Hour Food</li>
-              <li className="flex items-center gap-2"><span className="text-zara-gold">✓</span> Reservation Available</li>
-              <li className="flex items-center gap-2"><span className="text-zara-gold">✓</span> Group Friendly</li>
-            </ul>
+          <div className="bg-white rounded-lg p-6 shadow-sm">
+            <h3 className="font-bold text-black mb-4">🕐 Opening Hours</h3>
+            <div className="space-y-2 text-sm">
+              <div className="flex justify-between"><span className="text-gray-500">Monday</span><span className="text-black">08:00 AM - 06:00 PM</span></div>
+              <div className="flex justify-between"><span className="text-gray-500">Tuesday</span><span className="text-black">08:00 AM - 06:00 PM</span></div>
+              <div className="flex justify-between"><span className="text-gray-500">Wednesday</span><span className="text-black">08:00 AM - 06:00 PM</span></div>
+              <div className="flex justify-between"><span className="text-gray-500">Thursday</span><span className="text-black">08:00 AM - 06:00 PM</span></div>
+              <div className="flex justify-between"><span className="text-gray-500">Friday</span><span className="text-black">08:00 AM - 07:00 PM</span></div>
+              <div className="flex justify-between"><span className="text-gray-500">Saturday</span><span className="text-black">09:00 AM - 05:00 PM</span></div>
+              <div className="flex justify-between"><span className="text-red-500">Sunday</span><span className="text-red-500">Closed</span></div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg p-6 shadow-sm">
+            <h3 className="font-bold text-black mb-3">📦 Coverage</h3>
+            <p className="text-sm text-gray-600 mb-4">Walk in | Delivery | Corporate | Outdoor Catering Events</p>
+            <h3 className="font-bold text-black mb-3">📞 Contact</h3>
+            <div className="space-y-1 text-sm text-gray-600">
+              <p>+233 (0) 543637122</p>
+              <p>054 363 7122</p>
+              <p>@zarakitchenofficial</p>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg p-6 shadow-sm">
+            <h3 className="font-bold text-black mb-3">📍 Details</h3>
+            <p className="text-sm text-gray-600 mb-4">
+              66th Patrice Lumumba Street, Airport Residential Area, Accra, Ghana, 00233
+            </p>
+            <h3 className="font-bold text-black mb-2">🔗 Links</h3>
+            <a href="https://zarakitchengh.com" className="text-sm text-zara-gold hover:underline">zarakitchengh.com</a>
+          </div>
+
+          <div className="bg-white rounded-lg p-6 shadow-sm">
+            <h3 className="font-bold text-black mb-3">👤 Contact Info</h3>
+            <div className="space-y-1 text-sm text-gray-600 mb-3">
+              <p>📘 zarakitchenofficial &nbsp; 📷 zarakitchenghana &nbsp; 🎵 ZaraKitchenGha</p>
+              <p>📞 054 363 7122</p>
+              <p>✉️ info@zarakitchengh.com</p>
+              <p>📞 +233 54 013 1808</p>
+            </div>
+            <p className="text-xs text-gray-500">
+              A very rich, well-curated and presentable brunch buffet with wide varieties of delicious local,
+              Chinese, continental dishes including finger foods on display; perfect for groups.
+            </p>
           </div>
         </div>
       </section>
 
-      {/* Call to Action */}
-      <section className="py-12 px-4 bg-gradient-to-r from-zara-gold/10 to-zara-orange/10 border-t border-gray-800">
-        <div className="container-wide text-center">
-          <h2 className="text-3xl font-bold text-white mb-4">
-            Ready to Experience Zara Kitchen?
-          </h2>
-          <p className="text-gray-300 mb-6 max-w-2xl mx-auto">
-            Visit us today and discover why we're Accra's favorite destination for authentic Ghanaian and continental cuisine.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href="tel:+233243637122" className="btn-primary text-lg px-8 py-4">
-              📞 Call Us
-            </a>
-            <a
-              href="https://wa.me/233243637122"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-secondary text-lg px-8 py-4"
-            >
-              💬 WhatsApp
-            </a>
-            <a href="/catering" className="btn-secondary text-lg px-8 py-4">
-              🎉 Book Catering
-            </a>
-          </div>
-        </div>
-      </section>
-
-      {/* Above Footer banner -- mockup asset used as-is */}
+      {/* Bottom trust strip */}
       <section className="py-8 px-4 bg-black border-t border-gray-800">
-        <div className="container-wide">
-          <img
-            src="/images/assets/above-footer.png"
-            alt="Friendly Support, Fast Response, Reservations, Events & Catering"
-            className="w-full h-auto rounded-lg"
-          />
+        <div className="container-wide grid grid-cols-2 md:grid-cols-4 gap-6">
+          {[
+            { icon: '👨‍🍳', title: 'Authentic Cuisine', desc: 'Delicious Ghanaian & Continental dishes made with love.' },
+            { icon: '🌿', title: 'Fresh Ingredients', desc: 'We use only the freshest ingredients daily.' },
+            { icon: '👥', title: 'Great Service', desc: 'Our friendly staff is here to serve you with a smile.' },
+            { icon: '🏆', title: 'Award Winning', desc: 'Recognized for our quality food and excellent service.' },
+          ].map((item, i) => (
+            <div key={i} className="flex items-start gap-3">
+              <div className="text-2xl flex-shrink-0">{item.icon}</div>
+              <div>
+                <h4 className="font-bold text-white text-sm">{item.title}</h4>
+                <p className="text-gray-400 text-xs">{item.desc}</p>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
 

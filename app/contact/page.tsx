@@ -3,7 +3,7 @@
 import { useState } from 'react'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
-import { Phone, Mail, MapPin, Clock } from 'lucide-react'
+import { Clock } from 'lucide-react'
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -42,33 +42,12 @@ export default function ContactPage() {
   }
 
   const contactInfo = [
-    {
-      icon: Phone,
-      title: 'Phone',
-      details: ['+233 (0) 543637122', '054 363 7122'],
-    },
-    {
-      icon: Mail,
-      title: 'Email',
-      details: ['info@zarakitchengh.com'],
-    },
-    {
-      icon: MapPin,
-      title: 'Visit Us',
-      details: ['64 Patrice Lumumba St.', 'Airport Residential Area, Accra, Ghana'],
-    },
-    {
-      icon: Phone,
-      title: 'Other Line',
-      details: ['+233 54 013 1808'],
-    },
-  ]
-
-  const socialMedia = [
-    { platform: 'Facebook', handle: 'zarakitchengbana', icon: '📘', url: 'https://facebook.com/zarakitchengbana' },
-    { platform: 'Instagram', handle: '@zarakitchenofficial', icon: '📷', url: 'https://instagram.com/zarakitchenofficial' },
-    { platform: 'TikTok', handle: '@ZaraKitchenGha', icon: '🎵', url: 'https://tiktok.com/@zarakitchengh' },
-    { platform: 'WhatsApp', handle: '+233 54 363 7122', icon: '💬', url: 'https://wa.me/233243637122' },
+    { icon: '📞', title: 'Phone', details: ['+233 (0) 543637122', '054 363 7122'] },
+    { icon: '📷', title: 'Instagram', details: ['zarakitchenofficial'] },
+    { icon: '📘', title: 'Facebook', details: ['zarakitchenghana'] },
+    { icon: '🎵', title: 'TikTok', details: ['ZaraKitchenGha'] },
+    { icon: '✉️', title: 'Email', details: ['info@zarakitchengh.com'] },
+    { icon: '📞', title: 'Other Line', details: ['+233 54 013 1808'] },
   ]
 
   const openingHours = [
@@ -86,69 +65,69 @@ export default function ContactPage() {
       <Header />
 
       {/* Hero Section */}
-      <section className="relative py-12 md:py-20 px-4 bg-gradient-to-r from-gray-900 to-black border-b border-gray-800">
-        <div className="container-wide">
-          <div className="max-w-2xl">
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-              Contact Us <span className="text-zara-gold">❤️</span>
-            </h1>
-            <p className="text-xl text-gray-300 mb-4">We'd Love to Hear From You!</p>
-            <p className="text-gray-400">
-              Whether you have a question, want to make a reservation, or need more information, our team is here to help. Reach out to us anytime!
+      <section className="relative bg-black border-b border-gray-800">
+        <div className="container-wide grid lg:grid-cols-2">
+          <div className="py-10 md:py-16 px-4">
+            <p className="font-display italic text-3xl md:text-4xl text-white mb-1">Contact Us</p>
+            <p className="text-zara-gold text-lg font-semibold mb-4">We&apos;d Love to Hear From You!</p>
+            <p className="text-gray-400 mb-6 max-w-md">
+              Whether you have a question, want to make a reservation, or need more information, our team is
+              here to help. Reach out to us anytime!
             </p>
+            <div className="flex flex-wrap gap-6 text-sm">
+              <div className="flex items-center gap-2 text-gray-300">
+                <span className="text-xl">📞</span>
+                <div>
+                  <p className="text-gray-500 text-xs">Call Us</p>
+                  <p>+233 (0) 543637122</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 text-gray-300">
+                <span className="text-xl">✉️</span>
+                <div>
+                  <p className="text-gray-500 text-xs">Email Us</p>
+                  <p>info@zarakitchengh.com</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 text-gray-300">
+                <span className="text-xl">📍</span>
+                <div>
+                  <p className="text-gray-500 text-xs">Visit Us</p>
+                  <p>64 Patrice Lumumba St, Accra</p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="relative h-56 md:h-auto min-h-[280px]">
+            <img
+              src="/images/about/restaurant-interior.png"
+              alt="Zara Kitchen restaurant interior"
+              className="absolute inset-0 w-full h-full object-cover"
+            />
           </div>
         </div>
       </section>
 
-      <div className="grid lg:grid-cols-2 gap-8 p-4 md:p-8">
+      <div className="grid lg:grid-cols-2 gap-8 p-4 md:p-8 bg-[#FFF8E7]">
         {/* Left Column - Contact Info & Form */}
         <div>
           {/* Get In Touch */}
           <div className="mb-8">
-            <h2 className="text-2xl font-bold text-white mb-6">Get In Touch</h2>
+            <h2 className="text-2xl font-bold text-black mb-6">Get In Touch</h2>
 
-            <div className="space-y-6">
-              {contactInfo.map((info, idx) => {
-                const Icon = info.icon
-                return (
-                  <div key={idx} className="flex gap-4">
-                    <div className="text-2xl">
-                      {info.title === 'Phone' && '📞'}
-                      {info.title === 'Email' && '📧'}
-                      {info.title === 'Visit Us' && '📍'}
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-white mb-1">{info.title}</h3>
-                      {info.details.map((detail, i) => (
-                        <p key={i} className="text-gray-400 text-sm">
-                          {detail}
-                        </p>
-                      ))}
-                    </div>
+            <div className="space-y-5">
+              {contactInfo.map((info, idx) => (
+                <div key={idx} className="flex gap-4">
+                  <div className="text-2xl">{info.icon}</div>
+                  <div>
+                    <h3 className="font-bold text-black mb-1">{info.title}</h3>
+                    {info.details.map((detail, i) => (
+                      <p key={i} className="text-gray-600 text-sm">
+                        {detail}
+                      </p>
+                    ))}
                   </div>
-                )
-              })}
-            </div>
-          </div>
-
-          {/* Social Media */}
-          <div>
-            <h3 className="text-xl font-bold text-white mb-4">Follow Us</h3>
-            <div className="grid grid-cols-2 gap-3">
-              {socialMedia.map((social) => (
-                <a
-                  key={social.platform}
-                  href={social.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 bg-gray-800 hover:bg-gray-700 p-3 rounded-lg transition"
-                >
-                  <span className="text-2xl">{social.icon}</span>
-                  <div className="text-left">
-                    <p className="text-white text-sm font-bold">{social.platform}</p>
-                    <p className="text-gray-400 text-xs">{social.handle}</p>
-                  </div>
-                </a>
+                </div>
               ))}
             </div>
           </div>
@@ -156,7 +135,7 @@ export default function ContactPage() {
 
         {/* Right Column - Contact Form */}
         <div>
-          <h2 className="text-2xl font-bold text-white mb-6">Send Us a Message</h2>
+          <h2 className="text-2xl font-bold text-black mb-6">Send Us a Message</h2>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             {/* Name */}
@@ -168,7 +147,7 @@ export default function ContactPage() {
                 value={formData.name}
                 onChange={handleChange}
                 required
-                className="col-span-1 px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-zara-gold"
+                className="col-span-1 px-4 py-2 bg-white border border-gray-300 rounded-lg text-black placeholder-gray-400 focus:outline-none focus:border-zara-gold"
               />
               <input
                 type="tel"
@@ -176,7 +155,7 @@ export default function ContactPage() {
                 placeholder="Phone Number"
                 value={formData.phone}
                 onChange={handleChange}
-                className="col-span-1 px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-zara-gold"
+                className="col-span-1 px-4 py-2 bg-white border border-gray-300 rounded-lg text-black placeholder-gray-400 focus:outline-none focus:border-zara-gold"
               />
             </div>
 
@@ -188,7 +167,7 @@ export default function ContactPage() {
               value={formData.email}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-zara-gold"
+              className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg text-black placeholder-gray-400 focus:outline-none focus:border-zara-gold"
             />
 
             {/* Subject */}
@@ -199,7 +178,7 @@ export default function ContactPage() {
               value={formData.subject}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-zara-gold"
+              className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg text-black placeholder-gray-400 focus:outline-none focus:border-zara-gold"
             />
 
             {/* Message */}
@@ -210,15 +189,15 @@ export default function ContactPage() {
               value={formData.message}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-zara-gold resize-none"
+              className="w-full px-4 py-2 bg-white border border-gray-300 rounded-lg text-black placeholder-gray-400 focus:outline-none focus:border-zara-gold resize-none"
             />
 
             {/* Submit Status */}
             {submitStatus === 'success' && (
-              <p className="text-green-400 text-sm">✓ Message sent successfully!</p>
+              <p className="text-green-600 text-sm">✓ Message sent successfully!</p>
             )}
             {submitStatus === 'error' && (
-              <p className="text-red-400 text-sm">✗ Error sending message. Please try again.</p>
+              <p className="text-red-600 text-sm">✗ Error sending message. Please try again.</p>
             )}
 
             {/* Submit Button */}
@@ -234,11 +213,11 @@ export default function ContactPage() {
       </div>
 
       {/* Map & Hours Section */}
-      <section className="grid lg:grid-cols-3 gap-8 p-4 md:p-8 bg-gradient-to-b from-black to-gray-900">
+      <section className="grid lg:grid-cols-3 gap-8 p-4 md:p-8 bg-[#FFF8E7] border-t border-gray-200">
         {/* Map */}
         <div className="lg:col-span-2">
-          <h2 className="text-2xl font-bold text-white mb-4">Find Us on the Map</h2>
-          <div className="w-full h-96 rounded-lg overflow-hidden border border-gray-800 bg-gray-800">
+          <h2 className="text-2xl font-bold text-black mb-4">Find Us on the Map</h2>
+          <div className="w-full h-96 rounded-lg overflow-hidden border border-gray-300 bg-gray-200">
             <iframe
               width="100%"
               height="100%"
@@ -246,23 +225,23 @@ export default function ContactPage() {
               loading="lazy"
               allowFullScreen={true}
               referrerPolicy="no-referrer-when-downgrade"
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3970.8447896839726!2d-0.18449732346812734!3d5.611788532678905!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xfdf9b0e7c9c9c9c9%3A0x8c8c8c8c8c8c8c8c!2s64%20Patrice%20Lumumba%20St%2C%20Accra!5e0!3m2!1sen!2sgh!4v1234567890123"
+              src="https://www.google.com/maps?q=64+Patrice+Lumumba+St,+Airport+Residential+Area,+Accra,+Ghana&output=embed"
             ></iframe>
           </div>
         </div>
 
         {/* Opening Hours & Info */}
         <div>
-          <div className="mb-8 bg-gray-900 border border-gray-800 rounded-lg p-6">
-            <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+          <div className="mb-8 bg-white border border-gray-200 rounded-lg p-6">
+            <h3 className="text-xl font-bold text-black mb-4 flex items-center gap-2">
               <Clock size={20} />
               Opening Hours
             </h3>
             <div className="space-y-2">
               {openingHours.map((item) => (
                 <div key={item.day} className="flex justify-between text-sm">
-                  <span className="text-gray-400">{item.day}</span>
-                  <span className={item.hours === 'Closed' ? 'text-red-400 font-bold' : 'text-white'}>
+                  <span className="text-gray-500">{item.day}</span>
+                  <span className={item.hours === 'Closed' ? 'text-red-500 font-bold' : 'text-black'}>
                     {item.hours}
                   </span>
                 </div>
@@ -270,9 +249,9 @@ export default function ContactPage() {
             </div>
           </div>
 
-          <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
-            <h3 className="text-xl font-bold text-white mb-4">Coverage</h3>
-            <ul className="space-y-2 text-gray-400 text-sm">
+          <div className="bg-white border border-gray-200 rounded-lg p-6">
+            <h3 className="text-xl font-bold text-black mb-4">Coverage</h3>
+            <ul className="space-y-2 text-gray-600 text-sm">
               <li>✓ Walk in</li>
               <li>✓ Delivery</li>
               <li>✓ Corporate</li>
@@ -283,19 +262,21 @@ export default function ContactPage() {
       </section>
 
       {/* Support Features */}
-      <section className="py-12 px-4 bg-gray-900 border-t border-gray-800">
+      <section className="py-8 px-4 bg-[#FFF8E7] border-t border-gray-200">
         <div className="container-wide">
-          <div className="grid md:grid-cols-4 gap-6">
+          <div className="grid md:grid-cols-4 gap-6 bg-[#FFEFC7] rounded-xl p-6">
             {[
               { icon: '🎧', title: 'Friendly Support', desc: 'Our team is ready to assist you with a smile.' },
               { icon: '⚡', title: 'Fast Response', desc: 'We respond quickly to all your inquiries.' },
               { icon: '📅', title: 'Reservations', desc: 'Book your table in advance for a seamless experience.' },
               { icon: '🎉', title: 'Events & Catering', desc: 'We cater for all types of events and special occasions.' },
             ].map((feature, idx) => (
-              <div key={idx} className="text-center">
-                <div className="text-4xl mb-3">{feature.icon}</div>
-                <h3 className="font-bold text-white mb-2">{feature.title}</h3>
-                <p className="text-gray-400 text-sm">{feature.desc}</p>
+              <div key={idx} className="flex items-start gap-3">
+                <div className="text-3xl flex-shrink-0">{feature.icon}</div>
+                <div>
+                  <h3 className="font-bold text-black text-sm mb-1">{feature.title}</h3>
+                  <p className="text-gray-600 text-xs">{feature.desc}</p>
+                </div>
               </div>
             ))}
           </div>

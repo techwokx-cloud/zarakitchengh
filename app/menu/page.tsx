@@ -925,140 +925,145 @@ function MenuPageContent() {
   }
 
   return (
-    <main className="min-h-screen bg-black">
+    <main className="min-h-screen bg-[#FFF8E7]">
       <Header />
 
-      {/* Hero Section */}
-      <section className="relative py-12 md:py-16 px-4 bg-gradient-to-r from-gray-900 to-black border-b border-gray-800">
-        <div className="container-wide">
-          <h1 className="font-display text-4xl md:text-5xl font-semibold text-white mb-2">Our Menu</h1>
-          <p className="text-xl text-gray-300">Authentic Ghanaian & Continental Cuisine</p>
-        </div>
-      </section>
-
-      <div className="flex flex-col lg:flex-row gap-6 p-4 md:p-8">
-        {/* Sidebar - Categories */}
-        <div className="w-full lg:w-64 flex-shrink-0">
-          <div className="bg-gray-900 border border-gray-800 rounded-lg p-6 sticky top-20">
-            <h2 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
-              <Filter size={20} />
-              Categories
-            </h2>
-
-            {/* Search */}
-            <div className="mb-6">
-              <div className="relative">
-                <Search className="absolute left-3 top-3 text-gray-400" size={18} />
-                <input
-                  type="text"
-                  placeholder="Search menu..."
-                  value={searchQuery}
-                  onChange={(e) => handleSearch(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-zara-gold"
-                />
-              </div>
-            </div>
-
-            {/* Category List */}
-            <div className="space-y-2">
-              {MENU_CATEGORIES.map((category) => (
-                <button
-                  key={category.id}
-                  onClick={() => handleCategoryChange(category.name)}
-                  className={`w-full text-left px-4 py-3 rounded-lg transition ${
-                    activeCategory === category.name
-                      ? 'bg-zara-gold text-black font-bold'
-                      : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-                  }`}
-                >
-                  <span className="mr-2">{category.emoji}</span>
-                  {category.name}
-                </button>
-              ))}
-            </div>
-          </div>
+      <div className="p-4 md:p-8">
+        {/* Breadcrumb */}
+        <div className="container-wide mb-4 text-sm text-gray-600">
+          <a href="/" className="hover:text-zara-gold">Home</a>
+          <span className="mx-2">›</span>
+          <span className="text-red-600 font-semibold">Food Menu</span>
         </div>
 
-        {/* Main Content - Menu Items */}
-        <div id="menu-results" className="flex-1 scroll-mt-20">
-          {/* Active Category Display */}
-          <div className="mb-8">
-            <h2 className="font-display text-3xl font-semibold text-white mb-2">{activeCategory}</h2>
-            <p className="text-gray-400">
-              {filteredItems.length} {filteredItems.length === 1 ? 'item' : 'items'} found
-            </p>
-          </div>
+        <div className="container-wide flex flex-col lg:flex-row gap-6">
+          {/* Sidebar - Categories */}
+          <div className="w-full lg:w-64 flex-shrink-0">
+            <div className="bg-white border border-gray-200 rounded-lg p-5 sticky top-20 shadow-sm">
+              <h2 className="text-lg font-bold text-black mb-4 flex items-center gap-2">
+                <Filter size={18} />
+                Categories
+              </h2>
 
-          {/* Menu Grid */}
-          {filteredItems.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {filteredItems.map((item) => (
-                <div
-                  key={item.id}
-                  className="bg-gray-900 border border-gray-800 rounded-lg overflow-hidden hover:border-zara-gold transition group"
-                >
-                  {/* Image */}
-                  <div className="relative h-64 overflow-hidden bg-gray-800">
-                    <img
-                      src={item.image}
-                      alt={item.name}
-                      className="w-full h-full object-cover group-hover:scale-110 transition duration-300"
-                    />
-                    <div className="absolute inset-0 bg-black/20 group-hover:bg-black/0 transition"></div>
-
-                    {/* Tags */}
-                    <div className="absolute top-4 right-4 flex gap-2">
-                      {item.isSpicy && (
-                        <span className="bg-red-600 text-white px-2 py-1 rounded text-xs font-bold">
-                          🌶️ Spicy
-                        </span>
-                      )}
-                      {item.isVegetarian && (
-                        <span className="bg-green-600 text-white px-2 py-1 rounded text-xs font-bold">
-                          🥬 Vegan
-                        </span>
-                      )}
-                    </div>
-
-                    {/* Price Badge */}
-                    <div className="absolute bottom-4 left-4 bg-zara-gold text-black px-4 py-2 rounded-lg font-bold text-lg">
-                      GHS {item.price.toFixed(2)}
-                    </div>
-                  </div>
-
-                  {/* Content */}
-                  <div className="p-4">
-                    <h3 className="text-lg font-bold text-white mb-2">{item.name}</h3>
-                    <p className="text-gray-400 text-sm mb-4">{item.description}</p>
-
-                    {/* Add to Order Button */}
-                    <button className="w-full bg-zara-gold text-black font-bold py-2 rounded-lg hover:bg-zara-orange transition">
-                      Add to Order
-                    </button>
-                  </div>
+              {/* Search */}
+              <div className="mb-5">
+                <div className="relative">
+                  <Search className="absolute left-3 top-2.5 text-gray-400" size={16} />
+                  <input
+                    type="text"
+                    placeholder="Search menu..."
+                    value={searchQuery}
+                    onChange={(e) => handleSearch(e.target.value)}
+                    className="w-full pl-9 pr-3 py-2 text-sm bg-gray-50 border border-gray-200 rounded-lg text-black placeholder-gray-400 focus:outline-none focus:border-zara-gold"
+                  />
                 </div>
-              ))}
+              </div>
+
+              {/* Category List */}
+              <div className="space-y-1">
+                {MENU_CATEGORIES.map((category) => (
+                  <button
+                    key={category.id}
+                    onClick={() => handleCategoryChange(category.name)}
+                    className={`w-full text-left px-3 py-2 rounded-lg transition text-sm flex items-center gap-2 ${
+                      activeCategory === category.name
+                        ? 'bg-zara-gold text-black font-bold'
+                        : 'text-gray-700 hover:bg-gray-50'
+                    }`}
+                  >
+                    <span>{category.emoji}</span>
+                    {category.name}
+                  </button>
+                ))}
+              </div>
+
+              {/* Ask Zara mini widget -- mockup asset used as-is */}
+              <a href="#" className="block mt-5">
+                <img
+                  src="/images/mascot/ask-zara-mini.png"
+                  alt="Craving something special? Let Zara help you find your perfect meal. Ask Zara"
+                  className="w-full h-auto"
+                />
+              </a>
             </div>
-          ) : (
-            <div className="text-center py-12">
-              <p className="text-gray-400 text-lg">No items found matching your search.</p>
-              <button
-                onClick={() => {
-                  setActiveCategory('All Categories')
-                  setSearchQuery('')
-                  filterMenu('All Categories', '')
-                }}
-                className="mt-4 text-zara-gold hover:text-zara-orange transition"
-              >
-                Clear filters
-              </button>
+          </div>
+
+          {/* Main Content - Menu Items */}
+          <div id="menu-results" className="flex-1 scroll-mt-20">
+            {/* Active Category Display */}
+            <div className="mb-6">
+              <h2 className="font-display text-2xl font-semibold text-black mb-1">{activeCategory}</h2>
+              <p className="text-gray-500 text-sm">
+                {filteredItems.length} {filteredItems.length === 1 ? 'item' : 'items'} found
+              </p>
             </div>
-          )}
+
+            {/* Menu Grid */}
+            {filteredItems.length > 0 ? (
+              <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5">
+                {filteredItems.map((item) => (
+                  <div
+                    key={item.id}
+                    className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-md transition group"
+                  >
+                    {/* Image */}
+                    <div className="relative aspect-square overflow-hidden bg-gray-100">
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
+                      />
+                      {item.isVegetarian && (
+                        <span className="absolute top-2 right-2 bg-green-600 text-white px-2 py-0.5 rounded text-[10px] font-bold">
+                          🥬 Veg
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Content */}
+                    <div className="p-3">
+                      <h3 className="text-sm font-bold text-black mb-1 leading-tight line-clamp-2">{item.name}</h3>
+
+                      {/* Spice dots */}
+                      <div className="flex items-center gap-0.5 mb-2">
+                        {[0, 1, 2, 3, 4].map((i) => (
+                          <span key={i} className={i < (item.isSpicy ? 2 : 0) ? 'text-red-500' : 'text-gray-200'}>
+                            🌶
+                          </span>
+                        ))}
+                      </div>
+
+                      <div className="flex items-center justify-between">
+                        <span className="text-red-600 font-bold text-sm">GHS {item.price.toFixed(0)}</span>
+                        <button className="w-6 h-6 rounded-full bg-red-600 hover:bg-red-700 text-white flex items-center justify-center text-xs transition">
+                          +
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-12">
+                <p className="text-gray-500 text-lg">No items found matching your search.</p>
+                <button
+                  onClick={() => {
+                    setActiveCategory('All Categories')
+                    setSearchQuery('')
+                    filterMenu('All Categories', '')
+                  }}
+                  className="mt-4 text-zara-gold hover:text-zara-orange transition"
+                >
+                  Clear filters
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
       {/* CTA Section */}
-      <section className="py-12 px-4 bg-gradient-to-r from-zara-gold/10 to-zara-orange/10 border-t border-gray-800">
+      <section className="py-12 px-4 bg-black border-t border-gray-800">
         <div className="container-wide text-center">
           <h2 className="font-display text-3xl font-semibold text-white mb-4">Ready to Order?</h2>
           <p className="text-gray-300 mb-6">Choose your favorite dishes and place your order now!</p>
