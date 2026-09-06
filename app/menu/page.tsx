@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import { Search, Filter } from 'lucide-react'
@@ -869,10 +870,32 @@ const SAMPLE_MENU_ITEMS = [
   },
 ]
 
-export default function MenuPage() {
+function MenuPageContent() {
+  const searchParams = useSearchParams()
+  const categoryFromUrl = searchParams.get('category')
+
   const [activeCategory, setActiveCategory] = useState('All Categories')
   const [searchQuery, setSearchQuery] = useState('')
   const [filteredItems, setFilteredItems] = useState(SAMPLE_MENU_ITEMS)
+
+  // Preset category + scroll to results when arriving from a homepage category link
+  useEffect(() => {
+    if (categoryFromUrl) {
+      const match = MENU_CATEGORIES.find(
+        (c) => c.name.toLowerCase() === categoryFromUrl.toLowerCase()
+      )
+      const categoryName = match ? match.name : categoryFromUrl
+      setActiveCategory(categoryName)
+      setFilteredItems(
+        categoryName === 'All Categories'
+          ? SAMPLE_MENU_ITEMS
+          : SAMPLE_MENU_ITEMS.filter((item) => item.category === categoryName)
+      )
+      const el = document.getElementById('menu-results')
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [categoryFromUrl])
 
   const handleCategoryChange = (category: string) => {
     setActiveCategory(category)
@@ -957,7 +980,7 @@ export default function MenuPage() {
         </div>
 
         {/* Main Content - Menu Items */}
-        <div className="flex-1">
+        <div id="menu-results" className="flex-1 scroll-mt-20">
           {/* Active Category Display */}
           <div className="mb-8">
             <h2 className="font-display text-3xl font-semibold text-white mb-2">{activeCategory}</h2>
@@ -1057,5 +1080,13 @@ export default function MenuPage() {
 
       <Footer />
     </main>
+  )
+}
+
+export default function MenuPage() {
+  return (
+    <Suspense fallback={null}>
+      <MenuPageContent />
+    </Suspense>
   )
 }
