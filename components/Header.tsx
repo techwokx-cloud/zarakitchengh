@@ -44,19 +44,15 @@ export default function Header() {
 
         {/* CTA Buttons */}
         <div className="hidden md:flex items-center gap-3">
-          <a
-            href="/menu"
-            className="btn-primary text-sm"
-          >
-            🛒 Order Online
+          <a href="/menu">
+            <img src="/images/buttons/order-online.png" alt="Order Online" className="h-9 w-auto" />
           </a>
           <a
             href="https://wa.me/233243637122"
             target="_blank"
             rel="noopener noreferrer"
-            className="btn-secondary text-sm"
           >
-            💬 WhatsApp
+            <img src="/images/buttons/whatsapp-order.png" alt="WhatsApp Order" className="h-9 w-auto" />
           </a>
         </div>
 
@@ -79,17 +75,16 @@ export default function Header() {
             <a href="/gallery" className="text-white">Gallery</a>
             <a href="/catering" className="text-white">Catering</a>
             <a href="/contact" className="text-white">Contact</a>
-            <div className="border-t border-gray-700 pt-4 flex flex-col gap-2">
-              <a href="/menu" className="btn-primary text-sm text-center">
-                🛒 Order Online
+            <div className="border-t border-gray-700 pt-4 flex flex-col gap-2 items-start">
+              <a href="/menu">
+                <img src="/images/buttons/order-online.png" alt="Order Online" className="h-9 w-auto" />
               </a>
               <a
                 href="https://wa.me/233243637122"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn-secondary text-sm text-center"
               >
-                💬 WhatsApp
+                <img src="/images/buttons/whatsapp-order.png" alt="WhatsApp Order" className="h-9 w-auto" />
               </a>
             </div>
           </nav>
