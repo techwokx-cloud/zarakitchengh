@@ -20,7 +20,7 @@ const MENU_CATEGORIES = [
   { id: 10, name: 'Chinese Food', emoji: '🥢' },
   { id: 11, name: 'Indian Dishes', emoji: '🍛' },
   { id: 12, name: 'Rice Dishes', emoji: '🍚' },
-  { id: 13, name: 'Ghanaian Specialities', emoji: '🇬🇭' },
+  { id: 13, name: 'Ghanaian Specialities', emoji: '🍲' },
   { id: 14, name: 'From the Grill', emoji: '🐟' },
   { id: 15, name: 'Soups', emoji: '🍲' },
   { id: 16, name: 'Extra Dishes', emoji: '🍟' },

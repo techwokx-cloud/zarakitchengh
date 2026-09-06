@@ -30,11 +30,11 @@ export default function MenuCategories() {
               href={`/menu?category=${encodeURIComponent(category.name)}`}
               className="group flex flex-col items-center text-center"
             >
-              <div className="w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden group-hover:ring-2 group-hover:ring-zara-gold transition-all">
+              <div className="w-16 h-16 md:w-20 md:h-20 rounded-full overflow-hidden bg-[#FDF8EA] group-hover:ring-2 group-hover:ring-zara-gold transition-all">
                 <img
                   src={category.icon}
                   alt={category.name}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                  className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300"
                 />
               </div>
               <p className="mt-2 text-[11px] md:text-sm font-bold text-black leading-tight">
