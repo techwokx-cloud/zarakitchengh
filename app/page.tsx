@@ -1,6 +1,7 @@
 import Header from '@/components/Header'
 import HeroSection from '@/components/HeroSection'
 import MenuCategories from '@/components/MenuCategories'
+import OrderSection from '@/components/OrderSection'
 import Footer from '@/components/Footer'
 
 export default function Home() {
@@ -14,6 +15,9 @@ export default function Home() {
 
       {/* Menu Categories -- expands inline when a category icon is clicked */}
       <MenuCategories />
+
+      {/* Order Your Way / Payments bar */}
+      <OrderSection />
 
       {/* Footer */}
       <Footer />
