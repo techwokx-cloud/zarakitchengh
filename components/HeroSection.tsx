@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { ShoppingCart, MessageCircle, ChevronLeft, ChevronRight } from 'lucide-react'
+import { ChevronLeft, ChevronRight } from 'lucide-react'
 
 // Recommended size for new slideshow images: 1920x800px (landscape, ~2.4:1),
 // JPEG/WebP, quality 85-90+. Landscape orientation avoids empty bars/pixelation.
@@ -55,22 +55,6 @@ export default function HeroSection() {
           <p className="text-sm md:text-base text-gray-200 mb-5">
             Fresh. Tasty. Satisfying.
           </p>
-
-          <div className="flex gap-3">
-            <a href="/menu" className="btn-primary flex items-center gap-2 text-sm px-5 py-2.5">
-              <ShoppingCart size={16} />
-              Order Online
-            </a>
-            <a
-              href="https://wa.me/233243637122"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-secondary flex items-center gap-2 text-sm px-5 py-2.5"
-            >
-              <MessageCircle size={16} />
-              WhatsApp Order
-            </a>
-          </div>
         </div>
       </div>
 
