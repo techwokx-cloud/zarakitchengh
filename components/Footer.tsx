@@ -24,8 +24,16 @@ export default function Footer() {
         <a href="tel:+233241234567" aria-label="Call +233 24 123 4567" className="absolute left-[31.5%] top-[30%] w-[13%] h-[16%]" />
         <a href="mailto:info@zarakitchengh.com" aria-label="Email info@zarakitchengh.com" className="absolute left-[31.5%] top-[48%] w-[13%] h-[16%]" />
 
-        {/* Get Our Food App */}
-        <a href="#" aria-label="Install PWA" className="absolute left-[67%] top-[38%] w-[13%] h-[45%]" />
+        {/* Get Our Food App -- your new "Install Zara Mobile App" asset, fitted into this column */}
+        <div className="absolute left-[65%] top-0 w-[17%] h-full bg-black flex items-center justify-center p-1">
+          <a href="#" className="w-full h-full flex items-center justify-center">
+            <img
+              src="/images/assets/install-app-button.png"
+              alt="Get Our Food App: Install Zara Mobile App. Order faster. Save favourites. Download on the App Store, Get it on Google Play."
+              className="w-full h-auto max-h-full object-contain"
+            />
+          </a>
+        </div>
 
         {/* Follow Us */}
         <a href="https://www.facebook.com/ZaraKitchenOfficial" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="absolute left-[84.4%] top-[30%] w-[2.6%] h-[28%]" />
