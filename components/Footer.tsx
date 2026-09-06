@@ -1,4 +1,10 @@
+'use client'
+
+import { useInstallPrompt } from '@/lib/pwa/InstallPromptProvider'
+
 export default function Footer() {
+  const { canInstall, promptInstall } = useInstallPrompt()
+
   return (
     <footer className="bg-black">
       <div className="relative w-full">
@@ -26,13 +32,16 @@ export default function Footer() {
 
         {/* Get Our Food App -- your new "Install Zara Mobile App" asset, fitted into this column */}
         <div className="absolute left-[65%] top-0 w-[17%] h-full bg-black flex items-center justify-center p-1">
-          <a href="#" className="w-full h-full flex items-center justify-center">
+          <button
+            onClick={() => canInstall && promptInstall()}
+            className="w-full h-full flex items-center justify-center"
+          >
             <img
               src="/images/assets/install-app-button.png"
-              alt="Get Our Food App: Install Zara Mobile App. Order faster. Save favourites. Download on the App Store, Get it on Google Play."
+              alt="Get Our Food App: Install Zara Mobile App. Order faster. Save favourites."
               className="w-full h-auto max-h-full object-contain"
             />
-          </a>
+          </button>
         </div>
 
         {/* Follow Us */}
