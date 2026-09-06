@@ -5,21 +5,6 @@ import Footer from '@/components/Footer'
 import { CheckCircle } from 'lucide-react'
 
 export default function AboutPage() {
-  const features = [
-    { icon: '💳', title: 'Accepts Cards', desc: 'Credit & Debit Cards' },
-    { icon: '❄️', title: 'Air conditioning', desc: 'Comfortable climate' },
-    { icon: '🍷', title: 'Alcohol', desc: 'Full bar available' },
-    { icon: '🥞', title: 'Breakfast', desc: 'Delicious morning meals' },
-    { icon: '🍽️', title: 'Delivery', desc: 'Fast delivery service' },
-    { icon: '🎉', title: 'Event Space', desc: 'Perfect for events' },
-    { icon: '👨‍👩‍👧‍👦', title: 'Good for Business Meeting', desc: 'Professional setting' },
-    { icon: '👶', title: 'Kid Friendly', desc: 'Family welcome' },
-    { icon: '📍', title: 'Outdoor Seating', desc: 'Al fresco dining' },
-    { icon: '🅿️', title: 'Free Parking', desc: 'Convenient parking' },
-    { icon: '📋', title: 'Reservations', desc: 'Book your table' },
-    { icon: '🍽️', title: 'Takeout', desc: 'Quick pickup service' },
-  ]
-
   const achievements = [
     {
       icon: '👨‍🍳',
@@ -132,25 +117,14 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Features */}
+      {/* Features -- mockup asset used as-is */}
       <section className="py-12 px-4 bg-black border-t border-gray-800">
         <div className="container-wide">
-          <h2 className="text-3xl font-bold text-white text-center mb-12">Features</h2>
-
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {features.map((feature, idx) => (
-              <div
-                key={idx}
-                className="bg-gray-900 border border-gray-800 rounded-lg p-4 hover:border-zara-gold transition flex items-start gap-3"
-              >
-                <div className="text-3xl flex-shrink-0">{feature.icon}</div>
-                <div>
-                  <h3 className="font-bold text-white">{feature.title}</h3>
-                  <p className="text-gray-400 text-xs">{feature.desc}</p>
-                </div>
-              </div>
-            ))}
-          </div>
+          <img
+            src="/images/assets/features.png"
+            alt="Features: Accepts Credit Cards, Air conditioning, Alcohol, Breakfast, Delivery, Event Space, Free Parking, Good for Business Meeting, Group Friendly, Kid Friendly, Outdoor Seating, Reservation, Take-out, Walk-in"
+            className="w-full h-auto rounded-lg"
+          />
         </div>
       </section>
 
@@ -171,15 +145,13 @@ export default function AboutPage() {
             </div>
           </div>
 
-          {/* Coverage */}
-          <div className="bg-black border border-gray-800 rounded-lg p-6">
-            <h3 className="text-xl font-bold text-white mb-4">📦 Coverage & Services</h3>
-            <ul className="space-y-2 text-gray-400 text-sm">
-              <li className="flex items-center gap-2"><span className="text-zara-gold">✓</span> Walk-in Dining</li>
-              <li className="flex items-center gap-2"><span className="text-zara-gold">✓</span> Delivery Service</li>
-              <li className="flex items-center gap-2"><span className="text-zara-gold">✓</span> Corporate Orders</li>
-              <li className="flex items-center gap-2"><span className="text-zara-gold">✓</span> Outdoor Catering Events</li>
-            </ul>
+          {/* Coverage -- mockup asset used as-is */}
+          <div className="bg-black border border-gray-800 rounded-lg p-6 flex items-center">
+            <img
+              src="/images/assets/coverage.png"
+              alt="Coverage: Walk in, Delivery, Corporate, Outdoor Catering Events"
+              className="w-full h-auto"
+            />
           </div>
 
           {/* Services */}
@@ -220,6 +192,17 @@ export default function AboutPage() {
               🎉 Book Catering
             </a>
           </div>
+        </div>
+      </section>
+
+      {/* Above Footer banner -- mockup asset used as-is */}
+      <section className="py-8 px-4 bg-black border-t border-gray-800">
+        <div className="container-wide">
+          <img
+            src="/images/assets/above-footer.png"
+            alt="Friendly Support, Fast Response, Reservations, Events & Catering"
+            className="w-full h-auto rounded-lg"
+          />
         </div>
       </section>
 

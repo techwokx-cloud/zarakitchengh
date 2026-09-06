@@ -61,53 +61,12 @@ export default function HeroSection() {
               </a>
             </div>
 
-            {/* Ask Zara Widget, mascot sits beside it in normal flow (no absolute overlap) */}
-            <div className="flex items-end gap-3 max-w-md">
-              <img
-                src="/images/mascot/zara-bot.png"
-                alt="Zara, the Zara Kitchen food assistant"
-                className="hidden sm:block w-16 h-16 md:w-20 md:h-20 flex-shrink-0"
-              />
-              <div className="ask-zara-widget flex-1">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="w-9 h-9 bg-gradient-to-br from-purple-400 to-blue-500 rounded-full flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
-                    Z
-                  </div>
-                  <div>
-                    <h3 className="font-bold text-black text-sm">Ask Zara</h3>
-                    <p className="text-xs text-gray-600">Your Smart Food Assistant</p>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <p className="text-sm font-semibold text-black">What are you craving today?</p>
-                  <div className="bg-purple-100 rounded-lg p-2.5">
-                    <p className="text-xs text-gray-700">
-                      I&apos;m hungry for something tasty under GH₵50
-                    </p>
-                  </div>
-                  <div className="bg-orange-100 rounded-lg p-2.5">
-                    <p className="text-xs text-gray-700 mb-1">I&apos;ve got you! 🔥</p>
-                    <p className="text-xs font-bold text-orange-600">
-                      Try our Spicy Chicken Rice Bowl. GH₵45
-                    </p>
-                  </div>
-                  <div className="flex gap-2 pt-1">
-                    <a href="/menu" className="flex-1 text-center text-xs py-2 px-2 bg-gray-100 hover:bg-gray-200 rounded transition">
-                      📋 View Menu
-                    </a>
-                    <a
-                      href="https://wa.me/233243637122"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="flex-1 text-center text-xs py-2 px-2 bg-green-50 hover:bg-green-100 rounded transition"
-                    >
-                      💬 Order on WhatsApp
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
+            {/* Ask Zara Widget -- using your mockup asset directly, unmodified */}
+            <img
+              src="/images/assets/ai-assist.png"
+              alt="Ask Zara - Your Smart Food Assistant widget"
+              className="max-w-[320px] md:max-w-[360px] w-full h-auto"
+            />
           </div>
 
           {/* Right column: single contained photo, matches mockup's framed food shot */}
