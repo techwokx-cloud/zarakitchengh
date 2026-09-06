@@ -38,7 +38,7 @@ export default function Footer() {
           >
             <img
               src="/images/assets/install-app-button.png"
-              alt="Get Our Food App: Install Zara Mobile App. Order faster. Save favourites."
+              alt="Get Our App: Install Zara Mobile App. Order faster. Save your favourites. iOS & Android compatible."
               className="w-full h-auto max-h-full object-contain"
             />
           </button>
