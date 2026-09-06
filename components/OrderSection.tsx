@@ -4,37 +4,37 @@ import { CreditCard, Smartphone, Smartphone as MobileMoneyIcon, TrendingUp } fro
 export default function OrderSection() {
   const orderMethods = [
     {
-      icon: '🌐',
+      icon: '/images/order-icons/web.jpg',
       title: 'Website',
       subtitle: 'Order Online',
       link: '#'
     },
     {
-      icon: '💬',
+      icon: '/images/order-icons/whatsapp.jpg',
       title: 'WhatsApp',
       subtitle: 'Chat & Order',
       link: 'https://wa.me/233243637122'
     },
     {
-      icon: '🍔',
+      icon: '/images/order-icons/jumia.jpg',
       title: 'Jumia Food',
       subtitle: 'Via Jumia Food',
       link: '#'
     },
     {
-      icon: '🚗',
+      icon: '/images/order-icons/uber.jpg',
       title: 'Uber Eats',
       subtitle: 'Via Uber Eats',
       link: '#'
     },
     {
-      icon: '⚡',
+      icon: '/images/order-icons/bolt.jpg',
       title: 'Bolt Food',
       subtitle: 'Via Bolt Food',
       link: '#'
     },
     {
-      icon: '🎯',
+      icon: '/images/order-icons/hubtel.jpg',
       title: 'Hubtel',
       subtitle: 'Via Hubtel',
       link: '#'
@@ -82,7 +82,9 @@ export default function OrderSection() {
                 rel={method.link.startsWith('http') ? 'noopener noreferrer' : undefined}
                 className="group bg-gray-800 border border-gray-700 p-6 rounded-lg text-center hover:border-zara-gold hover:bg-gray-750 transition"
               >
-                <div className="text-4xl mb-3 group-hover:scale-110 transition">{method.icon}</div>
+                <div className="w-14 h-14 mx-auto mb-3 rounded-lg overflow-hidden group-hover:scale-110 transition">
+                  <img src={method.icon} alt={method.title} className="w-full h-full object-cover" />
+                </div>
                 <h3 className="font-bold text-white mb-1">{method.title}</h3>
                 <p className="text-gray-400 text-xs">{method.subtitle}</p>
               </a>

@@ -1,33 +1,30 @@
-# dependencies
-/node_modules
-/.pnp
-.pnp.js
 
-# testing
-/coverage
-
-# next.js
-/.next/
-/out/
-
-# production
-/build
-
-# misc
-.DS_Store
-*.pem
-
+# IDE
 # debug
+# dependencies
+# local env files
+# misc
+# next.js
+# production
+# testing
+*.pem
+*.swo
+*.swp
+.DS_Store
+.env
+.env.*.local
+.env.local
+.idea
+.next/
+.pnp.js
+.vscode
+/.next/
+/.pnp
+/build
+/coverage
+/node_modules
+/out/
+node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-
-# local env files
-.env.local
-.env.*.local
-
-# IDE
-.vscode
-.idea
-*.swp
-*.swo

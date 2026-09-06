@@ -5,16 +5,28 @@ import { ChevronLeft, ChevronRight, ShoppingCart, MessageCircle } from 'lucide-r
 
 const heroImages = [
   {
-    url: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=1200&h=600&fit=crop',
-    alt: 'Grilled Chicken with Rice',
+    url: '/images/hero/jollof-grilled-chicken.jpg',
+    alt: 'Jollof Rice with Grilled Chicken',
   },
   {
-    url: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=1200&h=600&fit=crop',
-    alt: 'Assorted Meat with Fufu',
+    url: '/images/hero/waakye-special.jpg',
+    alt: 'Waakye Special with Fish, Egg & Gari',
   },
   {
-    url: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=1200&h=600&fit=crop',
-    alt: 'Spicy Chicken Rice Bowl',
+    url: '/images/hero/tilapia-banku-plantain.jpg',
+    alt: 'Grilled Tilapia with Banku & Plantain',
+  },
+  {
+    url: '/images/hero/red-red-plantain.jpg',
+    alt: 'Red Red with Fried Plantain',
+  },
+  {
+    url: '/images/hero/fufu-kontomire-soup.jpg',
+    alt: 'Fufu with Kontomire Soup',
+  },
+  {
+    url: '/images/hero/banku-fried-fish.jpg',
+    alt: 'Banku with Fried Fish & Pepper',
   },
 ]
 

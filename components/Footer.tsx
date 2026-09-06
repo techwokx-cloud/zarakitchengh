@@ -106,15 +106,18 @@ export default function Footer() {
             <div>
               <h4 className="text-white font-bold mb-4">Order Your Way</h4>
               <div className="grid grid-cols-3 gap-4">
-                <div className="bg-gray-800 p-3 rounded text-center text-xs">
-                  🌐 Website
-                </div>
-                <div className="bg-gray-800 p-3 rounded text-center text-xs">
-                  🍕 Jumia Food
-                </div>
-                <div className="bg-gray-800 p-3 rounded text-center text-xs">
-                  🚗 Uber Eats
-                </div>
+                <a href="#" className="bg-gray-800 p-2 rounded text-center flex flex-col items-center gap-1">
+                  <img src="/images/order-icons/web.jpg" alt="Website" className="w-8 h-8 rounded object-cover" />
+                  <span className="text-xs">Website</span>
+                </a>
+                <a href="#" className="bg-gray-800 p-2 rounded text-center flex flex-col items-center gap-1">
+                  <img src="/images/order-icons/jumia.jpg" alt="Jumia Food" className="w-8 h-8 rounded object-cover" />
+                  <span className="text-xs">Jumia Food</span>
+                </a>
+                <a href="#" className="bg-gray-800 p-2 rounded text-center flex flex-col items-center gap-1">
+                  <img src="/images/order-icons/uber.jpg" alt="Uber Eats" className="w-8 h-8 rounded object-cover" />
+                  <span className="text-xs">Uber Eats</span>
+                </a>
               </div>
             </div>
           </div>
