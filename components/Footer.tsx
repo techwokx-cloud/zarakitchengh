@@ -1,163 +1,43 @@
-import { Facebook, Instagram, Mail, MapPin, Phone, Twitter } from 'lucide-react'
-
 export default function Footer() {
   return (
-    <footer className="bg-gray-900 text-gray-300 py-12">
-      <div className="container-wide px-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-8 mb-8">
-          {/* Logo & Brand */}
-          <div>
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-12 h-12 bg-zara-gold rounded-full flex items-center justify-center text-black font-bold text-lg">
-                Z
-              </div>
-              <div>
-                <h3 className="text-white font-bold">Zara Kitchen</h3>
-                <p className="text-yellow-400 text-xs">Good Food, Good Mood</p>
-              </div>
-            </div>
-            <p className="text-sm text-gray-400">
-              Authentic Ghanaian & Continental Cuisine made with love, served fresh and tasty.
-            </p>
-          </div>
+    <footer className="bg-black">
+      <div className="relative w-full">
+        <img
+          src="/images/assets/footer-full.png"
+          alt="Zara Kitchen footer: Quick Links (Home, Menu, About Us, Gallery, Contact), Contact Us, Opening Hours, Get Our Food App, Follow Us"
+          className="w-full h-auto block"
+        />
 
-          {/* Quick Links */}
-          <div>
-            <h4 className="text-white font-bold mb-4">Quick Links</h4>
-            <ul className="space-y-2 text-sm">
-              <li><a href="#home" className="hover:text-zara-gold transition">▸ Home</a></li>
-              <li><a href="#menu" className="hover:text-zara-gold transition">▸ Menu</a></li>
-              <li><a href="#about" className="hover:text-zara-gold transition">▸ About Us</a></li>
-              <li><a href="#gallery" className="hover:text-zara-gold transition">▸ Gallery</a></li>
-              <li><a href="#contact" className="hover:text-zara-gold transition">▸ Contact</a></li>
-            </ul>
-          </div>
+        {/* Clickable overlays -- positioned as percentages so they track the image at any width */}
 
-          {/* Contact Info */}
-          <div>
-            <h4 className="text-white font-bold mb-4">Contact Us</h4>
-            <ul className="space-y-3 text-sm">
-              <li className="flex items-center gap-2">
-                <Phone size={16} className="text-zara-gold" />
-                <a href="tel:+233241234567" className="hover:text-zara-gold transition">
-                  +233 24 123 4567
-                </a>
-              </li>
-              <li className="flex items-start gap-2">
-                <Mail size={16} className="text-zara-gold mt-0.5" />
-                <a href="mailto:info@zarakitchen.com" className="hover:text-zara-gold transition">
-                  info@zarakitchen.com
-                </a>
-              </li>
-              <li className="flex items-start gap-2">
-                <MapPin size={16} className="text-zara-gold mt-0.5" />
-                <span>Accra, Ghana</span>
-              </li>
-            </ul>
-          </div>
+        {/* Logo -> home */}
+        <a href="/" aria-label="Zara Kitchen home" className="absolute left-[0%] top-0 w-[17%] h-full" />
 
-          {/* Opening Hours */}
-          <div>
-            <h4 className="text-white font-bold mb-4">Opening Hours</h4>
-            <ul className="space-y-2 text-sm">
-              <li className="flex justify-between">
-                <span>Mon - Fri:</span>
-                <span className="text-zara-gold">8:00 AM - 10:00 PM</span>
-              </li>
-              <li className="flex justify-between">
-                <span>Sat - Sun:</span>
-                <span className="text-zara-gold">8:00 AM - 11:00 PM</span>
-              </li>
-            </ul>
-          </div>
+        {/* Quick Links */}
+        <a href="/" aria-label="Home" className="absolute left-[18.5%] top-[24%] w-[11%] h-[14%]" />
+        <a href="/menu" aria-label="Menu" className="absolute left-[18.5%] top-[40%] w-[11%] h-[14%]" />
+        <a href="/about" aria-label="About Us" className="absolute left-[18.5%] top-[56%] w-[11%] h-[14%]" />
+        <a href="/gallery" aria-label="Gallery" className="absolute left-[18.5%] top-[72%] w-[11%] h-[14%]" />
+        <a href="/contact" aria-label="Contact" className="absolute left-[18.5%] top-[86%] w-[11%] h-[12%]" />
 
-          {/* Get Our App */}
-          <div>
-            <h4 className="text-white font-bold mb-4">Get Our Food App</h4>
-            <div className="bg-zara-gold text-black rounded-lg p-4 text-center">
-              <div className="text-2xl mb-2">📱</div>
-              <p className="text-xs font-semibold mb-2">Install PWA</p>
-              <p className="text-xs mb-3">Order faster. Save favorites.</p>
-              <a href="#" className="text-xs font-bold underline hover:no-underline">
-                Download Now
-              </a>
-            </div>
-          </div>
-        </div>
+        {/* Contact Us */}
+        <a href="tel:+233241234567" aria-label="Call +233 24 123 4567" className="absolute left-[31.5%] top-[30%] w-[13%] h-[16%]" />
+        <a href="mailto:info@zarakitchengh.com" aria-label="Email info@zarakitchengh.com" className="absolute left-[31.5%] top-[48%] w-[13%] h-[16%]" />
 
-        {/* Payment Methods */}
-        <div className="border-t border-gray-700 pt-8 mb-8">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <h4 className="text-white font-bold mb-4">All Payments Accepted</h4>
-              <div className="grid grid-cols-3 gap-4">
-                <div className="bg-gray-800 p-3 rounded text-center text-xs">
-                  💳 Bank Cards
-                </div>
-                <div className="bg-gray-800 p-3 rounded text-center text-xs">
-                  📱 Mobile Money (MoMo)
-                </div>
-                <div className="bg-gray-800 p-3 rounded text-center text-xs">
-                  📦 Pay on Delivery
-                </div>
-              </div>
-            </div>
+        {/* Get Our Food App */}
+        <a href="#" aria-label="Install PWA" className="absolute left-[67%] top-[38%] w-[13%] h-[45%]" />
 
-            <div>
-              <h4 className="text-white font-bold mb-4">Order Your Way</h4>
-              <div className="grid grid-cols-3 gap-4">
-                <a href="#" className="bg-gray-800 p-2 rounded text-center flex flex-col items-center gap-1">
-                  <img src="/images/order-icons/web.jpg" alt="Website" className="w-8 h-8 rounded object-cover" />
-                  <span className="text-xs">Website</span>
-                </a>
-                <a href="#" className="bg-gray-800 p-2 rounded text-center flex flex-col items-center gap-1">
-                  <img src="/images/order-icons/jumia.jpg" alt="Jumia Food" className="w-8 h-8 rounded object-cover" />
-                  <span className="text-xs">Jumia Food</span>
-                </a>
-                <a href="#" className="bg-gray-800 p-2 rounded text-center flex flex-col items-center gap-1">
-                  <img src="/images/order-icons/uber.jpg" alt="Uber Eats" className="w-8 h-8 rounded object-cover" />
-                  <span className="text-xs">Uber Eats</span>
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Social & Bottom */}
-        <div className="border-t border-gray-700 pt-8 flex flex-col md:flex-row justify-between items-center">
-          <div className="flex items-center gap-6 mb-4 md:mb-0">
-            <span className="text-white font-bold">Follow Us</span>
-            <a
-              href="https://www.facebook.com/ZaraKitchenOfficial"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="bg-gray-800 p-2 rounded-full hover:bg-blue-600 transition"
-            >
-              <Facebook size={20} className="text-white" />
-            </a>
-            <a
-              href="https://www.instagram.com/zarakitchenofficial/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="bg-gray-800 p-2 rounded-full hover:bg-pink-600 transition"
-            >
-              <Instagram size={20} className="text-white" />
-            </a>
-            <a
-              href="https://x.com/Zarakitchengh"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="bg-gray-800 p-2 rounded-full hover:bg-blue-400 transition"
-            >
-              <Twitter size={20} className="text-white" />
-            </a>
-          </div>
-
-          <p className="text-sm text-gray-500 text-center md:text-right">
-            © 2026 Zara Kitchen. All rights reserved. | Download. Order. Enjoy!
-          </p>
-        </div>
+        {/* Follow Us */}
+        <a href="https://www.facebook.com/ZaraKitchenOfficial" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="absolute left-[84.4%] top-[30%] w-[2.6%] h-[28%]" />
+        <a href="https://www.instagram.com/zarakitchenofficial/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="absolute left-[87.4%] top-[30%] w-[2.6%] h-[28%]" />
+        <a href="https://tiktok.com/@zarakitchengh" target="_blank" rel="noopener noreferrer" aria-label="TikTok" className="absolute left-[90.3%] top-[30%] w-[2.6%] h-[28%]" />
+        <a href="https://youtube.com/@zarakitchengh" target="_blank" rel="noopener noreferrer" aria-label="YouTube" className="absolute left-[93.2%] top-[30%] w-[2.6%] h-[28%]" />
+        <a href="https://x.com/Zarakitchengh" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)" className="absolute left-[96.2%] top-[30%] w-[2.6%] h-[28%]" />
       </div>
+
+      <p className="text-center text-xs text-gray-500 py-3 border-t border-gray-900">
+        © 2026 Zara Kitchen. All rights reserved. | Download. Order. Enjoy!
+      </p>
     </footer>
   )
 }
