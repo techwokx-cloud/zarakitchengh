@@ -24,7 +24,7 @@ export default function HeroSection() {
   const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + heroImages.length) % heroImages.length)
 
   return (
-    <section id="home" className="relative w-full overflow-hidden bg-black h-[520px] md:h-[600px]">
+    <section id="home" className="relative w-full overflow-hidden bg-black h-[380px] md:h-[440px]">
       {/* Full-bleed background photo(s) */}
       {heroImages.map((image, index) => (
         <img
@@ -56,7 +56,7 @@ export default function HeroSection() {
             Fresh. Tasty. Satisfying.
           </p>
 
-          <div className="flex gap-3 mb-6">
+          <div className="flex gap-3">
             <a href="/menu" className="btn-primary flex items-center gap-2 text-sm px-5 py-2.5">
               <ShoppingCart size={16} />
               Order Online
@@ -70,57 +70,6 @@ export default function HeroSection() {
               <MessageCircle size={16} />
               WhatsApp Order
             </a>
-          </div>
-
-          {/* Mascot + Ask Zara widget, floating over the photo */}
-          <div className="flex items-end">
-            <img
-              src="/images/mascot/zara-bot-full.jpg"
-              alt="Zara, the Zara Kitchen food assistant"
-              className="hidden sm:block w-24 md:w-28 h-auto flex-shrink-0 -mr-4 relative z-10 animate-float drop-shadow-2xl"
-            />
-            <div className="ask-zara-widget flex-1 max-w-xs shadow-2xl">
-              <div className="flex items-center gap-2 mb-2.5">
-                <div className="w-8 h-8 bg-gradient-to-br from-purple-400 to-blue-500 rounded-full flex items-center justify-center text-white font-bold text-xs flex-shrink-0">
-                  Z
-                </div>
-                <div>
-                  <h3 className="font-bold text-black text-sm leading-tight">Ask Zara</h3>
-                  <p className="text-[11px] text-gray-600">Your Smart Food Assistant</p>
-                </div>
-              </div>
-
-              <div className="space-y-1.5">
-                <p className="text-xs font-semibold text-black">What are you craving today?</p>
-                <div className="bg-purple-100 rounded-lg px-2.5 py-1.5">
-                  <p className="text-[11px] text-gray-700">
-                    I&apos;m hungry for something tasty under GH₵50
-                  </p>
-                </div>
-                <div className="bg-orange-100 rounded-lg px-2.5 py-1.5">
-                  <p className="text-[11px] text-gray-700">I&apos;ve got you! 🔥</p>
-                  <p className="text-[11px] font-bold text-orange-600">
-                    Try our Spicy Chicken Rice Bowl. <span className="bg-zara-gold px-1 rounded">GH₵45</span>
-                  </p>
-                </div>
-                <a href="/menu" className="block w-full text-center bg-zara-gold text-black font-bold text-xs py-1.5 rounded hover:bg-zara-orange transition">
-                  🛒 Add to Order
-                </a>
-                <div className="flex gap-1.5 pt-0.5">
-                  <a href="/menu" className="flex-1 text-center text-[10px] py-1.5 px-1 bg-gray-100 hover:bg-gray-200 rounded transition">
-                    📋 View Menu
-                  </a>
-                  <a
-                    href="https://wa.me/233243637122"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex-1 text-center text-[10px] py-1.5 px-1 bg-green-50 hover:bg-green-100 rounded transition"
-                  >
-                    💬 Order on WhatsApp
-                  </a>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </div>

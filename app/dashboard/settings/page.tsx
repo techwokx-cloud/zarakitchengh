@@ -1,11 +1,22 @@
 // app/dashboard/settings/page.tsx
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Eye, EyeOff, Save, AlertCircle } from 'lucide-react'
 
 export default function DashboardSettings() {
   const [showKeys, setShowKeys] = useState<Record<string, boolean>>({})
+  const [askZaraEnabled, setAskZaraEnabled] = useState(false)
+
+  useEffect(() => {
+    const stored = localStorage.getItem('zara_widget_enabled')
+    setAskZaraEnabled(stored === 'true')
+  }, [])
+
+  const handleAskZaraToggle = (checked: boolean) => {
+    setAskZaraEnabled(checked)
+    localStorage.setItem('zara_widget_enabled', checked ? 'true' : 'false')
+  }
   const [settings, setSettings] = useState({
     // Business Info
     businessName: 'Zara Kitchen',
@@ -234,6 +245,34 @@ export default function DashboardSettings() {
             isVisible={showKeys.whatsappBusinessToken}
           />
         </div>
+      </SettingsSection>
+
+      {/* Site Widgets */}
+      <SettingsSection title="Site Widgets">
+        <label className="flex items-center justify-between cursor-pointer">
+          <div>
+            <span className="text-white font-medium">Ask Zara floating widget</span>
+            <p className="text-gray-400 text-sm mt-1">
+              Shows the Ask Zara chat assistant in the bottom-right corner of the site.
+              (Not yet live on the site -- this toggle is ready for when it's added.)
+            </p>
+          </div>
+          <button
+            type="button"
+            role="switch"
+            aria-checked={askZaraEnabled}
+            onClick={() => handleAskZaraToggle(!askZaraEnabled)}
+            className={`relative inline-flex h-6 w-11 flex-shrink-0 items-center rounded-full transition-colors ${
+              askZaraEnabled ? 'bg-zara-gold' : 'bg-gray-600'
+            }`}
+          >
+            <span
+              className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                askZaraEnabled ? 'translate-x-6' : 'translate-x-1'
+              }`}
+            />
+          </button>
+        </label>
       </SettingsSection>
 
       {/* Content Settings */}
