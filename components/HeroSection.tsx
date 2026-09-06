@@ -1,123 +1,102 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { ChevronLeft, ChevronRight, ShoppingCart, MessageCircle } from 'lucide-react'
-
-const heroImages = [
-  { url: '/images/hero/jollof-grilled-chicken.jpg', alt: 'Jollof Rice with Grilled Chicken' },
-  { url: '/images/hero/waakye-special.jpg', alt: 'Waakye Special with Fish, Egg & Gari' },
-  { url: '/images/hero/tilapia-banku-plantain.jpg', alt: 'Grilled Tilapia with Banku & Plantain' },
-  { url: '/images/hero/red-red-plantain.jpg', alt: 'Red Red with Fried Plantain' },
-  { url: '/images/hero/fufu-kontomire-soup.jpg', alt: 'Fufu with Kontomire Soup' },
-  { url: '/images/hero/banku-fried-fish.jpg', alt: 'Banku with Fried Fish & Pepper' },
-]
+import { ShoppingCart, MessageCircle } from 'lucide-react'
 
 export default function HeroSection() {
-  const [currentSlide, setCurrentSlide] = useState(0)
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % heroImages.length)
-    }, 5000)
-    return () => clearInterval(timer)
-  }, [])
-
-  const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % heroImages.length)
-  const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + heroImages.length) % heroImages.length)
-
   return (
     <section id="home" className="relative w-full overflow-hidden bg-black">
-      <div className="container-wide px-4 py-10 md:py-14">
-        <div className="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
+      <div className="grid lg:grid-cols-[38%_62%]">
 
-          {/* Left column: headline, CTAs, Ask Zara widget */}
-          <div>
-            <p className="text-sm md:text-base tracking-wide text-gray-300 mb-3">
-              Authentic Ghanaian &amp; Continental Cuisine
-            </p>
-            <h1 className="font-display text-5xl md:text-7xl font-semibold leading-[0.95] mb-3 text-white">
-              Zara <span className="text-zara-gold">Kitchen</span>
-            </h1>
-            <p className="font-display italic text-xl md:text-2xl text-gray-200 mb-2">
-              Made with Love ❤️
-            </p>
-            <p className="text-sm md:text-base text-gray-400 mb-8">
-              Fresh. Tasty. Satisfying.
-            </p>
+        {/* Left: headline, CTAs, Ask Zara widget -- real HTML, fully interactive */}
+        <div className="px-4 md:px-8 py-8 md:py-12 flex flex-col justify-center">
+          <p className="text-sm md:text-base tracking-wide text-gray-300 mb-2">
+            Authentic Ghanaian &amp; Continental Cuisine
+          </p>
+          <h1 className="font-display text-4xl md:text-5xl font-bold leading-[1.05] mb-1 text-white">
+            Zara <span className="text-zara-gold">Kitchen</span>
+          </h1>
+          <p className="font-display italic text-2xl md:text-3xl text-white mb-1">
+            Made with Love <span className="text-zara-gold">♡</span>
+          </p>
+          <p className="text-sm md:text-base text-gray-300 mb-5">
+            Fresh. Tasty. Satisfying.
+          </p>
 
-            <div className="flex gap-3 mb-10">
-              <a href="/menu" className="btn-primary flex items-center gap-2">
-                <ShoppingCart size={18} />
-                Order Online
-              </a>
-              <a
-                href="https://wa.me/233241234567"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-secondary flex items-center gap-2"
-              >
-                <MessageCircle size={18} />
-                WhatsApp
-              </a>
-            </div>
-
-            {/* Ask Zara Widget -- using your mockup asset directly, unmodified */}
-            <img
-              src="/images/assets/ai-assist.png"
-              alt="Ask Zara - Your Smart Food Assistant widget"
-              className="max-w-[320px] md:max-w-[360px] w-full h-auto"
-            />
+          <div className="flex gap-3 mb-6">
+            <a href="/menu" className="btn-primary flex items-center gap-2 text-sm px-5 py-2.5">
+              <ShoppingCart size={16} />
+              Order Online
+            </a>
+            <a
+              href="https://wa.me/233243637122"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-secondary flex items-center gap-2 text-sm px-5 py-2.5"
+            >
+              <MessageCircle size={16} />
+              WhatsApp Order
+            </a>
           </div>
 
-          {/* Right column: single contained photo, matches mockup's framed food shot */}
-          <div className="relative">
-            <div className="relative aspect-square lg:aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl bg-gray-900">
-              {heroImages.map((image, index) => (
-                <img
-                  key={index}
-                  src={image.url}
-                  alt={image.alt}
-                  className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-1000 ${
-                    index === currentSlide ? 'opacity-100' : 'opacity-0'
-                  }`}
-                />
-              ))}
-
-              {/* Delicious Meals Badge, matches mockup's overlapping tag */}
-              <div className="absolute bottom-4 right-4 bg-zara-gold text-black px-5 py-3 rounded-lg shadow-lg -rotate-2 z-20">
-                <p className="font-display text-lg font-semibold italic leading-tight">Delicious Meals</p>
-                <p className="text-xs">Made for you ❤️</p>
+          {/* Mascot + Ask Zara widget row */}
+          <div className="flex items-end">
+            <img
+              src="/images/mascot/zara-bot-full.jpg"
+              alt="Zara, the Zara Kitchen food assistant"
+              className="hidden sm:block w-24 md:w-28 h-auto flex-shrink-0 -mr-4 relative z-10"
+            />
+            <div className="ask-zara-widget flex-1 max-w-xs">
+              <div className="flex items-center gap-2 mb-2.5">
+                <div className="w-8 h-8 bg-gradient-to-br from-purple-400 to-blue-500 rounded-full flex items-center justify-center text-white font-bold text-xs flex-shrink-0">
+                  Z
+                </div>
+                <div>
+                  <h3 className="font-bold text-black text-sm leading-tight">Ask Zara</h3>
+                  <p className="text-[11px] text-gray-600">Your Smart Food Assistant</p>
+                </div>
               </div>
 
-              {/* Carousel Controls, positioned clear of the badge and mascot */}
-              <button
-                onClick={prevSlide}
-                aria-label="Previous photo"
-                className="absolute left-3 top-1/2 -translate-y-1/2 z-30 bg-black/40 hover:bg-black/60 text-white p-2 rounded-full transition"
-              >
-                <ChevronLeft size={20} />
-              </button>
-              <button
-                onClick={nextSlide}
-                aria-label="Next photo"
-                className="absolute right-3 top-1/2 -translate-y-1/2 z-30 bg-black/40 hover:bg-black/60 text-white p-2 rounded-full transition"
-              >
-                <ChevronRight size={20} />
-              </button>
-            </div>
-
-            {/* Carousel dots, below the frame -- never overlapping other elements */}
-            <div className="flex justify-center gap-2 mt-4">
-              {heroImages.map((_, index) => (
-                <button
-                  key={index}
-                  aria-label={`Show photo ${index + 1}`}
-                  onClick={() => setCurrentSlide(index)}
-                  className={`carousel-dot ${index === currentSlide ? 'active' : ''}`}
-                />
-              ))}
+              <div className="space-y-1.5">
+                <p className="text-xs font-semibold text-black">What are you craving today?</p>
+                <div className="bg-purple-100 rounded-lg px-2.5 py-1.5">
+                  <p className="text-[11px] text-gray-700">
+                    I&apos;m hungry for something tasty under GH₵50
+                  </p>
+                </div>
+                <div className="bg-orange-100 rounded-lg px-2.5 py-1.5">
+                  <p className="text-[11px] text-gray-700">I&apos;ve got you! 🔥</p>
+                  <p className="text-[11px] font-bold text-orange-600">
+                    Try our Spicy Chicken Rice Bowl. <span className="bg-zara-gold px-1 rounded">GH₵45</span>
+                  </p>
+                </div>
+                <a href="/menu" className="block w-full text-center bg-zara-gold text-black font-bold text-xs py-1.5 rounded hover:bg-zara-orange transition">
+                  🛒 Add to Order
+                </a>
+                <div className="flex gap-1.5 pt-0.5">
+                  <a href="/menu" className="flex-1 text-center text-[10px] py-1.5 px-1 bg-gray-100 hover:bg-gray-200 rounded transition">
+                    📋 View Menu
+                  </a>
+                  <a
+                    href="https://wa.me/233243637122"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 text-center text-[10px] py-1.5 px-1 bg-green-50 hover:bg-green-100 rounded transition"
+                  >
+                    💬 Order on WhatsApp
+                  </a>
+                </div>
+              </div>
             </div>
           </div>
+        </div>
+
+        {/* Right: single signature photo (with "Delicious Meals" baked in from the mockup), edge-to-edge */}
+        <div className="relative min-h-[320px] md:min-h-[500px]">
+          <img
+            src="/images/hero/hero-signature-bowl.jpg"
+            alt="Delicious grilled chicken, jollof rice and fresh salad bowl"
+            className="absolute inset-0 w-full h-full object-cover"
+          />
         </div>
       </div>
     </section>
