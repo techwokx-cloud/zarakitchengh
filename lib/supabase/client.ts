@@ -15,7 +15,14 @@ if (!supabaseUrl || !supabasePublishableKey) {
   )
 }
 
+// createClient() validates its URL and throws immediately if it's missing
+// or malformed -- which crashes the entire Next.js build (not just the one
+// page using it) whenever these env vars aren't set on the deploy host.
+// Falling back to a syntactically-valid placeholder URL means the client
+// always constructs successfully; any actual Supabase call will simply
+// fail at runtime (safely, inside a try/catch) if the real env vars are
+// still missing, instead of taking down the whole build.
 export const supabase = createClient(
-  supabaseUrl ?? '',
-  supabasePublishableKey ?? ''
+  supabaseUrl || 'https://placeholder.supabase.co',
+  supabasePublishableKey || 'placeholder-key'
 )

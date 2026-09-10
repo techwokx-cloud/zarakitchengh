@@ -6,6 +6,11 @@ import Footer from '@/components/Footer'
 import { supabase } from '@/lib/supabase/client'
 import { Calendar, Clock, Users } from 'lucide-react'
 
+// This is a form page (booking submissions) -- no reason to statically
+// prerender it at build time, and doing so is what caused the Supabase
+// client construction to run during the build in the first place.
+export const dynamic = 'force-dynamic'
+
 export default function BookATablePage() {
   const [formData, setFormData] = useState({
     name: '',
