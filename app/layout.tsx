@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from 'next'
 import './globals.css'
 import { InstallPromptProvider } from '@/lib/pwa/InstallPromptProvider'
+import AnnouncementBar from '@/components/AnnouncementBar'
+import FirstVisitPopup from '@/components/FirstVisitPopup'
 
 export const metadata: Metadata = {
   title: 'Zara Kitchen - Authentic Ghanaian & Continental Cuisine',
@@ -38,7 +40,11 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="bg-white">
-        <InstallPromptProvider>{children}</InstallPromptProvider>
+        <InstallPromptProvider>
+          <AnnouncementBar />
+          {children}
+          <FirstVisitPopup />
+        </InstallPromptProvider>
       </body>
     </html>
   )

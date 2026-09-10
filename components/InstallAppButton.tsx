@@ -20,14 +20,15 @@ export default function InstallAppButton({ className = '' }: { className?: strin
     }
   }
 
+  const baseClass =
+    className ||
+    'flex items-center gap-2 bg-zara-gold hover:bg-zara-orange text-black font-bold text-sm px-4 py-2 rounded-lg transition'
+
   return (
     <div className="relative inline-block">
       <button
         onClick={handleClick}
-        className={
-          className ||
-          'flex items-center gap-2 bg-zara-gold hover:bg-zara-orange text-black font-bold text-sm px-4 py-2 rounded-lg transition'
-        }
+        className={`${baseClass} hover-bump`}
       >
         <Download size={16} />
         Install App

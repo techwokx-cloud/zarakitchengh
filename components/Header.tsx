@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { Menu, X } from 'lucide-react'
-import InstallAppButton from './InstallAppButton'
 
 export default function Header() {
   const [isOpen, setIsOpen] = useState(false)
@@ -45,7 +44,12 @@ export default function Header() {
 
         {/* CTA Buttons */}
         <div className="hidden md:flex items-center gap-3">
-          <InstallAppButton className="flex items-center gap-1.5 border border-zara-gold text-zara-gold hover:bg-zara-gold hover:text-black text-xs font-bold px-3 py-2 rounded-lg transition" />
+          <a
+            href="/book-a-table"
+            className="flex items-center gap-1.5 border border-zara-gold text-zara-gold hover:bg-zara-gold hover:text-black text-xs font-bold px-3 py-2 rounded-lg transition"
+          >
+            📅 Book a Table
+          </a>
           <a href="/menu">
             <img src="/images/buttons/order-online.png" alt="Order Online" className="h-9 w-auto" />
           </a>
@@ -78,7 +82,12 @@ export default function Header() {
             <a href="/catering" className="text-white">Catering</a>
             <a href="/contact" className="text-white">Contact</a>
             <div className="border-t border-gray-700 pt-4 flex flex-col gap-2 items-start">
-              <InstallAppButton className="flex items-center gap-1.5 border border-zara-gold text-zara-gold text-sm font-bold px-4 py-2 rounded-lg" />
+              <a
+                href="/book-a-table"
+                className="flex items-center gap-1.5 border border-zara-gold text-zara-gold text-sm font-bold px-4 py-2 rounded-lg"
+              >
+                📅 Book a Table
+              </a>
               <a href="/menu">
                 <img src="/images/buttons/order-online.png" alt="Order Online" className="h-9 w-auto" />
               </a>

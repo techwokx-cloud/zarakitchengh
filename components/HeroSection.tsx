@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
+import InstallAppButton from './InstallAppButton'
 
 // Recommended size for new slideshow images: 1920x800px (landscape, ~2.4:1),
 // JPEG/WebP, quality 85-90+. Landscape orientation avoids empty bars/pixelation.
@@ -59,6 +60,11 @@ export default function HeroSection() {
       </div>
 
       {/* "Delicious Meals" tag -- baked into the current photo already; only add a fallback badge if a future slide doesn't have one */}
+
+      {/* Floating Install App button, right corner of hero */}
+      <div className="absolute right-4 top-4 md:right-6 md:top-6 z-20">
+        <InstallAppButton className="flex items-center gap-1.5 bg-zara-gold hover:bg-zara-orange text-black font-bold text-xs md:text-sm px-3 md:px-4 py-2 rounded-full shadow-lg" />
+      </div>
 
       {/* Carousel controls, only shown once more than one slide exists */}
       {heroImages.length > 1 && (

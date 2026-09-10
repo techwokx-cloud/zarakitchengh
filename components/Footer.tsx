@@ -34,7 +34,7 @@ export default function Footer() {
         <div className="absolute left-[65%] top-0 w-[17%] h-full bg-black flex items-center justify-center p-1">
           <button
             onClick={() => canInstall && promptInstall()}
-            className="w-full h-full flex items-center justify-center"
+            className="w-full h-full flex items-center justify-center hover-bump"
           >
             <img
               src="/images/assets/install-app-button.png"
