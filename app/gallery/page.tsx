@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
+import { SAMPLE_MENU_ITEMS } from '@/lib/menuData'
 
 const GALLERY_CATEGORIES = [
   { id: 'all', name: 'All', emoji: '🖼️' },
@@ -13,162 +14,35 @@ const GALLERY_CATEGORIES = [
   { id: 'customers', name: 'Happy Customers', emoji: '😊' },
 ]
 
-const GALLERY_IMAGES = [
+const AMBIANCE_IMAGES = [
   {
-    id: 1,
-    category: 'food',
-    title: 'Jollof Rice with Grilled Chicken',
-    image: '/images/hero/jollof-grilled-chicken.jpg',
-    description: 'Our signature smoky jollof, served with grilled chicken and a fresh side salad',
-  },
-  {
-    id: 2,
-    category: 'food',
-    title: 'Waakye Special',
-    image: '/images/hero/waakye-special.jpg',
-    description: 'Rice & beans loaded with fried fish, boiled egg, gari and spaghetti',
-  },
-  {
-    id: 3,
-    category: 'food',
-    title: 'Banku with Fried Fish',
-    image: '/images/hero/banku-fried-fish.jpg',
-    description: 'Soft banku served with crispy fried fish and pepper sauce',
-  },
-  {
-    id: 4,
-    category: 'food',
-    title: 'Grilled Tilapia with Banku',
-    image: '/images/hero/tilapia-banku-plantain.jpg',
-    description: 'Whole grilled tilapia with banku, fried plantain and avocado',
-  },
-  {
-    id: 5,
-    category: 'food',
-    title: 'Fufu with Kontomire Soup',
-    image: '/images/hero/fufu-kontomire-soup.jpg',
-    description: 'Smooth fufu served with rich green kontomire soup',
-  },
-  {
-    id: 6,
-    category: 'food',
-    title: 'Fufu with Light Soup',
-    image: '/images/hero/fufu-light-soup.jpg',
-    description: 'Fufu paired with a warming goat light soup',
-  },
-  {
-    id: 7,
-    category: 'food',
-    title: 'Red Red with Fried Plantain',
-    image: '/images/hero/red-red-plantain.jpg',
-    description: 'Black-eyed peas stew served with sweet fried plantain',
-  },
-  {
-    id: 8,
-    category: 'food',
-    title: 'Rice Balls with Light Soup',
-    image: '/images/hero/riceballs-light-soup.jpg',
-    description: 'Soft rice balls served in a spicy chicken light soup',
-  },
-  {
-    id: 9,
-    category: 'food',
-    title: 'Akple with Fish Soup',
-    image: '/images/hero/akple-fish-soup.jpg',
-    description: 'Traditional akple served with dried fish and pepper soup',
-  },
-  {
-    id: 10,
-    category: 'food',
-    title: 'Ampesi with Egg Stew',
-    image: '/images/hero/yam-egg-stew-avocado.jpg',
-    description: 'Boiled yam with rich egg stew and fresh avocado',
-  },
-  {
-    id: 11,
-    category: 'food',
-    title: 'Kelewele',
-    image: '/images/menu/appetisers/kelewele.jpg',
-    description: 'Spiced fried plantain cubes, a Zara Kitchen favourite',
-  },
-  {
-    id: 12,
-    category: 'food',
-    title: 'Grilled Guinea Fowl',
-    image: '/images/menu/ghanaian-specialities/grilled-guinea-fowl.jpg',
-    description: 'Charcoal grilled guinea fowl, smoky and tender',
-  },
-  {
-    id: 13,
-    category: 'food',
-    title: 'Charcoal Grilled Tilapia',
-    image: '/images/menu/ghanaian-specialities/charcoal-tilapia.jpg',
-    description: 'Fresh tilapia grilled over charcoal to perfection',
-  },
-  {
-    id: 14,
-    category: 'food',
-    title: 'Grilled Snapper',
-    image: '/images/menu/ghanaian-specialities/grilled-snapper.jpg',
-    description: 'Whole red snapper grilled with our house spice rub',
-  },
-  {
-    id: 15,
-    category: 'food',
-    title: 'Zara Special Fried Rice',
-    image: '/images/menu/rice-dishes/zara-special.jpg',
-    description: 'Our signature fried rice, loaded with flavour',
-  },
-  {
-    id: 16,
-    category: 'food',
-    title: 'Chicken Fried Rice',
-    image: '/images/menu/rice-dishes/chiken-fried-rice.jpg',
-    description: 'Classic fried rice tossed with tender chicken',
-  },
-  {
-    id: 17,
-    category: 'food',
-    title: 'Zara Salad',
-    image: '/images/menu/salads/zara-salad.jpg',
-    description: 'Our house salad, fresh and light',
-  },
-  {
-    id: 18,
-    category: 'food',
-    title: 'Avocado Salad',
-    image: '/images/menu/salads/avacado-salad.jpg',
-    description: 'Creamy avocado with crisp garden vegetables',
-  },
-  {
-    id: 19,
-    category: 'food',
-    title: 'Assorted Cakes & Desserts',
-    image: '/images/menu/desserts/cakes-and-dessert.jpg',
-    description: 'A sweet selection to finish off your meal',
-  },
-  {
-    id: 20,
-    category: 'food',
-    title: 'Ice Cream',
-    image: '/images/menu/desserts/ice-cream.jpg',
-    description: 'Cool, creamy ice cream in your favourite flavours',
-  },
-  {
-    id: 21,
+    id: 9001,
     category: 'ambiance',
     title: 'Zara Kitchen Dining Room',
     image: '/images/about/restaurant-interior.png',
     description: 'Our warm, welcoming dining space',
   },
   {
-    id: 22,
+    id: 9002,
     category: 'ambiance',
     title: 'Brunch Buffet Spread',
     image: '/images/about/buffet-spread.png',
     description: 'Our well-curated brunch buffet, laid out fresh',
   },
 ]
+
+// Every dish photo from the real menu, pushed into the gallery automatically --
+// stays in sync with lib/menuData.ts rather than needing a separately
+// maintained list.
+const FOOD_IMAGES = SAMPLE_MENU_ITEMS.map((item) => ({
+  id: item.id,
+  category: 'food',
+  title: item.name,
+  image: item.image,
+  description: item.description,
+}))
+
+const GALLERY_IMAGES = [...FOOD_IMAGES, ...AMBIANCE_IMAGES]
 
 export default function GalleryPage() {
   const [activeCategory, setActiveCategory] = useState('all')

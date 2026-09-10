@@ -137,14 +137,14 @@ function MenuPageContent() {
 
             {/* Menu Grid */}
             {filteredItems.length > 0 ? (
-              <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredItems.map((item) => (
                   <div
                     key={item.id}
                     className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-md transition group"
                   >
                     {/* Image */}
-                    <div className="relative aspect-square overflow-hidden bg-gray-100">
+                    <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
                       <img
                         src={item.image}
                         alt={item.name}
@@ -158,8 +158,8 @@ function MenuPageContent() {
                     </div>
 
                     {/* Content */}
-                    <div className="p-3">
-                      <h3 className="text-sm font-bold text-black mb-1 leading-tight line-clamp-2">{item.name}</h3>
+                    <div className="p-4">
+                      <h3 className="text-base font-bold text-black mb-1 leading-tight line-clamp-2">{item.name}</h3>
 
                       {/* Spice dots */}
                       <div className="flex items-center gap-0.5 mb-2">
@@ -171,7 +171,7 @@ function MenuPageContent() {
                       </div>
 
                       <div className="flex items-center justify-between">
-                        <span className="text-red-600 font-bold text-sm">GHS {item.price.toFixed(0)}</span>
+                        <span className="text-red-600 font-bold text-base">GHS {item.price.toFixed(0)}</span>
                         <button className="w-6 h-6 rounded-full bg-red-600 hover:bg-red-700 text-white flex items-center justify-center text-xs transition">
                           +
                         </button>
