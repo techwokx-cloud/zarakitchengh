@@ -34,10 +34,10 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* Our Story + photo */}
+      {/* Our Story + photo + Why you should go + Know before you go -- one unified row */}
       <section className="py-12 md:py-16 px-4 bg-[#FFF8E7]">
-        <div className="container-wide grid lg:grid-cols-2 gap-10 items-start">
-          <div>
+        <div className="container-wide grid lg:grid-cols-12 gap-8 items-start">
+          <div className="lg:col-span-5">
             <h2 className="font-display text-3xl md:text-4xl font-semibold text-black mb-4">Our Story</h2>
             <p className="text-gray-700 mb-4 leading-relaxed text-sm">
               At Zara Kitchen, you are treated to a menu of Ghanaian and Continental dishes that will no doubt
@@ -59,37 +59,34 @@ export default function AboutPage() {
             </p>
           </div>
 
-          <div className="rounded-xl overflow-hidden shadow-lg">
+          <div className="lg:col-span-3 rounded-xl overflow-hidden shadow-lg">
             <img
               src="/images/hero/jollof-grilled-chicken.jpg"
               alt="Grilled chicken and jollof rice bowl"
               className="w-full h-auto"
             />
           </div>
-        </div>
 
-        {/* Why you should go / Know before you go */}
-        <div className="container-wide grid md:grid-cols-2 gap-10 mt-10">
-          <div>
-            <h3 className="font-display text-2xl font-semibold text-black mb-4">Why you should go</h3>
+          <div className="lg:col-span-2">
+            <h3 className="font-display text-xl font-semibold text-black mb-4">Why you should go</h3>
             <div className="space-y-3">
               {[
                 'Enjoy natural and additive-free juices made upon request',
                 'Affordable prices for quality food',
                 'Experience the enticing aroma and flavors of dishes like Nasi Goreng',
               ].map((item, i) => (
-                <div key={i} className="flex gap-3">
-                  <span className="w-6 h-6 rounded-full bg-zara-gold text-black font-bold text-xs flex items-center justify-center flex-shrink-0">
+                <div key={i} className="flex gap-2">
+                  <span className="w-5 h-5 rounded-full bg-zara-gold text-black font-bold text-[10px] flex items-center justify-center flex-shrink-0 mt-0.5">
                     {i + 1}
                   </span>
-                  <p className="text-gray-700 text-sm">{item}</p>
+                  <p className="text-gray-700 text-xs leading-relaxed">{item}</p>
                 </div>
               ))}
             </div>
           </div>
 
-          <div>
-            <h3 className="font-display text-2xl font-semibold text-black mb-4">Know before you go</h3>
+          <div className="lg:col-span-2">
+            <h3 className="font-display text-xl font-semibold text-black mb-4">Know before you go</h3>
             <div className="space-y-3">
               {[
                 'Order ahead of time to avoid long wait times',
@@ -97,9 +94,9 @@ export default function AboutPage() {
                 "Don't miss out on their Pina Colada drink that's worth a visit",
                 'Consider tipping Ishmael for excellent customer service',
               ].map((item, i) => (
-                <div key={i} className="flex gap-3">
-                  <CheckCircle size={20} className="text-zara-gold flex-shrink-0 mt-0.5" />
-                  <p className="text-gray-700 text-sm">{item}</p>
+                <div key={i} className="flex gap-2">
+                  <CheckCircle size={16} className="text-zara-gold flex-shrink-0 mt-0.5" />
+                  <p className="text-gray-700 text-xs leading-relaxed">{item}</p>
                 </div>
               ))}
             </div>
