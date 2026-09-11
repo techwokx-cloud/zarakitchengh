@@ -71,22 +71,20 @@ export default function MenuCategories() {
               </button>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-              {items.slice(0, 12).map((item) => (
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+              {items.slice(0, 8).map((item) => (
                 <a
                   key={item.id}
                   href={`/menu?category=${encodeURIComponent(revealed)}`}
-                  className="group/item"
+                  className="group/item block"
                 >
-                  <div className="aspect-square rounded-lg overflow-hidden bg-gray-100 mb-1.5">
+                  <div className="aspect-square rounded-lg overflow-hidden bg-gray-100">
                     <img
                       src={item.image_url ?? ''}
                       alt={item.name}
                       className="w-full h-full object-cover group-hover/item:scale-105 transition-transform"
                     />
                   </div>
-                  <p className="text-xs font-semibold text-black leading-tight line-clamp-2">{item.name}</p>
-                  <p className="text-xs text-red-600 font-bold">GHS {item.price.toFixed(0)}</p>
                 </a>
               ))}
             </div>
