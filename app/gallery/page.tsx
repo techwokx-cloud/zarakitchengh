@@ -1,9 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
-import { SAMPLE_MENU_ITEMS } from '@/lib/menuData'
+import { fetchAvailableMenuItems } from '@/lib/menuItemsApi'
 
 const GALLERY_CATEGORIES = [
   { id: 'all', name: 'All', emoji: '🖼️' },
@@ -16,14 +16,14 @@ const GALLERY_CATEGORIES = [
 
 const AMBIANCE_IMAGES = [
   {
-    id: 9001,
+    id: 'amb-1',
     category: 'ambiance',
     title: 'Zara Kitchen Dining Room',
     image: '/images/about/restaurant-interior.png',
     description: 'Our warm, welcoming dining space',
   },
   {
-    id: 9002,
+    id: 'amb-2',
     category: 'ambiance',
     title: 'Brunch Buffet Spread',
     image: '/images/about/buffet-spread.png',
@@ -31,25 +31,35 @@ const AMBIANCE_IMAGES = [
   },
 ]
 
-// Every dish photo from the real menu, pushed into the gallery automatically --
-// stays in sync with lib/menuData.ts rather than needing a separately
-// maintained list.
-const FOOD_IMAGES = SAMPLE_MENU_ITEMS.map((item) => ({
-  id: item.id,
-  category: 'food',
-  title: item.name,
-  image: item.image,
-  description: item.description,
-}))
-
-const GALLERY_IMAGES = [...FOOD_IMAGES, ...AMBIANCE_IMAGES]
-
 export default function GalleryPage() {
   const [activeCategory, setActiveCategory] = useState('all')
+  const [galleryImages, setGalleryImages] = useState(AMBIANCE_IMAGES as Array<{
+    id: string
+    category: string
+    title: string
+    image: string
+    description: string
+  }>)
+
+  // Every dish photo from the real menu, pushed into the gallery automatically --
+  // stays in sync with the menu_items table rather than needing a separately
+  // maintained list.
+  useEffect(() => {
+    fetchAvailableMenuItems().then((items) => {
+      const foodImages = items.map((item) => ({
+        id: item.id,
+        category: 'food',
+        title: item.name,
+        image: item.image_url ?? '',
+        description: item.description ?? '',
+      }))
+      setGalleryImages([...foodImages, ...AMBIANCE_IMAGES])
+    })
+  }, [])
 
   const filteredImages = activeCategory === 'all'
-    ? GALLERY_IMAGES
-    : GALLERY_IMAGES.filter(img => img.category === activeCategory)
+    ? galleryImages
+    : galleryImages.filter(img => img.category === activeCategory)
 
   const emptyCategoryNote: Record<string, string> = {
     events: "We're still building our events photo album — check back soon!",

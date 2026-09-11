@@ -3,15 +3,28 @@
 import { useState, useEffect } from 'react'
 import { ChevronLeft, ChevronRight } from 'lucide-react'
 import InstallAppButton from './InstallAppButton'
+import { fetchHeroMenuItems } from '@/lib/menuItemsApi'
 
 // Recommended size for new slideshow images: 1920x800px (landscape, ~2.4:1),
 // JPEG/WebP, quality 85-90+. Landscape orientation avoids empty bars/pixelation.
-const heroImages = [
-  { url: '/images/hero/hero-signature-bowl.jpg', alt: 'Grilled chicken, jollof rice and fresh salad bowl' },
-]
+// Fallback used only if no items are marked "featured in hero" in the database yet.
+const FALLBACK_IMAGE = { url: '/images/hero/hero-signature-bowl.jpg', alt: 'Grilled chicken, jollof rice and fresh salad bowl' }
 
 export default function HeroSection() {
+  const [heroImages, setHeroImages] = useState([FALLBACK_IMAGE])
   const [currentSlide, setCurrentSlide] = useState(0)
+
+  useEffect(() => {
+    fetchHeroMenuItems().then((items) => {
+      if (items.length > 0) {
+        setHeroImages(
+          items
+            .filter((item) => item.image_url)
+            .map((item) => ({ url: item.image_url as string, alt: item.name }))
+        )
+      }
+    })
+  }, [])
 
   useEffect(() => {
     if (heroImages.length <= 1) return
@@ -19,7 +32,7 @@ export default function HeroSection() {
       setCurrentSlide((prev) => (prev + 1) % heroImages.length)
     }, 5000)
     return () => clearInterval(timer)
-  }, [])
+  }, [heroImages.length])
 
   const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % heroImages.length)
   const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + heroImages.length) % heroImages.length)

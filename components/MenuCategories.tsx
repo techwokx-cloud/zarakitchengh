@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { SAMPLE_MENU_ITEMS } from '@/lib/menuData'
+import { useState, useEffect } from 'react'
+import { fetchAvailableMenuItems, MenuItem } from '@/lib/menuItemsApi'
 
 const menuCategories = [
   { name: 'Healthy Breakfast', icon: '/images/category-icons/breakfast.png' },
@@ -24,12 +24,17 @@ const menuCategories = [
 
 export default function MenuCategories() {
   const [revealed, setRevealed] = useState<string | null>(null)
+  const [allItems, setAllItems] = useState<MenuItem[]>([])
+
+  useEffect(() => {
+    fetchAvailableMenuItems().then(setAllItems)
+  }, [])
 
   const handleClick = (name: string) => {
     setRevealed((prev) => (prev === name ? null : name))
   }
 
-  const items = revealed ? SAMPLE_MENU_ITEMS.filter((i) => i.category === revealed) : []
+  const items = revealed ? allItems.filter((i) => i.category === revealed) : []
 
   return (
     <section id="menu" className="py-6 md:py-8 px-4 bg-[#FFF8E7]">
@@ -75,7 +80,7 @@ export default function MenuCategories() {
                 >
                   <div className="aspect-square rounded-lg overflow-hidden bg-gray-100 mb-1.5">
                     <img
-                      src={item.image}
+                      src={item.image_url ?? ''}
                       alt={item.name}
                       className="w-full h-full object-cover group-hover/item:scale-105 transition-transform"
                     />

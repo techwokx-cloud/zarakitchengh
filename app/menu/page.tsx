@@ -5,7 +5,8 @@ import { useSearchParams } from 'next/navigation'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import { Search, Filter } from 'lucide-react'
-import { MENU_CATEGORIES, SAMPLE_MENU_ITEMS } from '@/lib/menuData'
+import { MENU_CATEGORIES } from '@/lib/menuData'
+import { fetchAvailableMenuItems, MenuItem } from '@/lib/menuItemsApi'
 
 function MenuPageContent() {
   const searchParams = useSearchParams()
@@ -13,11 +14,22 @@ function MenuPageContent() {
 
   const [activeCategory, setActiveCategory] = useState('All Categories')
   const [searchQuery, setSearchQuery] = useState('')
-  const [filteredItems, setFilteredItems] = useState(SAMPLE_MENU_ITEMS)
+  const [allItems, setAllItems] = useState<MenuItem[]>([])
+  const [filteredItems, setFilteredItems] = useState<MenuItem[]>([])
+  const [loading, setLoading] = useState(true)
+
+  // Load real menu items from Supabase on mount
+  useEffect(() => {
+    fetchAvailableMenuItems().then((items) => {
+      setAllItems(items)
+      setFilteredItems(items)
+      setLoading(false)
+    })
+  }, [])
 
   // Preset category + scroll to results when arriving from a homepage category link
   useEffect(() => {
-    if (categoryFromUrl) {
+    if (categoryFromUrl && allItems.length > 0) {
       const match = MENU_CATEGORIES.find(
         (c) => c.name.toLowerCase() === categoryFromUrl.toLowerCase()
       )
@@ -25,14 +37,14 @@ function MenuPageContent() {
       setActiveCategory(categoryName)
       setFilteredItems(
         categoryName === 'All Categories'
-          ? SAMPLE_MENU_ITEMS
-          : SAMPLE_MENU_ITEMS.filter((item) => item.category === categoryName)
+          ? allItems
+          : allItems.filter((item) => item.category === categoryName)
       )
       const el = document.getElementById('menu-results')
       if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [categoryFromUrl])
+  }, [categoryFromUrl, allItems])
 
   const handleCategoryChange = (category: string) => {
     setActiveCategory(category)
@@ -45,7 +57,7 @@ function MenuPageContent() {
   }
 
   const filterMenu = (category: string, search: string) => {
-    let filtered = SAMPLE_MENU_ITEMS
+    let filtered = allItems
 
     if (category !== 'All Categories') {
       filtered = filtered.filter(item => item.category === category)
@@ -54,7 +66,7 @@ function MenuPageContent() {
     if (search) {
       filtered = filtered.filter(item =>
         item.name.toLowerCase().includes(search.toLowerCase()) ||
-        item.description.toLowerCase().includes(search.toLowerCase())
+        (item.description ?? '').toLowerCase().includes(search.toLowerCase())
       )
     }
 
@@ -136,7 +148,11 @@ function MenuPageContent() {
             </div>
 
             {/* Menu Grid */}
-            {filteredItems.length > 0 ? (
+            {loading ? (
+              <div className="text-center py-12">
+                <p className="text-gray-500 text-lg">Loading menu…</p>
+              </div>
+            ) : filteredItems.length > 0 ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 {filteredItems.map((item) => (
                   <div
@@ -146,11 +162,11 @@ function MenuPageContent() {
                     {/* Image */}
                     <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
                       <img
-                        src={item.image}
+                        src={item.image_url ?? ''}
                         alt={item.name}
                         className="w-full h-full object-cover group-hover:scale-105 transition duration-300"
                       />
-                      {item.isVegetarian && (
+                      {item.is_vegetarian && (
                         <span className="absolute top-2 right-2 bg-green-600 text-white px-2 py-0.5 rounded text-[10px] font-bold">
                           🥬 Veg
                         </span>
@@ -164,7 +180,7 @@ function MenuPageContent() {
                       {/* Spice dots */}
                       <div className="flex items-center gap-0.5 mb-2">
                         {[0, 1, 2, 3, 4].map((i) => (
-                          <span key={i} className={i < (item.isSpicy ? 2 : 0) ? 'text-red-500' : 'text-gray-200'}>
+                          <span key={i} className={i < (item.is_spicy ? 2 : 0) ? 'text-red-500' : 'text-gray-200'}>
                             🌶
                           </span>
                         ))}
