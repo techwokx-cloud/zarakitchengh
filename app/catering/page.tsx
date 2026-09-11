@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
+import { supabase } from '@/lib/supabase/client'
 
 const CATERING_PACKAGES = [
   {
@@ -144,8 +145,21 @@ export default function CateringPage() {
     setIsSubmitting(true)
 
     try {
-      // TODO: Call API to save booking
-      console.log('Booking submitted:', bookingData, selectedPackage)
+      // Save as a real lead for the Admin/Manager to follow up on
+      const { error } = await supabase.from('leads').insert([{
+        name: bookingData.clientName,
+        phone: bookingData.clientPhone,
+        email: bookingData.clientEmail,
+        source: 'catering_form',
+        interest: selectedPkgInfo
+          ? `${selectedPkgInfo.name} -- ${bookingData.numberOfGuests} guests, ${bookingData.eventDate}`
+          : `Catering inquiry -- ${bookingData.numberOfGuests} guests, ${bookingData.eventDate}`,
+        notes: bookingData.specialRequests || null,
+        status: 'new',
+      }])
+
+      if (error) throw error
+
       setSubmitStatus('success')
       setTimeout(() => {
         setSubmitStatus('idle')
