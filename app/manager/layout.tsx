@@ -8,15 +8,12 @@ import { supabase } from '@/lib/supabase/client'
 import {
   LayoutDashboard,
   ClipboardList,
-  UtensilsCrossed,
   CalendarCheck,
   PartyPopper,
   Users,
   MessageCircle,
-  Megaphone,
   FileCheck,
   BarChart3,
-  Settings,
   LogOut,
   Menu,
   X,
@@ -129,7 +126,6 @@ export default function ManagerLayout({
 
           <SidebarSectionLabel>Restaurant</SidebarSectionLabel>
           <SidebarLink href="/manager/orders" icon={ClipboardList} label="Orders" pathname={pathname} />
-          <SidebarLink href="/manager/menu" icon={UtensilsCrossed} label="Menu" pathname={pathname} />
           <SidebarLink
             href="/manager/reservations"
             icon={CalendarCheck}
@@ -143,8 +139,7 @@ export default function ManagerLayout({
           <SidebarLink href="/manager/customers" icon={Users} label="Customers" pathname={pathname} />
           <SidebarLink href="/manager/whatsapp" icon={MessageCircle} label="WhatsApp" pathname={pathname} />
 
-          <SidebarSectionLabel>Marketing</SidebarSectionLabel>
-          <SidebarLink href="/manager/promotions" icon={Megaphone} label="Promotions" pathname={pathname} />
+          <SidebarSectionLabel>Content</SidebarSectionLabel>
           <SidebarLink
             href="/manager/content-approval"
             icon={FileCheck}
@@ -155,7 +150,6 @@ export default function ManagerLayout({
 
           <SidebarSectionLabel>Insights</SidebarSectionLabel>
           <SidebarLink href="/manager/reports" icon={BarChart3} label="Reports" pathname={pathname} />
-          <SidebarLink href="/manager/settings" icon={Settings} label="Settings" pathname={pathname} />
         </nav>
 
         <div className="p-4 mt-4">

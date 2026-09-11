@@ -11,6 +11,8 @@ import {
   Calendar,
   BarChart3,
   Settings,
+  UtensilsCrossed,
+  Megaphone,
   LogOut,
   Menu,
   X,
@@ -109,11 +111,17 @@ export default function DashboardLayout({
         </div>
 
         <nav className="p-4 space-y-2">
-          <SidebarLink href="/dashboard" icon={LayoutDashboard} label="Overview" />
-          <SidebarLink href="/dashboard/generate" icon={FileText} label="Generate Content" />
-          <SidebarLink href="/dashboard/calendar" icon={Calendar} label="Content Calendar" />
-          <SidebarLink href="/dashboard/analytics" icon={BarChart3} label="Analytics" />
-          <SidebarLink href="/dashboard/settings" icon={Settings} label="Settings" />
+          <SidebarLink href="/dashboard" icon={LayoutDashboard} label="Overview" pathname={pathname} exact />
+
+          <p className="px-4 pt-4 pb-1 text-[10px] font-bold uppercase tracking-wider text-gray-500">Website</p>
+          <SidebarLink href="/dashboard/menu" icon={UtensilsCrossed} label="Menu" pathname={pathname} />
+          <SidebarLink href="/dashboard/promotions" icon={Megaphone} label="Promotions" pathname={pathname} />
+          <SidebarLink href="/dashboard/settings" icon={Settings} label="Settings" pathname={pathname} />
+
+          <p className="px-4 pt-4 pb-1 text-[10px] font-bold uppercase tracking-wider text-gray-500">Marketing</p>
+          <SidebarLink href="/dashboard/generate" icon={FileText} label="Generate Content" pathname={pathname} />
+          <SidebarLink href="/dashboard/calendar" icon={Calendar} label="Content Calendar" pathname={pathname} />
+          <SidebarLink href="/dashboard/analytics" icon={BarChart3} label="Analytics" pathname={pathname} />
         </nav>
 
         <div className="absolute bottom-4 left-4 right-4">
@@ -163,15 +171,25 @@ function SidebarLink({
   href,
   icon: Icon,
   label,
+  pathname,
+  exact = false,
 }: {
   href: string
   icon: LucideIcon
   label: string
+  pathname: string
+  exact?: boolean
 }) {
+  const isActive = exact ? pathname === href : pathname.startsWith(href)
+
   return (
     <Link
       href={href}
-      className="flex items-center gap-3 px-4 py-2 text-gray-300 hover:bg-gray-700 hover:text-white rounded transition"
+      className={`flex items-center gap-3 px-4 py-2 rounded transition ${
+        isActive
+          ? 'bg-zara-gold text-black font-bold'
+          : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+      }`}
     >
       <Icon size={20} />
       {label}

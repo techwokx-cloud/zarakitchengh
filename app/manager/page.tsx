@@ -156,9 +156,9 @@ export default function ManagerDashboard() {
               <Calendar size={22} className="mx-auto mb-2 text-zara-gold" />
               <p className="text-sm text-white">Manage Reservations</p>
             </Link>
-            <Link href="/manager/menu" className="bg-gray-900 hover:bg-gray-700 rounded-lg p-4 text-center transition">
+            <Link href="/manager/content-approval" className="bg-gray-900 hover:bg-gray-700 rounded-lg p-4 text-center transition">
               <Utensils size={22} className="mx-auto mb-2 text-zara-gold" />
-              <p className="text-sm text-white">Update Menu</p>
+              <p className="text-sm text-white">Content Approval</p>
             </Link>
             <Link href="/manager/catering" className="bg-gray-900 hover:bg-gray-700 rounded-lg p-4 text-center transition">
               <PartyPopper size={22} className="mx-auto mb-2 text-zara-gold" />
