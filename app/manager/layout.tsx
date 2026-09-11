@@ -14,6 +14,7 @@ import {
   Users,
   MessageCircle,
   Megaphone,
+  FileCheck,
   BarChart3,
   Settings,
   LogOut,
@@ -32,6 +33,7 @@ export default function ManagerLayout({
   const [isOpen, setIsOpen] = useState(false)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [pendingReservations, setPendingReservations] = useState(0)
+  const [pendingContent, setPendingContent] = useState(0)
 
   useEffect(() => {
     let active = true
@@ -72,6 +74,19 @@ export default function ManagerLayout({
         .eq('status', 'pending')
 
       if (active) setPendingReservations(count ?? 0)
+
+      // Pending social content awaiting approval. Wrapped in try/catch
+      // since the 'posts' table only exists if schema.sql has been run --
+      // this shouldn't break the whole dashboard if it hasn't.
+      try {
+        const { count: contentCount } = await supabase
+          .from('posts')
+          .select('*', { count: 'exact', head: true })
+          .eq('status', 'pending_approval')
+        if (active) setPendingContent(contentCount ?? 0)
+      } catch {
+        // posts table not set up yet -- fine, badge just stays at 0
+      }
     }
 
     checkAccess()
@@ -130,6 +145,13 @@ export default function ManagerLayout({
 
           <SidebarSectionLabel>Marketing</SidebarSectionLabel>
           <SidebarLink href="/manager/promotions" icon={Megaphone} label="Promotions" pathname={pathname} />
+          <SidebarLink
+            href="/manager/content-approval"
+            icon={FileCheck}
+            label="Content Approval"
+            pathname={pathname}
+            badge={pendingContent > 0 ? pendingContent : undefined}
+          />
 
           <SidebarSectionLabel>Insights</SidebarSectionLabel>
           <SidebarLink href="/manager/reports" icon={BarChart3} label="Reports" pathname={pathname} />
