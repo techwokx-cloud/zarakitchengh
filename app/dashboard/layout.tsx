@@ -2,7 +2,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { supabase } from '@/lib/supabase/client'
 import {
@@ -23,10 +23,17 @@ export default function DashboardLayout({
   children: React.ReactNode
 }) {
   const router = useRouter()
+  const pathname = usePathname()
+  const isLoginPage = pathname === '/dashboard/login'
   const [isOpen, setIsOpen] = useState(false)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
 
   useEffect(() => {
+    // The login page has no session to check yet -- it must render on
+    // its own, without going through the auth guard below (which would
+    // otherwise redirect back to itself and render nothing).
+    if (isLoginPage) return
+
     let active = true
 
     const checkAccess = async () => {
@@ -63,11 +70,16 @@ export default function DashboardLayout({
 
     checkAccess()
     return () => { active = false }
-  }, [router])
+  }, [router, isLoginPage])
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
     router.push('/dashboard/login')
+  }
+
+  // Login page renders standalone -- no sidebar/auth-check chrome around it
+  if (isLoginPage) {
+    return <>{children}</>
   }
 
   if (!isAuthenticated) {
