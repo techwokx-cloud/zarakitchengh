@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase/client'
 import { fetchAllMenuItems, MenuItem } from '@/lib/menuItemsApi'
 import { MENU_CATEGORIES } from '@/lib/menuData'
-import { Plus, Pencil, Trash2, Star, EyeOff, Eye } from 'lucide-react'
+import { Plus, Pencil, Trash2, Star, EyeOff, Eye, Upload } from 'lucide-react'
 
 const CATEGORY_OPTIONS = MENU_CATEGORIES.filter((c) => c.name !== 'All Categories').map((c) => c.name)
 
@@ -27,6 +27,10 @@ export default function ManagerMenuPage() {
   const [activeCategory, setActiveCategory] = useState('All')
   const [editingId, setEditingId] = useState<string | null>(null)
   const [showForm, setShowForm] = useState(false)
+  const [showBatchUpload, setShowBatchUpload] = useState(false)
+  const [batchCsv, setBatchCsv] = useState('')
+  const [batchResult, setBatchResult] = useState<{ success: number; failed: number } | null>(null)
+  const [batchSaving, setBatchSaving] = useState(false)
   const [form, setForm] = useState(emptyForm)
   const [saving, setSaving] = useState(false)
 
@@ -53,6 +57,44 @@ export default function ManagerMenuPage() {
     setEditingId(null)
     setForm(emptyForm)
     setShowForm(true)
+  }
+
+  const handleBatchUpload = async () => {
+    setBatchSaving(true)
+    setBatchResult(null)
+
+    // Expected format, one dish per line:
+    // name,category,price,description,image_url,is_spicy,is_vegetarian
+    const lines = batchCsv.split('\n').map((l) => l.trim()).filter(Boolean)
+    let success = 0
+    let failed = 0
+
+    for (const line of lines) {
+      const parts = line.split(',').map((p) => p.trim())
+      const [name, category, price, description, image_url, isSpicy, isVegetarian] = parts
+
+      if (!name || !category || !price) {
+        failed++
+        continue
+      }
+
+      const { error } = await supabase.from('menu_items').insert([{
+        name,
+        category,
+        price: parseFloat(price) || 0,
+        description: description || null,
+        image_url: image_url || null,
+        is_spicy: (isSpicy ?? '').toLowerCase() === 'true',
+        is_vegetarian: (isVegetarian ?? '').toLowerCase() === 'true',
+      }])
+
+      if (error) failed++
+      else success++
+    }
+
+    setBatchResult({ success, failed })
+    setBatchSaving(false)
+    if (success > 0) load()
   }
 
   const openEdit = (item: MenuItem) => {
@@ -137,14 +179,72 @@ export default function ManagerMenuPage() {
           <h1 className="text-2xl font-bold text-white">Menu</h1>
           <p className="text-gray-400 text-sm">{items.length} items across {CATEGORY_OPTIONS.length} categories</p>
         </div>
-        <button
-          onClick={openNew}
-          className="flex items-center gap-2 bg-zara-gold hover:bg-zara-orange text-black font-bold px-4 py-2 rounded-lg transition"
-        >
-          <Plus size={18} />
-          Add Item
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => { setShowBatchUpload(true); setBatchResult(null) }}
+            className="flex items-center gap-2 bg-gray-700 hover:bg-gray-600 text-white font-bold px-4 py-2 rounded-lg transition"
+          >
+            <Upload size={18} />
+            Batch Upload
+          </button>
+          <button
+            onClick={openNew}
+            className="flex items-center gap-2 bg-zara-gold hover:bg-zara-orange text-black font-bold px-4 py-2 rounded-lg transition"
+          >
+            <Plus size={18} />
+            Add Item
+          </button>
+        </div>
       </div>
+
+      {/* Batch upload modal */}
+      {showBatchUpload && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60">
+          <div className="bg-gray-800 border border-gray-700 rounded-lg p-6 max-w-2xl w-full max-h-[85vh] overflow-y-auto">
+            <h2 className="font-bold text-white text-lg mb-2">Batch Upload Menu Items</h2>
+            <p className="text-gray-400 text-sm mb-3">
+              One dish per line, comma-separated, in this exact order:
+            </p>
+            <code className="block bg-black/40 text-gray-300 text-xs p-2 rounded mb-4">
+              name,category,price,description,image_url,is_spicy,is_vegetarian
+            </code>
+            <p className="text-gray-500 text-xs mb-3">
+              Example: <code className="bg-black/40 px-1 rounded">Kelewele,Appetisers,35,Spicy fried plantain,/images/menu/appetisers/kelewele.jpg,true,false</code>
+              <br />Category must exactly match one of the existing category names. Leave description/image_url blank if unknown -- don&apos;t skip the commas.
+            </p>
+
+            <textarea
+              value={batchCsv}
+              onChange={(e) => setBatchCsv(e.target.value)}
+              rows={8}
+              placeholder="Kelewele,Appetisers,35,Spicy fried plantain,/images/menu/appetisers/kelewele.jpg,true,false&#10;Jollof Rice,Rice Dishes,40,Classic Ghanaian jollof,,false,true"
+              className="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white placeholder-gray-600 font-mono text-xs"
+            />
+
+            {batchResult && (
+              <div className={`mt-3 text-sm rounded-lg p-3 ${batchResult.failed > 0 ? 'bg-amber-500/10 text-amber-300' : 'bg-green-500/10 text-green-400'}`}>
+                ✓ {batchResult.success} added{batchResult.failed > 0 ? `, ${batchResult.failed} failed (check the format on those lines)` : ''}
+              </div>
+            )}
+
+            <div className="flex gap-2 mt-4">
+              <button
+                onClick={handleBatchUpload}
+                disabled={batchSaving || !batchCsv.trim()}
+                className="bg-zara-gold hover:bg-zara-orange text-black font-bold px-4 py-2 rounded-lg transition disabled:opacity-50"
+              >
+                {batchSaving ? 'Uploading...' : 'Upload All'}
+              </button>
+              <button
+                onClick={() => { setShowBatchUpload(false); setBatchCsv(''); setBatchResult(null) }}
+                className="text-gray-400 hover:text-white px-4 py-2"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Category filter */}
       <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
