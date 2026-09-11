@@ -220,35 +220,35 @@ npm run dev
 
 ---
 
-## 🔐 Step 6: Create Admin User
+## 🔐 Step 6: Create Staff Accounts (Website Admin / Restaurant Manager)
 
-### Via Supabase CLI
+**First**, run `supabase/auth_and_roles.sql` in Supabase SQL Editor (in addition to `supabase/schema.sql`) -- this sets up the `profiles` table and real authentication, replacing the old `admin_users.password_hash` approach below.
+
+### Create a user via Supabase Dashboard
 
 ```bash
-# Install Supabase CLI
-npm install -g @supabase/cli
-
-# Sign in
-supabase login
-
-# Link project
-supabase link --project-ref your-project-id
-
-# Create admin user in database
-supabase db push
+1. Go to Supabase Dashboard > Authentication > Users
+2. Click "Add User" > "Create new user"
+3. Enter their email and a password
+4. Under "User Metadata" (or via SQL after creating), set:
+   role = "website_admin"   (for the Admin dashboard)
+   role = "restaurant_manager"   (for the Restaurant Manager dashboard)
 ```
 
-### Via Supabase Dashboard
+If you create the user without setting the role in metadata, it defaults to
+`restaurant_manager` -- fix it afterward with SQL:
+
+```sql
+update profiles set role = 'website_admin' where email = 'someone@zarakitchen.com';
+```
+
+### Log in
 
 ```bash
-1. Go to Supabase Dashboard
-2. SQL Editor → New Query
-3. Run:
-
-INSERT INTO admin_users (email, password_hash, role) 
-VALUES ('admin@zarakitchen.com', 'hashed_password', 'admin');
-
-Note: You'll need to hash password with bcrypt first
+1. Visit /dashboard/login on the live site (or localhost:3000/dashboard/login)
+2. Enter the email + password you just created
+3. You'll land on /dashboard (Website Admin) or /manager (Restaurant Manager)
+   automatically based on their role
 ```
 
 ---

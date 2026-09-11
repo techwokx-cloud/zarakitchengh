@@ -4,6 +4,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
+import { supabase } from '@/lib/supabase/client'
 import {
   LayoutDashboard,
   FileText,
@@ -26,17 +27,46 @@ export default function DashboardLayout({
   const [isAuthenticated, setIsAuthenticated] = useState(false)
 
   useEffect(() => {
-    // Check if user is authenticated
-    const token = localStorage.getItem('adminToken')
-    if (!token) {
-      router.push('/dashboard/login')
-    } else {
+    let active = true
+
+    const checkAccess = async () => {
+      const { data: { session } } = await supabase.auth.getSession()
+
+      if (!session) {
+        router.push('/dashboard/login')
+        return
+      }
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', session.user.id)
+        .single()
+
+      if (!active) return
+
+      // Website Admin dashboard is website_admin-only -- a Restaurant
+      // Manager account gets redirected to their own dashboard instead
+      // of silently being let into pages meant for the other role.
+      if (profile?.role === 'restaurant_manager') {
+        router.push('/manager')
+        return
+      }
+
+      if (profile?.role !== 'website_admin') {
+        router.push('/dashboard/login')
+        return
+      }
+
       setIsAuthenticated(true)
     }
+
+    checkAccess()
+    return () => { active = false }
   }, [router])
 
-  const handleLogout = () => {
-    localStorage.removeItem('adminToken')
+  const handleLogout = async () => {
+    await supabase.auth.signOut()
     router.push('/dashboard/login')
   }
 

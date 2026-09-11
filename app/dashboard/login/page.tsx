@@ -4,6 +4,7 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Lock, Mail } from 'lucide-react'
+import { supabase } from '@/lib/supabase/client'
 
 export default function DashboardLogin() {
   const router = useRouter()
@@ -17,31 +18,33 @@ export default function DashboardLogin() {
     setLoading(true)
     setError('')
 
-    try {
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      })
+    const { data, error: authError } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
 
-      const data = (await response.json()) as {
-        success?: boolean
-        token?: string
-        error?: string
-      }
-
-      if (data.success && data.token) {
-        // Save token to localStorage
-        localStorage.setItem('adminToken', data.token)
-        router.push('/dashboard')
-      } else {
-        setError(data.error || 'Login failed')
-      }
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred')
-    } finally {
+    if (authError) {
+      setError(authError.message)
       setLoading(false)
+      return
     }
+
+    if (data.session) {
+      // Look up this user's role to send them to the right dashboard
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', data.session.user.id)
+        .single()
+
+      if (profile?.role === 'restaurant_manager') {
+        router.push('/manager')
+      } else {
+        router.push('/dashboard')
+      }
+    }
+
+    setLoading(false)
   }
 
   return (
