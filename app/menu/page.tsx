@@ -7,6 +7,7 @@ import Footer from '@/components/Footer'
 import { Search, Filter } from 'lucide-react'
 import { MENU_CATEGORIES } from '@/lib/menuData'
 import { fetchAvailableMenuItems, MenuItem } from '@/lib/menuItemsApi'
+import QuickOrderModal from '@/components/QuickOrderModal'
 
 function MenuPageContent() {
   const searchParams = useSearchParams()
@@ -17,6 +18,7 @@ function MenuPageContent() {
   const [allItems, setAllItems] = useState<MenuItem[]>([])
   const [filteredItems, setFilteredItems] = useState<MenuItem[]>([])
   const [loading, setLoading] = useState(true)
+  const [orderingItem, setOrderingItem] = useState<MenuItem | null>(null)
 
   // Load real menu items from Supabase on mount
   useEffect(() => {
@@ -187,8 +189,16 @@ function MenuPageContent() {
                       </div>
 
                       <div className="flex items-center justify-between">
-                        <span className="text-red-600 font-bold text-base">GHS {item.price.toFixed(0)}</span>
-                        <button className="w-6 h-6 rounded-full bg-red-600 hover:bg-red-700 text-white flex items-center justify-center text-xs transition">
+                        <button
+                          onClick={() => setOrderingItem(item)}
+                          className="text-red-600 hover:text-red-700 font-bold text-base transition"
+                        >
+                          GHS {item.price.toFixed(0)}
+                        </button>
+                        <button
+                          onClick={() => setOrderingItem(item)}
+                          className="w-6 h-6 rounded-full bg-red-600 hover:bg-red-700 text-white flex items-center justify-center text-xs transition"
+                        >
                           +
                         </button>
                       </div>
@@ -237,6 +247,13 @@ function MenuPageContent() {
       </section>
 
       <Footer />
+
+      {orderingItem && (
+        <QuickOrderModal
+          item={{ name: orderingItem.name, price: orderingItem.price }}
+          onClose={() => setOrderingItem(null)}
+        />
+      )}
     </main>
   )
 }

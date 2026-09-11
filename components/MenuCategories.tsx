@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { fetchAvailableMenuItems, MenuItem } from '@/lib/menuItemsApi'
+import QuickOrderModal from './QuickOrderModal'
 
 const menuCategories = [
   { name: 'Healthy Breakfast', icon: '/images/category-icons/breakfast.png' },
@@ -25,6 +26,7 @@ const menuCategories = [
 export default function MenuCategories() {
   const [revealed, setRevealed] = useState<string | null>(null)
   const [allItems, setAllItems] = useState<MenuItem[]>([])
+  const [orderingItem, setOrderingItem] = useState<MenuItem | null>(null)
 
   useEffect(() => {
     fetchAvailableMenuItems().then(setAllItems)
@@ -73,28 +75,35 @@ export default function MenuCategories() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
               {items.slice(0, 6).map((item) => (
-                <a
+                <div
                   key={item.id}
-                  href={`/menu?category=${encodeURIComponent(revealed)}`}
                   className="group/item block bg-[#FFF8E7] rounded-xl overflow-hidden border border-gray-200 hover:shadow-md transition"
                 >
-                  <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
-                    <img
-                      src={item.image_url ?? ''}
-                      alt={item.name}
-                      className="w-full h-full object-cover group-hover/item:scale-105 transition-transform"
-                    />
-                  </div>
+                  <a href={`/menu?category=${encodeURIComponent(revealed)}`} className="block">
+                    <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
+                      <img
+                        src={item.image_url ?? ''}
+                        alt={item.name}
+                        className="w-full h-full object-cover group-hover/item:scale-105 transition-transform"
+                      />
+                    </div>
+                  </a>
                   <div className="p-3 flex items-center justify-between gap-2">
-                    <p className="text-sm font-bold text-black leading-tight line-clamp-2 flex-1">
+                    <a
+                      href={`/menu?category=${encodeURIComponent(revealed)}`}
+                      className="text-sm font-bold text-black leading-tight line-clamp-2 flex-1 hover:text-zara-gold transition"
+                    >
                       {item.name}
-                    </p>
-                    <span className="flex-shrink-0 flex items-center gap-1.5 bg-red-600 group-hover/item:bg-red-700 text-white font-bold text-sm px-3 py-1.5 rounded-lg transition">
+                    </a>
+                    <button
+                      onClick={() => setOrderingItem(item)}
+                      className="flex-shrink-0 flex items-center gap-1.5 bg-red-600 hover:bg-red-700 text-white font-bold text-sm px-3 py-1.5 rounded-lg transition"
+                    >
                       GHS {item.price.toFixed(0)}
                       <span className="text-xs">+</span>
-                    </span>
+                    </button>
                   </div>
-                </a>
+                </div>
               ))}
             </div>
 
@@ -109,6 +118,13 @@ export default function MenuCategories() {
           </div>
         )}
       </div>
+
+      {orderingItem && (
+        <QuickOrderModal
+          item={{ name: orderingItem.name, price: orderingItem.price }}
+          onClose={() => setOrderingItem(null)}
+        />
+      )}
     </section>
   )
 }
