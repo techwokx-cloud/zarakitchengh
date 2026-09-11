@@ -71,19 +71,28 @@ export default function MenuCategories() {
               </button>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-              {items.slice(0, 8).map((item) => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {items.slice(0, 6).map((item) => (
                 <a
                   key={item.id}
                   href={`/menu?category=${encodeURIComponent(revealed)}`}
-                  className="group/item block"
+                  className="group/item block bg-[#FFF8E7] rounded-xl overflow-hidden border border-gray-200 hover:shadow-md transition"
                 >
-                  <div className="aspect-square rounded-lg overflow-hidden bg-gray-100">
+                  <div className="relative aspect-[4/3] overflow-hidden bg-gray-100">
                     <img
                       src={item.image_url ?? ''}
                       alt={item.name}
                       className="w-full h-full object-cover group-hover/item:scale-105 transition-transform"
                     />
+                  </div>
+                  <div className="p-3 flex items-center justify-between gap-2">
+                    <p className="text-sm font-bold text-black leading-tight line-clamp-2 flex-1">
+                      {item.name}
+                    </p>
+                    <span className="flex-shrink-0 flex items-center gap-1.5 bg-red-600 group-hover/item:bg-red-700 text-white font-bold text-sm px-3 py-1.5 rounded-lg transition">
+                      GHS {item.price.toFixed(0)}
+                      <span className="text-xs">+</span>
+                    </span>
                   </div>
                 </a>
               ))}
