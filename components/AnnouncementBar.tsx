@@ -2,21 +2,35 @@
 
 import { useState, useEffect } from 'react'
 import { X } from 'lucide-react'
+import { supabase } from '@/lib/supabase/client'
 
-// Placeholder content -- this will become admin-managed (create in Admin dashboard,
-// approved via WhatsApp by the Restaurant Manager) once that workflow is built.
-const ANNOUNCEMENT = {
-  message: '🎉 Weekend Special: 15% off all Ghanaian Specialities, Fri-Sun!',
-  link: '/menu?category=Ghanaian%20Specialities',
-  linkText: 'View Menu',
+interface BarPromo {
+  message: string
+  link_url: string | null
+  link_text: string | null
 }
 
 export default function AnnouncementBar() {
   const [dismissed, setDismissed] = useState(true) // default hidden until we check sessionStorage, avoids flash
+  const [promo, setPromo] = useState<BarPromo | null>(null)
 
   useEffect(() => {
     const wasDismissed = sessionStorage.getItem('zara_announcement_dismissed')
     setDismissed(wasDismissed === 'true')
+
+    const load = async () => {
+      const { data } = await supabase
+        .from('promotions')
+        .select('message, link_url, link_text')
+        .eq('placement', 'bar')
+        .eq('is_active', true)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle()
+
+      if (data) setPromo(data)
+    }
+    load()
   }, [])
 
   const handleDismiss = () => {
@@ -24,16 +38,17 @@ export default function AnnouncementBar() {
     sessionStorage.setItem('zara_announcement_dismissed', 'true')
   }
 
-  if (dismissed) return null
+  // Nothing to show if dismissed, or if there's no active promotion in Supabase
+  if (dismissed || !promo) return null
 
   return (
     <div className="bg-zara-gold text-black text-sm">
       <div className="container-wide px-4 py-2 flex items-center justify-center gap-3 relative">
         <p className="text-center font-medium">
-          {ANNOUNCEMENT.message}{' '}
-          {ANNOUNCEMENT.link && (
-            <a href={ANNOUNCEMENT.link} className="underline font-bold">
-              {ANNOUNCEMENT.linkText}
+          {promo.message}{' '}
+          {promo.link_url && (
+            <a href={promo.link_url} className="underline font-bold">
+              {promo.link_text || 'Learn More'}
             </a>
           )}
         </p>
