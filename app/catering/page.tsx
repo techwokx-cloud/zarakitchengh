@@ -276,6 +276,12 @@ export default function CateringPage() {
                 ? `You selected ${selectedPkgInfo?.name}. Fill in your details below.`
                 : 'Select a package above and fill in your event details.'}
             </p>
+            <p className="text-gray-500 text-sm mt-3">
+              Prefer email? Reach our events team directly at{' '}
+              <a href="mailto:orders@zarakitchen.online" className="text-zara-gold hover:underline">
+                orders@zarakitchen.online
+              </a>
+            </p>
           </div>
 
           {selectedPackage ? (

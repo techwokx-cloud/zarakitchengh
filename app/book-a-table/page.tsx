@@ -167,7 +167,7 @@ export default function BookATablePage() {
               <div className="bg-amber-50 border border-amber-200 text-amber-800 text-sm rounded-lg p-3">
                 We couldn't save this online just yet -- please confirm your booking on WhatsApp instead:
                 <a
-                  href={`https://wa.me/233243637122?text=${whatsappMessage}`}
+                  href={`https://wa.me/233591599629?text=${whatsappMessage}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="block mt-2 font-bold text-green-700 underline"

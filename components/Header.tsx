@@ -54,7 +54,7 @@ export default function Header() {
             <img src="/images/buttons/order-online.png" alt="Order Online" className="h-9 w-auto" />
           </a>
           <a
-            href="https://wa.me/233243637122"
+            href="https://wa.me/233591599629"
             target="_blank"
             rel="noopener noreferrer"
           >
@@ -92,7 +92,7 @@ export default function Header() {
                 <img src="/images/buttons/order-online.png" alt="Order Online" className="h-9 w-auto" />
               </a>
               <a
-                href="https://wa.me/233243637122"
+                href="https://wa.me/233591599629"
                 target="_blank"
                 rel="noopener noreferrer"
               >

@@ -54,7 +54,7 @@ insert into restaurant_settings (id, phone, whatsapp_number, email, address, ope
 values (
   1,
   '+233 24 123 4567',
-  '+233243637122',
+  '+233591599629',
   'info@zarakitchengh.com',
   '64 Patrice Lumumba St, Airport Residential Area, Accra, Ghana',
   '[
