@@ -38,7 +38,7 @@ export default function HeroSection() {
   const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + heroImages.length) % heroImages.length)
 
   return (
-    <section id="home" className="relative w-full overflow-hidden bg-black h-[380px] md:h-[440px]">
+    <section id="home" className="relative w-full overflow-hidden bg-black h-screen">
       {/* Full-bleed background photo(s) */}
       {heroImages.map((image, index) => (
         <img

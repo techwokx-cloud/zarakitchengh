@@ -234,8 +234,8 @@ export default function ManagerMenuPage() {
         <div>
           <p className="text-gray-400 text-sm mb-4">
             These images rotate on the homepage hero, in this order. Use the arrows to reorder, or remove
-            an item to take it out of rotation. To add more, go to All Items and check &quot;Show in
-            homepage hero slideshow&quot; on any dish.
+            an item to take it out of rotation. To add more, go to All Items and click the ⭐ star button
+            on any dish.
           </p>
           {heroItems.length === 0 ? (
             <div className="bg-gray-800 border border-gray-700 rounded-lg p-8 text-center text-gray-400">
@@ -496,6 +496,17 @@ export default function ManagerMenuPage() {
                     className="flex-1 flex items-center justify-center gap-1 py-1.5 bg-gray-700 hover:bg-gray-600 text-white text-xs rounded transition"
                   >
                     <Pencil size={12} /> Edit
+                  </button>
+                  <button
+                    onClick={() => toggleHero(item)}
+                    title={item.is_featured_hero ? 'Remove from hero slideshow' : 'Add to hero slideshow'}
+                    className={`px-2 py-1.5 rounded transition ${
+                      item.is_featured_hero
+                        ? 'bg-zara-gold text-black hover:bg-zara-orange'
+                        : 'bg-gray-700 hover:bg-gray-600 text-white'
+                    }`}
+                  >
+                    <Star size={14} />
                   </button>
                   <button
                     onClick={() => toggleAvailable(item)}
