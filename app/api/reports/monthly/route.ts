@@ -57,6 +57,25 @@ export async function GET(request: NextRequest) {
   const totalGuests = reservations?.reduce((sum, r) => sum + (r.guests || 0), 0) ?? 0
   const avgPartySize = total > 0 ? (totalGuests / total).toFixed(1) : '0'
 
+  // Real sales data, now that the Orders system exists
+  const { data: orders, error: ordersError } = await supabase
+    .from('orders')
+    .select('status, total, delivery_type, payment_method, created_at')
+    .gte('created_at', firstOfLastMonth.toISOString())
+    .lt('created_at', firstOfThisMonth.toISOString())
+
+  if (ordersError) {
+    return NextResponse.json({ error: ordersError.message }, { status: 500 })
+  }
+
+  const totalOrders = orders?.length ?? 0
+  const completedOrders = orders?.filter((o) => o.status === 'completed') ?? []
+  const cancelledOrders = orders?.filter((o) => o.status === 'cancelled').length ?? 0
+  const totalRevenue = completedOrders.reduce((sum, o) => sum + (o.total || 0), 0)
+  const avgOrderValue = completedOrders.length > 0 ? (totalRevenue / completedOrders.length).toFixed(0) : '0'
+  const deliveryCount = orders?.filter((o) => o.delivery_type === 'delivery').length ?? 0
+  const pickupCount = orders?.filter((o) => o.delivery_type === 'pickup').length ?? 0
+
   const html = `
     <div style="font-family: sans-serif; max-width: 560px; margin: 0 auto;">
       <h1 style="color: #F5A623;">Zara Kitchen -- Monthly Report</h1>
@@ -72,11 +91,20 @@ export async function GET(request: NextRequest) {
         <tr><td style="padding: 8px 0;">Average party size</td><td style="text-align: right;">${avgPartySize}</td></tr>
       </table>
 
-      <h3>Sales &amp; Marketing Performance</h3>
+      <h3>Orders &amp; Sales</h3>
+      <table style="width: 100%; border-collapse: collapse;">
+        <tr><td style="padding: 8px 0;">Total orders placed</td><td style="text-align: right; font-weight: bold;">${totalOrders}</td></tr>
+        <tr><td style="padding: 8px 0;">Completed</td><td style="text-align: right;">${completedOrders.length}</td></tr>
+        <tr><td style="padding: 8px 0;">Cancelled</td><td style="text-align: right;">${cancelledOrders}</td></tr>
+        <tr><td style="padding: 8px 0;">Revenue (completed orders)</td><td style="text-align: right; font-weight: bold;">GHS ${totalRevenue.toFixed(0)}</td></tr>
+        <tr><td style="padding: 8px 0;">Average order value</td><td style="text-align: right;">GHS ${avgOrderValue}</td></tr>
+        <tr><td style="padding: 8px 0;">Delivery vs Pickup</td><td style="text-align: right;">${deliveryCount} / ${pickupCount}</td></tr>
+      </table>
+
+      <h3>Marketing &amp; Content Performance</h3>
       <p style="color: #999; font-size: 14px;">
-        Not included yet -- no Orders system or content-performance tracking is
-        connected to the database yet, so there's no real sales/marketing data
-        to report on this month.
+        Not included yet -- content/post engagement isn't being tracked automatically,
+        so there's no real marketing performance data to report on this month.
       </p>
 
       <p style="color: #999; font-size: 12px; margin-top: 32px;">
@@ -94,7 +122,12 @@ export async function GET(request: NextRequest) {
 
   return NextResponse.json({
     month: monthLabel,
-    stats: { total, byStatus, avgPartySize },
+    stats: {
+      total,
+      byStatus,
+      avgPartySize,
+      orders: { totalOrders, completed: completedOrders.length, cancelled: cancelledOrders, totalRevenue, avgOrderValue, deliveryCount, pickupCount },
+    },
     email: emailResult,
   })
 }
