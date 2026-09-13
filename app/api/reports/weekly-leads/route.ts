@@ -11,7 +11,7 @@ import { getServiceSupabase } from '@/lib/supabase/server'
 import { sendEmail } from '@/lib/email'
 
 const RESTAURANT_MANAGER_EMAIL = 'restaurantmanager@zarakitchen.online'
-const REPORT_FROM_EMAIL = 'reports@zarakitchen.online' // update once your Resend domain is verified
+const REPORT_FROM_EMAIL = 'orders@zarakitchen.online' // your real, working mailbox
 
 export async function GET(request: NextRequest) {
   const secret = request.nextUrl.searchParams.get('secret')

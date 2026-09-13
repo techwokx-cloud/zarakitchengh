@@ -1,10 +1,14 @@
 // lib/email.ts
-// Email sending via Resend. Server-side only -- never import this
-// from a client component (the API key must stay secret).
+// Email sending via your existing cPanel/DirectAdmin mailbox (SMTP),
+// not a third-party service. Server-side only -- never import this
+// from a client component (the SMTP password must stay secret).
 
-import { Resend } from 'resend'
+import nodemailer from 'nodemailer'
 
-const RESEND_API_KEY = process.env.RESEND_API_KEY
+const SMTP_HOST = process.env.SMTP_HOST // e.g. mail.zarakitchen.online
+const SMTP_PORT = process.env.SMTP_PORT // e.g. 587
+const SMTP_USER = process.env.SMTP_USER // e.g. orders@zarakitchen.online
+const SMTP_PASSWORD = process.env.SMTP_PASSWORD
 
 export async function sendEmail({
   to,
@@ -17,19 +21,27 @@ export async function sendEmail({
   subject: string
   html: string
 }) {
-  if (!RESEND_API_KEY) {
+  if (!SMTP_HOST || !SMTP_PORT || !SMTP_USER || !SMTP_PASSWORD) {
     console.warn(
-      'RESEND_API_KEY is not set -- email not sent. Add it to environment ' +
-      'variables once your Resend account/domain is set up.'
+      'SMTP env vars are not fully set (SMTP_HOST, SMTP_PORT, SMTP_USER, ' +
+      'SMTP_PASSWORD) -- email not sent.'
     )
-    return { sent: false, reason: 'RESEND_API_KEY not configured' }
+    return { sent: false, reason: 'SMTP not configured' }
   }
 
-  const resend = new Resend(RESEND_API_KEY)
+  const transporter = nodemailer.createTransport({
+    host: SMTP_HOST,
+    port: parseInt(SMTP_PORT, 10),
+    secure: parseInt(SMTP_PORT, 10) === 465, // true for port 465, false for 587/25 (STARTTLS)
+    auth: {
+      user: SMTP_USER,
+      pass: SMTP_PASSWORD,
+    },
+  })
 
   try {
-    const result = await resend.emails.send({ to, from, subject, html })
-    return { sent: true, result }
+    const result = await transporter.sendMail({ to, from, subject, html })
+    return { sent: true, result: { messageId: result.messageId } }
   } catch (error) {
     console.error('Failed to send email:', error)
     return { sent: false, reason: error instanceof Error ? error.message : 'Unknown error' }
