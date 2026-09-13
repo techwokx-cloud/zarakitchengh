@@ -1,10 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { X, MessageCircle } from 'lucide-react'
-import { supabase } from '@/lib/supabase/client'
-
-const WHATSAPP_NUMBER = '233591599629'
+import { X, MessageCircle, CheckCircle2 } from 'lucide-react'
 
 interface QuickOrderItem {
   name: string
@@ -26,6 +23,7 @@ export default function QuickOrderModal({
   const [paymentMethod, setPaymentMethod] = useState<'momo' | 'card' | 'cash'>('momo')
   const [whatsappOptIn, setWhatsappOptIn] = useState(true)
   const [submitting, setSubmitting] = useState(false)
+  const [result, setResult] = useState<{ success: boolean; customerNotified: boolean; error?: string } | null>(null)
 
   const total = item.price * quantity
 
@@ -33,38 +31,56 @@ export default function QuickOrderModal({
     e.preventDefault()
     setSubmitting(true)
 
-    // Save the order to Supabase -- gives the Restaurant Manager a real
-    // record, regardless of whether the WhatsApp message actually gets sent
-    await supabase.from('orders').insert([{
-      customer_name: name,
-      phone,
-      items: [{ name: item.name, price: item.price, quantity }],
-      total,
-      delivery_type: deliveryType,
-      delivery_address: deliveryType === 'delivery' ? address : null,
-      payment_method: paymentMethod,
-      whatsapp_opt_in: whatsappOptIn,
-      status: 'pending',
-    }])
+    try {
+      const response = await fetch('/api/orders/create', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          customer_name: name,
+          phone,
+          items: [{ name: item.name, price: item.price, quantity }],
+          total,
+          delivery_type: deliveryType,
+          delivery_address: deliveryType === 'delivery' ? address : null,
+          payment_method: paymentMethod,
+          whatsapp_opt_in: whatsappOptIn,
+        }),
+      })
 
-    // Build the WhatsApp message and open it -- this is what actually
-    // gets the order to the restaurant today (no Baileys bot yet to
-    // receive orders automatically any other way)
-    const lines = [
-      `New order from ${name}`,
-      `Phone: ${phone}`,
-      ``,
-      `${quantity} x ${item.name} - GHS ${(item.price * quantity).toFixed(0)}`,
-      ``,
-      `Total: GHS ${total.toFixed(0)}`,
-      `${deliveryType === 'delivery' ? `Delivery to: ${address}` : 'Pickup'}`,
-      `Payment: ${paymentMethod === 'momo' ? 'Mobile Money' : paymentMethod === 'card' ? 'Bank Card' : 'Cash on Delivery'}`,
-    ]
-    const message = encodeURIComponent(lines.join('\n'))
-    window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${message}`, '_blank')
+      const data = await response.json()
+
+      if (!response.ok) {
+        setResult({ success: false, customerNotified: false, error: data.error || 'Something went wrong' })
+      } else {
+        setResult({ success: true, customerNotified: data.customerNotification?.sent ?? false })
+      }
+    } catch {
+      setResult({ success: false, customerNotified: false, error: 'Could not reach the server' })
+    }
 
     setSubmitting(false)
-    onClose()
+  }
+
+  if (result?.success) {
+    return (
+      <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60">
+        <div className="relative bg-white rounded-xl shadow-2xl max-w-md w-full p-6 text-center">
+          <CheckCircle2 size={48} className="mx-auto text-green-600 mb-3" />
+          <h3 className="font-display text-xl font-semibold text-black mb-2">Order Received!</h3>
+          <p className="text-gray-600 text-sm mb-4">
+            {whatsappOptIn && result.customerNotified
+              ? "We've sent a confirmation to your WhatsApp. We'll be in touch shortly!"
+              : "We've got your order and will be in touch shortly to confirm."}
+          </p>
+          <button
+            onClick={onClose}
+            className="w-full bg-zara-gold hover:bg-zara-orange text-black font-bold py-2.5 rounded-lg transition"
+          >
+            Done
+          </button>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -186,8 +202,12 @@ export default function QuickOrderModal({
               onChange={(e) => setWhatsappOptIn(e.target.checked)}
               className="mt-0.5"
             />
-            Send me order updates and occasional promos on WhatsApp
+            Send me an order confirmation and occasional promos on WhatsApp
           </label>
+
+          {result?.error && (
+            <p className="text-red-600 text-xs">✗ {result.error}</p>
+          )}
 
           <div className="bg-[#FFF8E7] rounded-lg p-3 flex items-center justify-between">
             <span className="text-sm text-gray-600">Total</span>
@@ -200,7 +220,7 @@ export default function QuickOrderModal({
             className="w-full flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg transition disabled:opacity-50"
           >
             <MessageCircle size={18} />
-            {submitting ? 'Sending...' : 'Send Order via WhatsApp'}
+            {submitting ? 'Placing Order...' : 'Place Order'}
           </button>
         </form>
       </div>
