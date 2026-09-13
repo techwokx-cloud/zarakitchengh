@@ -3,6 +3,29 @@
 // bot server. Never import this in a client component -- the admin
 // token must stay server-side.
 
+// Converts a Ghana phone number to the international format the bot
+// requires (digits only, country code first, no leading 0). Customers
+// naturally type local format (0264375628); WhatsApp IDs need
+// 233264375628. Without this, messages to customer-entered numbers
+// silently fail even though hardcoded/already-correct numbers (like
+// the Manager's) work fine.
+function normalizeGhanaPhone(raw: string): string {
+  const digits = raw.replace(/[^\d]/g, '')
+
+  if (digits.startsWith('0') && digits.length === 10) {
+    return '233' + digits.slice(1)
+  }
+  if (digits.startsWith('233')) {
+    return digits
+  }
+  // Already missing both the 0 and the 233 prefix (e.g. someone typed
+  // just the 9-digit subscriber number) -- assume Ghana and prepend it.
+  if (digits.length === 9) {
+    return '233' + digits
+  }
+  return digits
+}
+
 export async function sendWhatsAppMessage(to: string, text: string) {
   const botUrl = process.env.WHATSAPP_BOT_API_URL
   const adminToken = process.env.WHATSAPP_BOT_ADMIN_TOKEN
@@ -12,8 +35,7 @@ export async function sendWhatsAppMessage(to: string, text: string) {
     return { sent: false, reason: 'Bot not configured' }
   }
 
-  // Bot expects digits only, country code first, no '+' or spaces
-  const cleanTo = to.replace(/[^\d]/g, '')
+  const cleanTo = normalizeGhanaPhone(to)
 
   try {
     const response = await fetch(`${botUrl}/api/whatsapp/send`, {

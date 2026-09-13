@@ -19,6 +19,7 @@ interface Order {
   total: number
   delivery_type: string
   delivery_address: string | null
+  ghana_post_gps: string | null
   payment_method: string
   whatsapp_opt_in: boolean
   status: string
@@ -162,7 +163,9 @@ export default function OrdersPage() {
                     </a>
                     <span className="flex items-center gap-1.5">
                       {order.delivery_type === 'delivery' ? <Truck size={14} /> : <Store size={14} />}
-                      {order.delivery_type === 'delivery' ? order.delivery_address : 'Pickup'}
+                      {order.delivery_type === 'delivery'
+                        ? `${order.delivery_address}${order.ghana_post_gps ? ` (GPS: ${order.ghana_post_gps})` : ''}`
+                        : 'Pickup'}
                     </span>
                     <span className="flex items-center gap-1.5">
                       <CreditCard size={14} />

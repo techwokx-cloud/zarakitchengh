@@ -20,6 +20,7 @@ export default function QuickOrderModal({
   const [quantity, setQuantity] = useState(1)
   const [deliveryType, setDeliveryType] = useState<'delivery' | 'pickup'>('delivery')
   const [address, setAddress] = useState('')
+  const [ghanaPostGps, setGhanaPostGps] = useState('')
   const [paymentMethod, setPaymentMethod] = useState<'momo' | 'card' | 'cash'>('momo')
   const [whatsappOptIn, setWhatsappOptIn] = useState(true)
   const [submitting, setSubmitting] = useState(false)
@@ -42,6 +43,7 @@ export default function QuickOrderModal({
           total,
           delivery_type: deliveryType,
           delivery_address: deliveryType === 'delivery' ? address : null,
+          ghana_post_gps: deliveryType === 'delivery' ? ghanaPostGps : null,
           payment_method: paymentMethod,
           whatsapp_opt_in: whatsappOptIn,
         }),
@@ -163,14 +165,23 @@ export default function QuickOrderModal({
           </div>
 
           {deliveryType === 'delivery' && (
-            <input
-              type="text"
-              required
-              placeholder="Delivery Address"
-              value={address}
-              onChange={(e) => setAddress(e.target.value)}
-              className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-black placeholder-gray-400 focus:outline-none focus:border-zara-gold"
-            />
+            <>
+              <input
+                type="text"
+                required
+                placeholder="Delivery Address (street, landmark, area)"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-black placeholder-gray-400 focus:outline-none focus:border-zara-gold"
+              />
+              <input
+                type="text"
+                placeholder="Ghana Post GPS Address (e.g. GA-123-4567) -- optional but helps a lot"
+                value={ghanaPostGps}
+                onChange={(e) => setGhanaPostGps(e.target.value.toUpperCase())}
+                className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-black placeholder-gray-400 focus:outline-none focus:border-zara-gold"
+              />
+            </>
           )}
 
           <div>
@@ -193,6 +204,11 @@ export default function QuickOrderModal({
                 </button>
               ))}
             </div>
+            {paymentMethod !== 'momo' && (
+              <p className="text-xs text-gray-500 mt-1.5">
+                {paymentMethod === 'card' ? 'Card payment is handled in person for now.' : 'Cash is collected on delivery/pickup.'}
+              </p>
+            )}
           </div>
 
           <label className="flex items-start gap-2 text-xs text-gray-500">

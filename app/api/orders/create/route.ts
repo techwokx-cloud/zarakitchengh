@@ -25,6 +25,7 @@ export async function POST(request: NextRequest) {
     total,
     delivery_type,
     delivery_address,
+    ghana_post_gps,
     payment_method,
     whatsapp_opt_in,
   }: {
@@ -34,6 +35,7 @@ export async function POST(request: NextRequest) {
     total: number
     delivery_type: 'delivery' | 'pickup'
     delivery_address: string | null
+    ghana_post_gps: string | null
     payment_method: 'momo' | 'card' | 'cash'
     whatsapp_opt_in: boolean
   } = body
@@ -61,6 +63,7 @@ export async function POST(request: NextRequest) {
       total,
       delivery_type,
       delivery_address: delivery_type === 'delivery' ? delivery_address : null,
+      ghana_post_gps: delivery_type === 'delivery' ? ghana_post_gps : null,
       payment_method,
       whatsapp_opt_in,
       status: 'pending',
@@ -91,7 +94,7 @@ export async function POST(request: NextRequest) {
     managerNotification = await sendWhatsAppMessage(
       managerNumber,
       `🛎️ New order from ${customer_name} (${phone})\n\n${itemsSummary}\nTotal: GHS ${total.toFixed(0)}\n` +
-      `${delivery_type === 'delivery' ? `Delivery to: ${delivery_address}` : 'Pickup'}\n` +
+      `${delivery_type === 'delivery' ? `Delivery to: ${delivery_address}${ghana_post_gps ? ` (GPS: ${ghana_post_gps})` : ''}` : 'Pickup'}\n` +
       `Payment: ${payment_method === 'momo' ? 'Mobile Money' : payment_method === 'card' ? 'Bank Card' : 'Cash'}\n\n` +
       `zarakitchen.online/manager/orders`
     )
