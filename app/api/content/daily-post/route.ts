@@ -61,7 +61,13 @@ export async function GET(request: NextRequest) {
   const focus = FOCUS_ROTATION[dayOfYear % FOCUS_ROTATION.length]
 
   const caption = await generatePostCaption(focus.prompt)
-  const imageUrl = await generateImage(focus.prompt, 'stable-diffusion', focus.category)
+  // Try FAL.ai first (cheaper), fall back to OpenAI's DALL-E 3 if that fails
+  let imageUrl = await generateImage(focus.prompt, 'stable-diffusion', focus.category)
+  let imageProvider = 'fal.ai'
+  if (!imageUrl) {
+    imageUrl = await generateImage(focus.prompt, 'dalle3', focus.category)
+    imageProvider = 'openai-dalle3'
+  }
   const hashtags = await generateHashtags(focus.category)
 
   const { data: post, error } = await supabase.from('posts').insert([{
@@ -91,6 +97,7 @@ export async function GET(request: NextRequest) {
     post,
     captionGenerated: !!caption,
     imageGenerated: !!imageUrl,
+    imageProvider: imageUrl ? imageProvider : null,
     hashtags,
     whatsappNotification: notification,
   })
