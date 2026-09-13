@@ -1,39 +1,44 @@
 // app/api/content/daily-post/route.ts
 //
-// Generates one social post per day automatically (image + caption),
-// landing as 'pending_approval' -- same review queue as everything
-// else. Rotates through the three agreed focus areas: corporate
-// catering, customer orders, and social media growth (followers/likes).
+// Generates one social post per day automatically using a REAL menu
+// photo (not AI-generated) as the base image, with a poster-style text
+// overlay composited on top. This replaced AI image generation
+// entirely -- it's free, doesn't depend on any external image API's
+// uptime/billing (FAL.ai/OpenAI/Pollinations all had real reliability
+// issues), and the photos are already professional, on-brand shots of
+// actual dishes.
+//
+// Rotates through the three agreed focus areas (Corporate Catering,
+// Order Now, Follow & Engage) AND rotates through all available menu
+// items by day-of-year, so the specific dish featured changes daily
+// too -- with 98 items, that's about 3 months before repeating.
 //
 // Meant to run daily via cron: GET /api/content/daily-post?secret=YOUR_CRON_SECRET
 //
-// Honest limitation: this needs ANTHROPIC_API_KEY (for captions) and
-// OPENAI_API_KEY or FAL_AI_KEY (for images) to actually produce
-// content. Without those, it will create a post with empty/failed
-// image and caption fields -- check the response for real errors
-// once those keys are added, rather than assuming this "just works."
+// Honest limitation: captions still need ANTHROPIC_API_KEY (confirmed
+// working). If that's ever missing, a template caption is used instead
+// so the post still gets created with a real photo either way.
 
 import { NextRequest, NextResponse } from 'next/server'
 import { getServiceSupabase } from '@/lib/supabase/server'
-import { generatePostCaption, generateImage, generateHashtags, generatePollinationsImage, pickImageShortcut } from '@/lib/ai-services'
+import { generatePostCaption, generateHashtags } from '@/lib/ai-services'
 import { composePosterImage } from '@/lib/image-compose'
 import { sendWhatsAppMessage, getManagerWhatsAppNumber } from '@/lib/whatsapp'
 
-// Rotates daily through the three agreed focus areas
-const FOCUS_ROTATION: { theme: string; prompt: string; category: string }[] = [
+const FOCUS_ROTATION: { theme: string; angle: string; category: string }[] = [
   {
     theme: 'Corporate Catering',
-    prompt: 'An inviting spread of Zara Kitchen catering food, styled for a corporate lunch event, showing variety and abundance',
+    angle: 'how great this dish would be for a corporate lunch or office catering order',
     category: 'promotion',
   },
   {
     theme: 'Order Now',
-    prompt: 'A mouth-watering close-up of a popular Zara Kitchen dish, designed to make viewers want to order immediately',
+    angle: 'making this dish sound irresistible and encouraging an immediate order',
     category: 'engagement',
   },
   {
     theme: 'Follow & Engage',
-    prompt: 'A fun, shareable graphic encouraging people to follow Zara Kitchen on social media, featuring the restaurant\'s branding',
+    angle: 'inviting people to follow and engage with Zara Kitchen on social media, using this dish as the hook',
     category: 'engagement',
   },
 ]
@@ -54,58 +59,55 @@ export async function GET(request: NextRequest) {
     )
   }
 
-  // Pick today's focus based on day-of-year, so it rotates predictably
-  // through all three rather than randomly repeating
   const dayOfYear = Math.floor(
     (Date.now() - new Date(new Date().getFullYear(), 0, 0).getTime()) / 86400000
   )
   const focus = FOCUS_ROTATION[dayOfYear % FOCUS_ROTATION.length]
 
-  const caption = await generatePostCaption(focus.prompt)
-  // Try FAL.ai first (cheaper), then OpenAI DALL-E 3, then Pollinations.ai
-  // (free, keyless -- last resort so daily posting still works even if
-  // both paid providers have account issues)
-  let imageResult = await generateImage(focus.prompt, 'stable-diffusion', focus.category)
-  let imageProvider = 'fal.ai'
-  if (!imageResult.url) {
-    const falError = imageResult.error
-    imageResult = await generateImage(focus.prompt, 'dalle3', focus.category)
-    imageProvider = 'openai-dalle3'
-    if (!imageResult.url) {
-      const openaiError = imageResult.error
-      imageResult = await generatePollinationsImage(focus.prompt, pickImageShortcut(focus.category))
-      imageProvider = 'pollinations'
-      if (!imageResult.url) {
-        imageResult.error = `fal.ai: ${falError} | openai: ${openaiError} | pollinations: ${imageResult.error}`
-      }
-    }
+  // Pick today's dish -- rotates through every available menu item
+  // (stable order by id), so the featured photo changes daily
+  const { data: menuItems, error: menuError } = await supabase
+    .from('menu_items')
+    .select('id, name, description, image_url, category')
+    .eq('is_available', true)
+    .not('image_url', 'is', null)
+    .order('id', { ascending: true })
+
+  if (menuError) {
+    return NextResponse.json({ error: menuError.message }, { status: 500 })
   }
-  const imageUrl = imageResult.url
+  if (!menuItems || menuItems.length === 0) {
+    return NextResponse.json({ error: 'No available menu items with photos found.' }, { status: 500 })
+  }
+
+  const dish = menuItems[dayOfYear % menuItems.length]
+
+  const captionPrompt = `Write a short, punchy social media caption about "${dish.name}" (${dish.description || dish.category}), focused on ${focus.angle}.`
+  const caption = await generatePostCaption(captionPrompt)
   const hashtags = await generateHashtags(focus.category)
 
-  // Composite the plain photo into a poster: dark banner + headline +
-  // caption snippet + branding. Falls back to the plain photo if
-  // compositing fails for any reason (e.g. storage bucket not set up
-  // yet) rather than losing the post's image entirely.
-  let finalImageUrl = imageUrl
+  // Composite the poster: real dish photo + headline banner + caption
+  let finalImageUrl: string | null = dish.image_url
+  let posterComposited = false
   let posterError: string | undefined
-  if (imageUrl) {
+  if (dish.image_url) {
     const posterResult = await composePosterImage({
-      imageUrl,
+      imageUrl: dish.image_url,
       headline: focus.theme,
-      subtext: caption || undefined,
+      subtext: dish.name,
     })
     if (posterResult.url) {
       finalImageUrl = posterResult.url
+      posterComposited = true
     } else {
       posterError = posterResult.error
     }
   }
 
   const { data: post, error } = await supabase.from('posts').insert([{
-    title: `${focus.theme} - ${new Date().toLocaleDateString()}`,
-    content: caption || `[Caption generation failed -- check ANTHROPIC_API_KEY] ${focus.theme}`,
-    image_url: finalImageUrl || null,
+    title: `${focus.theme}: ${dish.name} - ${new Date().toLocaleDateString()}`,
+    content: caption || `Try our ${dish.name} today! ${focus.theme}`,
+    image_url: finalImageUrl,
     post_type: 'image',
     status: 'pending_approval',
     scheduled_date: new Date().toISOString(),
@@ -120,18 +122,16 @@ export async function GET(request: NextRequest) {
   if (managerNumber) {
     notification = await sendWhatsAppMessage(
       managerNumber,
-      `🔔 Today's auto-generated post (${focus.theme}) is ready for your review.\n\nzarakitchen.online/manager/content-approval`
+      `🔔 Today's auto-generated post (${focus.theme}: ${dish.name}) is ready for your review.\n\nzarakitchen.online/manager/content-approval`
     )
   }
 
   return NextResponse.json({
     focus: focus.theme,
+    dish: dish.name,
     post,
     captionGenerated: !!caption,
-    imageGenerated: !!imageUrl,
-    imageProvider: imageUrl ? imageProvider : null,
-    imageError: imageUrl ? undefined : imageResult.error,
-    posterComposited: finalImageUrl !== imageUrl,
+    posterComposited,
     posterError,
     hashtags,
     whatsappNotification: notification,
