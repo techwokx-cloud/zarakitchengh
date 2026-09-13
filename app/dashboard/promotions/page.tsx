@@ -13,6 +13,7 @@ interface Promotion {
   link_url: string | null
   link_text: string | null
   promo_code: string | null
+  image_url: string | null
   is_active: boolean
   created_at: string
 }
@@ -24,6 +25,7 @@ const emptyForm = {
   link_url: '',
   link_text: '',
   promo_code: '',
+  image_url: '',
 }
 
 export default function PromotionsPage() {
@@ -65,6 +67,7 @@ export default function PromotionsPage() {
       link_url: form.link_url || null,
       link_text: form.link_text || null,
       promo_code: form.promo_code || null,
+      image_url: form.image_url || null,
       is_active: true,
     }])
 
@@ -186,13 +189,22 @@ export default function PromotionsPage() {
           </div>
 
           {form.placement === 'popup' && (
-            <input
-              type="text"
-              placeholder="Promo code (optional, e.g. WELCOME10)"
-              value={form.promo_code}
-              onChange={(e) => setForm((f) => ({ ...f, promo_code: e.target.value }))}
-              className="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white placeholder-gray-500"
-            />
+            <>
+              <input
+                type="text"
+                placeholder="Promo code (optional, e.g. WELCOME10)"
+                value={form.promo_code}
+                onChange={(e) => setForm((f) => ({ ...f, promo_code: e.target.value }))}
+                className="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white placeholder-gray-500"
+              />
+              <input
+                type="text"
+                placeholder="Image path (optional, e.g. /images/promotions/corporate-catering-promo.jpg)"
+                value={form.image_url}
+                onChange={(e) => setForm((f) => ({ ...f, image_url: e.target.value }))}
+                className="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white placeholder-gray-500"
+              />
+            </>
           )}
 
           <div className="flex gap-2">

@@ -10,6 +10,7 @@ interface PopupPromo {
   promo_code: string | null
   link_url: string | null
   link_text: string | null
+  image_url: string | null
 }
 
 const AUTO_DISMISS_MS = 15000 // 15 seconds
@@ -25,7 +26,7 @@ export default function FirstVisitPopup() {
     const load = async () => {
       const { data } = await supabase
         .from('promotions')
-        .select('title, message, promo_code, link_url, link_text')
+        .select('title, message, promo_code, link_url, link_text, image_url')
         .eq('placement', 'popup')
         .eq('is_active', true)
         .order('created_at', { ascending: false })
@@ -56,35 +57,41 @@ export default function FirstVisitPopup() {
 
   return (
     <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-4 bg-black/40">
-      <div className="relative bg-white rounded-xl shadow-2xl max-w-sm w-full p-6 animate-float">
+      <div className="relative bg-white rounded-xl shadow-2xl max-w-sm w-full overflow-hidden animate-float">
         <button
           onClick={() => setVisible(false)}
           aria-label="Close"
-          className="absolute right-3 top-3 text-gray-400 hover:text-black"
+          className="absolute right-3 top-3 z-10 text-white bg-black/40 hover:bg-black/60 rounded-full p-1"
         >
-          <X size={20} />
+          <X size={18} />
         </button>
 
-        {promo.title && (
-          <h3 className="font-display text-2xl font-semibold text-black mb-2">{promo.title}</h3>
-        )}
-        <p className="text-gray-600 text-sm mb-4">{promo.message}</p>
-
-        {promo.promo_code && (
-          <div className="bg-[#FFF8E7] border border-dashed border-zara-gold rounded-lg px-4 py-2 text-center mb-4">
-            <span className="text-xs text-gray-500">Use code</span>
-            <p className="font-bold text-lg tracking-wide text-black">{promo.promo_code}</p>
-          </div>
+        {promo.image_url && (
+          <img src={promo.image_url} alt={promo.title || 'Promotion'} className="w-full h-auto" />
         )}
 
-        {promo.link_url && (
-          <a
-            href={promo.link_url}
-            className="block w-full text-center bg-zara-gold hover:bg-zara-orange text-black font-bold py-2.5 rounded-lg transition"
-          >
-            {promo.link_text || 'Learn More'}
-          </a>
-        )}
+        <div className="p-6">
+          {promo.title && (
+            <h3 className="font-display text-2xl font-semibold text-black mb-2">{promo.title}</h3>
+          )}
+          <p className="text-gray-600 text-sm mb-4">{promo.message}</p>
+
+          {promo.promo_code && (
+            <div className="bg-[#FFF8E7] border border-dashed border-zara-gold rounded-lg px-4 py-2 text-center mb-4">
+              <span className="text-xs text-gray-500">Use code</span>
+              <p className="font-bold text-lg tracking-wide text-black">{promo.promo_code}</p>
+            </div>
+          )}
+
+          {promo.link_url && (
+            <a
+              href={promo.link_url}
+              className="block w-full text-center bg-zara-gold hover:bg-zara-orange text-black font-bold py-2.5 rounded-lg transition"
+            >
+              {promo.link_text || 'Learn More'}
+            </a>
+          )}
+        </div>
       </div>
     </div>
   )
