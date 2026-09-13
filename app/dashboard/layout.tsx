@@ -94,12 +94,12 @@ export default function DashboardLayout({
       {/* Sidebar */}
       <aside
         className={`
-        fixed md:relative w-64 h-full bg-gray-800 border-r border-gray-700 transition-transform duration-300
+        fixed md:relative w-64 h-full bg-gray-800 border-r border-gray-700 transition-transform duration-300 flex flex-col
         ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
         z-40
       `}
       >
-        <div className="p-6 border-b border-gray-700">
+        <div className="p-6 border-b border-gray-700 flex-shrink-0">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-zara-gold rounded-full flex items-center justify-center">
               <span className="font-bold text-black">Z</span>
@@ -111,7 +111,7 @@ export default function DashboardLayout({
           </div>
         </div>
 
-        <nav className="p-4 space-y-2">
+        <nav className="flex-1 overflow-y-auto p-4 space-y-2">
           <SidebarLink href="/dashboard" icon={LayoutDashboard} label="Overview" pathname={pathname} exact />
 
           <p className="px-4 pt-4 pb-1 text-[10px] font-bold uppercase tracking-wider text-gray-500">Website</p>
@@ -121,13 +121,12 @@ export default function DashboardLayout({
 
           <p className="px-4 pt-4 pb-1 text-[10px] font-bold uppercase tracking-wider text-gray-500">Marketing</p>
           <SidebarLink href="/dashboard/generate" icon={FileText} label="Generate Content" pathname={pathname} />
-          <SidebarLink href="/dashboard/calendar" icon={Calendar} label="Content Calendar" pathname={pathname} />
           <SidebarLink href="/dashboard/holidays" icon={Calendar} label="Holidays" pathname={pathname} />
           <SidebarLink href="/dashboard/leads" icon={Users} label="Leads" pathname={pathname} />
           <SidebarLink href="/dashboard/analytics" icon={BarChart3} label="Analytics" pathname={pathname} />
         </nav>
 
-        <div className="absolute bottom-4 left-4 right-4">
+        <div className="p-4 flex-shrink-0 border-t border-gray-700">
           <button
             onClick={handleLogout}
             className="w-full flex items-center gap-3 px-4 py-2 text-red-400 hover:bg-red-500 hover:bg-opacity-10 rounded transition"

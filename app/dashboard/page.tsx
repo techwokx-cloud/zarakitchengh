@@ -259,30 +259,47 @@ function RecentPostsList() {
 }
 
 function GhanaHolidaysList() {
-  const holidays = [
-    { date: 'Jan 1', name: "New Year's Day", type: 'National' },
-    { date: 'Mar 6', name: 'Independence Day', type: 'National' },
-    { date: 'May 1', name: 'Labour Day', type: 'National' },
-    { date: 'Aug 1', name: 'Homowo Festival', type: 'Cultural' },
-    { date: 'Sep 21', name: "Founder's Day", type: 'National' },
-  ]
+  const [holidays, setHolidays] = useState<{ id: string; name: string; holiday_date: string }[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const load = async () => {
+      const { supabase } = await import('@/lib/supabase/client')
+      const today = new Date().toISOString().split('T')[0]
+      const { data } = await supabase
+        .from('ghana_holidays')
+        .select('id, name, holiday_date')
+        .gte('holiday_date', today)
+        .order('holiday_date', { ascending: true })
+        .limit(6)
+      setHolidays(data ?? [])
+      setLoading(false)
+    }
+    load()
+  }, [])
+
+  if (loading) return <p className="text-gray-500 text-sm">Loading…</p>
+
+  if (holidays.length === 0) {
+    return (
+      <p className="text-gray-500 text-sm">
+        No upcoming holidays found -- manage the calendar on the{' '}
+        <Link href="/dashboard/holidays" className="text-zara-gold hover:underline">Holidays page</Link>.
+      </p>
+    )
+  }
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      {holidays.map((holiday, i) => (
+      {holidays.map((holiday) => (
         <div
-          key={i}
+          key={holiday.id}
           className="bg-gray-800 border border-gray-700 rounded-lg p-4 hover:border-zara-gold transition"
         >
-          <div className="flex justify-between items-start">
-            <div>
-              <p className="text-gray-400 text-sm">{holiday.date}</p>
-              <h4 className="font-semibold text-white mt-1">{holiday.name}</h4>
-            </div>
-            <span className="px-2 py-1 bg-zara-gold bg-opacity-20 text-zara-gold text-xs font-medium rounded">
-              {holiday.type}
-            </span>
-          </div>
+          <p className="text-gray-400 text-sm">
+            {new Date(holiday.holiday_date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+          </p>
+          <h4 className="font-semibold text-white mt-1">{holiday.name}</h4>
         </div>
       ))}
     </div>
