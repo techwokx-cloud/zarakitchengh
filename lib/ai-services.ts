@@ -156,26 +156,33 @@ async function generateStableDiffusionImage(prompt: string, shortcut: string): P
   try {
     const enhancedPrompt = `${shortcut} style: ${prompt}, professional food photography, vibrant colors, golden hour lighting, Instagram aesthetic, Zara Kitchen branding`;
 
-    const response = await fetch("https://api.falai.com/v1/fal-ai/flux-pro/inpaint", {
+    // Real fal.ai endpoint is fal.run/{model-id}, authenticated with
+    // "Authorization: Key $FAL_KEY" (not Bearer) -- the previous
+    // api.falai.com URL and Bearer header were both wrong and this
+    // call was silently failing every time.
+    const response = await fetch("https://fal.run/fal-ai/flux-2-pro", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${FAL_AI_KEY}`,
+        Authorization: `Key ${FAL_AI_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
         prompt: enhancedPrompt,
-        image_size: "landscape",
-        num_inference_steps: 50,
-        guidance_scale: 7.5,
+        image_size: "landscape_4_3",
       }),
     });
 
+    if (!response.ok) {
+      console.error("fal.ai request failed:", response.status, await response.text());
+      return "";
+    }
+
     const data = (await response.json()) as {
-      image: { url: string };
+      images: { url: string }[];
     };
-    return data.image?.url || "";
+    return data.images?.[0]?.url || "";
   } catch (error) {
-    console.error("Stable Diffusion generation failed:", error);
+    console.error("fal.ai image generation failed:", error);
     return "";
   }
 }
@@ -190,10 +197,16 @@ export async function generateVideo(
   duration: number = 15
 ): Promise<string> {
   try {
-    const response = await fetch("https://api.falai.com/v1/fal-ai/json-to-video", {
+    // NOTE: fixed the same domain/auth bug as image generation (fal.run,
+    // not api.falai.com; Key header, not Bearer). The specific model
+    // path "fal-ai/json-to-video" itself is NOT verified against real
+    // fal.ai docs -- video isn't the current priority (daily images
+    // are), so this hasn't been tested. Verify the model ID before
+    // relying on this.
+    const response = await fetch("https://fal.run/fal-ai/json-to-video", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${FAL_AI_KEY}`,
+        Authorization: `Key ${FAL_AI_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
