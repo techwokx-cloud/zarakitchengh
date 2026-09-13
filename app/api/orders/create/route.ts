@@ -96,7 +96,7 @@ export async function POST(request: NextRequest) {
       `🛎️ New order from ${customer_name} (${phone})\n\n${itemsSummary}\nTotal: GHS ${total.toFixed(0)}\n` +
       `${delivery_type === 'delivery' ? `Delivery to: ${delivery_address}${ghana_post_gps ? ` (GPS: ${ghana_post_gps})` : ''}` : 'Pickup'}\n` +
       `Payment: ${payment_method === 'momo' ? 'Mobile Money' : payment_method === 'card' ? 'Bank Card' : 'Cash'}\n\n` +
-      `zarakitchen.online/manager/orders`
+      `zarakitchen.online/manager/orders?highlight=${order.id}`
     )
   }
 

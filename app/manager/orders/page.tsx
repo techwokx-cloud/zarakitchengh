@@ -1,7 +1,8 @@
 // app/manager/orders/page.tsx
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Suspense } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { supabase } from '@/lib/supabase/client'
 import { Phone, Truck, Store, CreditCard } from 'lucide-react'
 
@@ -26,13 +27,6 @@ interface Order {
   created_at: string
 }
 
-const STATUS_FLOW: Record<string, string> = {
-  pending: 'confirmed',
-  confirmed: 'preparing',
-  preparing: 'out_for_delivery',
-  out_for_delivery: 'completed',
-}
-
 const STATUS_LABELS: Record<string, string> = {
   pending: 'Pending',
   confirmed: 'Confirmed',
@@ -45,6 +39,17 @@ const STATUS_LABELS: Record<string, string> = {
 const STATUS_FILTERS = ['all', 'pending', 'confirmed', 'preparing', 'out_for_delivery', 'completed', 'cancelled']
 
 export default function OrdersPage() {
+  return (
+    <Suspense fallback={<p className="text-gray-500">Loading…</p>}>
+      <OrdersPageContent />
+    </Suspense>
+  )
+}
+
+function OrdersPageContent() {
+  const searchParams = useSearchParams()
+  const highlightId = searchParams.get('highlight')
+
   const [orders, setOrders] = useState<Order[]>([])
   const [loading, setLoading] = useState(true)
   const [tableMissing, setTableMissing] = useState(false)
@@ -70,19 +75,22 @@ export default function OrdersPage() {
     load()
   }, [])
 
-  const advanceStatus = async (order: Order) => {
-    const next = STATUS_FLOW[order.status]
-    if (!next) return
-    setUpdatingId(order.id)
-    await supabase.from('orders').update({ status: next }).eq('id', order.id)
-    setOrders((prev) => prev.map((o) => (o.id === order.id ? { ...o, status: next } : o)))
-    setUpdatingId(null)
-  }
+  useEffect(() => {
+    if (!highlightId || orders.length === 0) return
+    // Make sure the order is visible regardless of the current filter,
+    // then scroll to and highlight it -- this is what a Manager lands
+    // on after tapping the order link in the WhatsApp alert.
+    setFilter('all')
+    const el = document.getElementById(`order-${highlightId}`)
+    if (el) {
+      setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'center' }), 100)
+    }
+  }, [highlightId, orders])
 
-  const cancelOrder = async (id: string) => {
+  const setStatus = async (id: string, status: string) => {
     setUpdatingId(id)
-    await supabase.from('orders').update({ status: 'cancelled' }).eq('id', id)
-    setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, status: 'cancelled' } : o)))
+    await supabase.from('orders').update({ status }).eq('id', id)
+    setOrders((prev) => prev.map((o) => (o.id === id ? { ...o, status } : o)))
     setUpdatingId(null)
   }
 
@@ -133,7 +141,13 @@ export default function OrdersPage() {
       ) : (
         <div className="space-y-3">
           {filtered.map((order) => (
-            <div key={order.id} className="bg-gray-800 border border-gray-700 rounded-lg p-4">
+            <div
+              key={order.id}
+              id={`order-${order.id}`}
+              className={`bg-gray-800 border rounded-lg p-4 transition ${
+                order.id === highlightId ? 'border-zara-gold ring-2 ring-zara-gold' : 'border-gray-700'
+              }`}
+            >
               <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-2">
@@ -176,26 +190,16 @@ export default function OrdersPage() {
 
                 <div className="flex flex-col items-end gap-2 flex-shrink-0">
                   <p className="text-lg font-bold text-zara-gold">GHS {order.total.toFixed(0)}</p>
-                  <div className="flex gap-2">
-                    {STATUS_FLOW[order.status] && (
-                      <button
-                        onClick={() => advanceStatus(order)}
-                        disabled={updatingId === order.id}
-                        className="px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-bold rounded transition disabled:opacity-50"
-                      >
-                        Mark {STATUS_LABELS[STATUS_FLOW[order.status]]}
-                      </button>
-                    )}
-                    {order.status !== 'completed' && order.status !== 'cancelled' && (
-                      <button
-                        onClick={() => cancelOrder(order.id)}
-                        disabled={updatingId === order.id}
-                        className="px-3 py-1.5 bg-gray-700 hover:bg-red-700 text-white text-xs font-bold rounded transition disabled:opacity-50"
-                      >
-                        Cancel
-                      </button>
-                    )}
-                  </div>
+                  <select
+                    value={order.status}
+                    onChange={(e) => setStatus(order.id, e.target.value)}
+                    disabled={updatingId === order.id}
+                    className="bg-gray-900 border border-gray-600 rounded-lg text-white text-xs px-3 py-1.5 disabled:opacity-50"
+                  >
+                    {STATUS_FILTERS.filter((s) => s !== 'all').map((s) => (
+                      <option key={s} value={s}>{STATUS_LABELS[s]}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
             </div>
