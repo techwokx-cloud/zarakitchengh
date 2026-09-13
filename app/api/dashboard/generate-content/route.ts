@@ -64,9 +64,11 @@ export async function POST(request: NextRequest) {
     }
 
     // 2. Generate Image
+    let imageGenError: string | undefined
     if (["image", "video", "carousel"].includes(type)) {
-      const imageUrl = await generateImage(prompt, imageStyle, contentType);
-      generatedContent.imageUrl = imageUrl;
+      const imageResult = await generateImage(prompt, imageStyle, contentType);
+      generatedContent.imageUrl = imageResult.url;
+      imageGenError = imageResult.error;
     }
 
     // 3. Generate Video
@@ -124,6 +126,7 @@ export async function POST(request: NextRequest) {
       success: true,
       post: post?.[0],
       message: "Content generated and sent for Manager approval",
+      imageError: imageGenError,
       whatsappNotification,
     });
   } catch (error) {

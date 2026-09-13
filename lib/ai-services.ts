@@ -112,7 +112,7 @@ export async function generateImage(
   prompt: string,
   style: "dalle3" | "stable-diffusion" = "stable-diffusion",
   category: string = "promotion"
-): Promise<string> {
+): Promise<{ url: string; error?: string }> {
   const shortcut = pickImageShortcut(category)
   if (style === "dalle3") {
     return generateDALLE3Image(prompt, shortcut);
@@ -121,7 +121,7 @@ export async function generateImage(
   }
 }
 
-async function generateDALLE3Image(prompt: string, shortcut: string): Promise<string> {
+async function generateDALLE3Image(prompt: string, shortcut: string): Promise<{ url: string; error?: string }> {
   try {
     const enhancedPrompt = `Create image ${shortcut} of: ${prompt}
     Professional food photography for a restaurant.
@@ -144,15 +144,23 @@ async function generateDALLE3Image(prompt: string, shortcut: string): Promise<st
       }),
     });
 
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("DALL-E 3 request failed:", response.status, errorText);
+      return { url: "", error: `HTTP ${response.status}: ${errorText.slice(0, 300)}` };
+    }
+
     const data = (await response.json()) as { data: { url: string }[] };
-    return data.data[0]?.url || "";
+    const url = data.data[0]?.url || "";
+    return url ? { url } : { url: "", error: "No image URL in response" };
   } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
     console.error("DALL-E 3 generation failed:", error);
-    return "";
+    return { url: "", error: message };
   }
 }
 
-async function generateStableDiffusionImage(prompt: string, shortcut: string): Promise<string> {
+async function generateStableDiffusionImage(prompt: string, shortcut: string): Promise<{ url: string; error?: string }> {
   try {
     const enhancedPrompt = `${shortcut} style: ${prompt}, professional food photography, vibrant colors, golden hour lighting, Instagram aesthetic, Zara Kitchen branding`;
 
@@ -173,17 +181,20 @@ async function generateStableDiffusionImage(prompt: string, shortcut: string): P
     });
 
     if (!response.ok) {
-      console.error("fal.ai request failed:", response.status, await response.text());
-      return "";
+      const errorText = await response.text();
+      console.error("fal.ai request failed:", response.status, errorText);
+      return { url: "", error: `HTTP ${response.status}: ${errorText.slice(0, 300)}` };
     }
 
     const data = (await response.json()) as {
       images: { url: string }[];
     };
-    return data.images?.[0]?.url || "";
+    const url = data.images?.[0]?.url || "";
+    return url ? { url } : { url: "", error: "No image URL in response" };
   } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
     console.error("fal.ai image generation failed:", error);
-    return "";
+    return { url: "", error: message };
   }
 }
 

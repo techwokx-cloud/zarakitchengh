@@ -62,12 +62,17 @@ export async function GET(request: NextRequest) {
 
   const caption = await generatePostCaption(focus.prompt)
   // Try FAL.ai first (cheaper), fall back to OpenAI's DALL-E 3 if that fails
-  let imageUrl = await generateImage(focus.prompt, 'stable-diffusion', focus.category)
+  let imageResult = await generateImage(focus.prompt, 'stable-diffusion', focus.category)
   let imageProvider = 'fal.ai'
-  if (!imageUrl) {
-    imageUrl = await generateImage(focus.prompt, 'dalle3', focus.category)
+  if (!imageResult.url) {
+    const falError = imageResult.error
+    imageResult = await generateImage(focus.prompt, 'dalle3', focus.category)
     imageProvider = 'openai-dalle3'
+    if (!imageResult.url) {
+      imageResult.error = `fal.ai: ${falError} | openai: ${imageResult.error}`
+    }
   }
+  const imageUrl = imageResult.url
   const hashtags = await generateHashtags(focus.category)
 
   const { data: post, error } = await supabase.from('posts').insert([{
@@ -98,6 +103,7 @@ export async function GET(request: NextRequest) {
     captionGenerated: !!caption,
     imageGenerated: !!imageUrl,
     imageProvider: imageUrl ? imageProvider : null,
+    imageError: imageUrl ? undefined : imageResult.error,
     hashtags,
     whatsappNotification: notification,
   })
