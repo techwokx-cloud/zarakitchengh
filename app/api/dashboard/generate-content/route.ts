@@ -7,7 +7,7 @@ import {
   generateVideo,
   generateHashtags,
 } from "@/lib/ai-services";
-import { postToAllPlatforms } from "@/lib/social-media";
+import { sendWhatsAppMessage, getManagerWhatsAppNumber } from "@/lib/whatsapp";
 
 // Create Supabase client at runtime, not build time
 function getSupabaseClient() {
@@ -81,7 +81,11 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // 4. Save to Database
+    // 4. Save to Database -- always goes to pending_approval. Per the
+    // agreed workflow, nothing posts automatically at generation time;
+    // it must be reviewed and approved by the Restaurant Manager first
+    // (see /manager/content-approval). The old autoPost-bypasses-review
+    // behavior has been removed.
     const { data: post, error: dbError } = await supabase
       .from("posts")
       .insert([
@@ -91,7 +95,7 @@ export async function POST(request: NextRequest) {
           image_url: generatedContent.imageUrl,
           video_url: generatedContent.videoUrl,
           post_type: type,
-          status: autoPost ? "scheduled" : "draft",
+          status: "pending_approval",
           created_by: userId,
           scheduled_date: scheduledDate || new Date(),
           ai_model: imageStyle === "dalle3" ? "dalle3" : "stable-diffusion",
@@ -106,52 +110,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // 5. Auto-Post if requested
-    if (autoPost && post && post.length > 0) {
-      const socialTokens = {
-        facebook: process.env.FACEBOOK_PAGE_ACCESS_TOKEN,
-        instagram: process.env.INSTAGRAM_ACCESS_TOKEN,
-        tiktok: process.env.TIKTOK_ACCESS_TOKEN,
-        twitter: process.env.TWITTER_BEARER_TOKEN,
-      };
-
-      const postResult = await postToAllPlatforms(
-        {
-          content: generatedContent.caption || "",
-          imageUrl: generatedContent.imageUrl,
-          videoUrl: generatedContent.videoUrl,
-          hashtags: generatedContent.hashtags,
-          platform: "facebook",
-        },
-        socialTokens
+    // 5. Notify the Restaurant Manager on WhatsApp that a new post is waiting
+    const managerNumber = await getManagerWhatsAppNumber();
+    let whatsappNotification: { sent: boolean; reason?: string } = { sent: false, reason: "No manager number configured" };
+    if (managerNumber && post && post.length > 0) {
+      whatsappNotification = await sendWhatsAppMessage(
+        managerNumber,
+        `🔔 New post ready for your review: "${post[0].title}"\n\nCheck it at zarakitchen.online/manager/content-approval`
       );
-
-      // Update post status with social media IDs
-      if (postResult.overallSuccess) {
-        await supabase
-          .from("posts")
-          .update({
-            status: "published",
-            facebook_post_id: postResult.results.facebook?.id,
-            instagram_post_id: postResult.results.instagram?.id,
-            tiktok_post_id: postResult.results.tiktok?.id,
-            twitter_post_id: postResult.results.twitter?.id,
-            published_date: new Date(),
-          })
-          .eq("id", post[0].id);
-      }
-
-      return NextResponse.json({
-        success: true,
-        post: post[0],
-        socialMediaResults: postResult,
-      });
     }
 
     return NextResponse.json({
       success: true,
       post: post?.[0],
-      message: "Content generated and saved",
+      message: "Content generated and sent for Manager approval",
+      whatsappNotification,
     });
   } catch (error) {
     console.error("Content generation error:", error);

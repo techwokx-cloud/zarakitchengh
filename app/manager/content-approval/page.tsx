@@ -75,10 +75,9 @@ export default function ContentApprovalPage() {
         </p>
       </div>
 
-      <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4 text-blue-300 text-sm mb-6">
-        Note: WhatsApp notifications for new pending posts aren&apos;t connected yet (that needs the
-        separate WhatsApp bot integration) -- for now, check back here directly to review what&apos;s
-        waiting.
+      <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-4 text-green-300 text-sm mb-6">
+        ✓ WhatsApp notifications are live -- you&apos;ll get a message here whenever a new post needs your
+        review (from the holiday-promo auto-drafts, and from Admin-generated content once AI keys are configured).
       </div>
 
       {loading ? (

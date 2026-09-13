@@ -15,6 +15,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { getServiceSupabase } from '@/lib/supabase/server'
+import { sendWhatsAppMessage, getManagerWhatsAppNumber } from '@/lib/whatsapp'
 
 // Ghana public holidays -- factual, doesn't change year to year for most
 // of these (a few, like Eid, shift and aren't included here since they
@@ -93,5 +94,18 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 
-  return NextResponse.json({ message: `Draft created for ${upcoming.name}, awaiting Manager approval.` })
+  // Notify the Restaurant Manager on WhatsApp that a new post is waiting
+  const managerNumber = await getManagerWhatsAppNumber()
+  let notification: { sent: boolean; reason?: string } = { sent: false, reason: 'No manager number configured' }
+  if (managerNumber) {
+    notification = await sendWhatsAppMessage(
+      managerNumber,
+      `🔔 New post ready for your review: "${title}"\n\nCheck it at zarakitchen.online/manager/content-approval`
+    )
+  }
+
+  return NextResponse.json({
+    message: `Draft created for ${upcoming.name}, awaiting Manager approval.`,
+    whatsappNotification: notification,
+  })
 }
