@@ -4,6 +4,7 @@
 import { useState, useEffect } from 'react'
 import { Zap, TrendingUp, Share2, CheckCircle } from 'lucide-react'
 import Link from 'next/link'
+import { supabase } from '@/lib/supabase/client'
 
 interface DashboardStats {
   totalPosts: number
@@ -27,16 +28,20 @@ export default function DashboardOverview() {
 
   const fetchStats = async () => {
     try {
-      const token = localStorage.getItem('adminToken')
-      const response = await fetch('/api/dashboard/stats', {
-        headers: {
-          'x-user-id': token || '',
-        },
-      })
+      const { data, error } = await supabase
+        .from('posts')
+        .select('status, views, likes, shares, comments')
 
-      if (response.ok) {
-        const data = (await response.json()) as DashboardStats
-        setStats(data)
+      if (!error && data) {
+        setStats({
+          totalPosts: data.length,
+          publishedPosts: data.filter((p) => p.status === 'published').length,
+          draftPosts: data.filter((p) => p.status === 'draft' || p.status === 'pending_approval').length,
+          totalEngagement: data.reduce(
+            (sum, p) => sum + (p.views || 0) + (p.likes || 0) + (p.shares || 0) + (p.comments || 0),
+            0
+          ),
+        })
       }
     } catch (error) {
       console.error('Error fetching stats:', error)
@@ -83,6 +88,11 @@ export default function DashboardOverview() {
           isBig
         />
       </div>
+      <p className="text-xs text-gray-500 -mt-4">
+        Note: Total Engagement will show 0 until post-level view/like/share tracking is wired up --
+        these are real counts from the database, not placeholders, they just aren&apos;t populated by
+        anything yet.
+      </p>
 
       {/* Quick Actions */}
       <div>
@@ -95,9 +105,9 @@ export default function DashboardOverview() {
             icon="✨"
           />
           <QuickActionCard
-            title="View Content Calendar"
-            description="Manage your 30-day content schedule"
-            href="/dashboard/calendar"
+            title="Manage Holidays"
+            description="Add or edit the calendar that drives auto-generated promos"
+            href="/dashboard/holidays"
             icon="📅"
           />
           <QuickActionCard
@@ -193,34 +203,19 @@ function RecentPostsList() {
       id: string
       title: string
       status: string
-      published_date: string
+      published_date: string | null
+      created_at: string
     }>
   >([])
 
   useEffect(() => {
     const fetchPosts = async () => {
-      try {
-        const token = localStorage.getItem('adminToken')
-        const response = await fetch('/api/dashboard/generate-content?status=published&limit=5', {
-          headers: {
-            'x-user-id': token || '',
-          },
-        })
-
-        if (response.ok) {
-          const data = (await response.json()) as {
-            posts: Array<{
-              id: string
-              title: string
-              status: string
-              published_date: string
-            }>
-          }
-          setPosts(data.posts)
-        }
-      } catch (error) {
-        console.error('Error fetching posts:', error)
-      }
+      const { data } = await supabase
+        .from('posts')
+        .select('id, title, status, published_date, created_at')
+        .order('created_at', { ascending: false })
+        .limit(5)
+      setPosts(data ?? [])
     }
 
     fetchPosts()
@@ -245,10 +240,22 @@ function RecentPostsList() {
             <div>
               <h3 className="font-semibold text-white">{post.title}</h3>
               <p className="text-sm text-gray-400 mt-1">
-                Published: {new Date(post.published_date).toLocaleDateString()}
+                {post.published_date
+                  ? `Published: ${new Date(post.published_date).toLocaleDateString()}`
+                  : `Created: ${new Date(post.created_at).toLocaleDateString()}`}
               </p>
             </div>
-            <span className="px-3 py-1 bg-green-500 bg-opacity-20 text-green-400 text-xs font-medium rounded">
+            <span
+              className={`px-3 py-1 text-xs font-medium rounded ${
+                post.status === 'published'
+                  ? 'bg-green-500 bg-opacity-20 text-green-400'
+                  : post.status === 'pending_approval'
+                  ? 'bg-yellow-500 bg-opacity-20 text-yellow-400'
+                  : post.status === 'rejected'
+                  ? 'bg-red-500 bg-opacity-20 text-red-400'
+                  : 'bg-gray-600 bg-opacity-40 text-gray-300'
+              }`}
+            >
               {post.status}
             </span>
           </div>
