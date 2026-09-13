@@ -3,6 +3,7 @@
 
 import { useEffect, useState } from 'react'
 import { supabase } from '@/lib/supabase/client'
+import { Mail, MailCheck } from 'lucide-react'
 
 interface Lead {
   id: string
@@ -14,9 +15,12 @@ interface Lead {
   notes: string | null
   status: string
   created_at: string
+  sequence_step: number
+  in_sequence: boolean
 }
 
 const STATUS_OPTIONS = ['new', 'contacted', 'qualified', 'converted', 'lost']
+const SEQUENCE_LABELS = ['Welcome sent', 'Nudge sent', 'Final nudge sent', 'Sequence complete']
 
 export default function LeadsPage() {
   const [leads, setLeads] = useState<Lead[]>([])
@@ -45,6 +49,11 @@ export default function LeadsPage() {
     setLeads((prev) => prev.map((l) => (l.id === id ? { ...l, status } : l)))
   }
 
+  const toggleSequence = async (lead: Lead) => {
+    await supabase.from('leads').update({ in_sequence: !lead.in_sequence }).eq('id', lead.id)
+    setLeads((prev) => prev.map((l) => (l.id === lead.id ? { ...l, in_sequence: !l.in_sequence } : l)))
+  }
+
   if (tableMissing) {
     return (
       <div>
@@ -65,8 +74,9 @@ export default function LeadsPage() {
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-white">Leads</h1>
         <p className="text-gray-400 text-sm">
-          Real inquiries from the website (catering form, etc.). A weekly digest of new leads is emailed
-          to the Restaurant Manager automatically (once /api/reports/weekly-leads is scheduled).
+          Real inquiries from the website (catering form, and Facebook Ads once that's connected). Each
+          lead with an email gets an automated 3-step follow-up sequence (welcome, nudge, final nudge),
+          then flags for personal follow-up once it completes.
         </p>
       </div>
 
@@ -103,6 +113,21 @@ export default function LeadsPage() {
                     {lead.email && <span>{lead.email} · </span>}
                     {lead.source}
                   </p>
+                  {lead.email && (
+                    <div className="flex items-center gap-1.5 mt-2">
+                      {lead.in_sequence ? <Mail size={13} className="text-yellow-400" /> : <MailCheck size={13} className="text-green-400" />}
+                      <span className="text-xs text-gray-400">
+                        {SEQUENCE_LABELS[lead.sequence_step] ?? 'Not started'}
+                        {!lead.in_sequence && lead.sequence_step < 3 ? ' -- paused (human took over)' : ''}
+                      </span>
+                      <button
+                        onClick={() => toggleSequence(lead)}
+                        className="text-xs text-zara-gold hover:underline ml-1"
+                      >
+                        {lead.in_sequence ? 'Pause & take over' : 'Resume automation'}
+                      </button>
+                    </div>
+                  )}
                 </div>
                 <select
                   value={lead.status}
