@@ -16,6 +16,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getServiceSupabase } from '@/lib/supabase/server'
 import { generatePostCaption, generateImage, generateHashtags, generatePollinationsImage, pickImageShortcut } from '@/lib/ai-services'
+import { composePosterImage } from '@/lib/image-compose'
 import { sendWhatsAppMessage, getManagerWhatsAppNumber } from '@/lib/whatsapp'
 
 // Rotates daily through the three agreed focus areas
@@ -82,10 +83,29 @@ export async function GET(request: NextRequest) {
   const imageUrl = imageResult.url
   const hashtags = await generateHashtags(focus.category)
 
+  // Composite the plain photo into a poster: dark banner + headline +
+  // caption snippet + branding. Falls back to the plain photo if
+  // compositing fails for any reason (e.g. storage bucket not set up
+  // yet) rather than losing the post's image entirely.
+  let finalImageUrl = imageUrl
+  let posterError: string | undefined
+  if (imageUrl) {
+    const posterResult = await composePosterImage({
+      imageUrl,
+      headline: focus.theme,
+      subtext: caption || undefined,
+    })
+    if (posterResult.url) {
+      finalImageUrl = posterResult.url
+    } else {
+      posterError = posterResult.error
+    }
+  }
+
   const { data: post, error } = await supabase.from('posts').insert([{
     title: `${focus.theme} - ${new Date().toLocaleDateString()}`,
     content: caption || `[Caption generation failed -- check ANTHROPIC_API_KEY] ${focus.theme}`,
-    image_url: imageUrl || null,
+    image_url: finalImageUrl || null,
     post_type: 'image',
     status: 'pending_approval',
     scheduled_date: new Date().toISOString(),
@@ -111,6 +131,8 @@ export async function GET(request: NextRequest) {
     imageGenerated: !!imageUrl,
     imageProvider: imageUrl ? imageProvider : null,
     imageError: imageUrl ? undefined : imageResult.error,
+    posterComposited: finalImageUrl !== imageUrl,
+    posterError,
     hashtags,
     whatsappNotification: notification,
   })

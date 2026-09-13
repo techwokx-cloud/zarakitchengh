@@ -14,6 +14,7 @@ import {
   UtensilsCrossed,
   Megaphone,
   Users,
+  Image as ImageIcon,
   LogOut,
   Menu,
   X,
@@ -121,6 +122,7 @@ export default function DashboardLayout({
 
           <p className="px-4 pt-4 pb-1 text-[10px] font-bold uppercase tracking-wider text-gray-500">Marketing</p>
           <SidebarLink href="/dashboard/generate" icon={FileText} label="Generate Content" pathname={pathname} />
+          <SidebarLink href="/dashboard/content-preview" icon={ImageIcon} label="Content Preview" pathname={pathname} />
           <SidebarLink href="/dashboard/holidays" icon={Calendar} label="Holidays" pathname={pathname} />
           <SidebarLink href="/dashboard/leads" icon={Users} label="Leads" pathname={pathname} />
           <SidebarLink href="/dashboard/analytics" icon={BarChart3} label="Analytics" pathname={pathname} />
