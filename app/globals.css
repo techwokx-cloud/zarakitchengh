@@ -179,3 +179,11 @@ footer a:hover {
 .hover-bump:hover {
   animation: bump-hover 0.5s ease-in-out;
 }
+
+@keyframes announcement-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(245, 166, 35, 0.4); }
+  50% { box-shadow: 0 0 0 6px rgba(245, 166, 35, 0); }
+}
+.announcement-pulse {
+  animation: announcement-pulse 2.5s ease-in-out infinite;
+}

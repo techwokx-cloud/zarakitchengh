@@ -42,12 +42,12 @@ export default function AnnouncementBar() {
   if (dismissed || !promo) return null
 
   return (
-    <div className="bg-zara-gold text-black text-sm">
-      <div className="container-wide px-4 py-2 flex items-center justify-center gap-3 relative">
-        <p className="text-center font-medium">
+    <div className="bg-zara-gold text-black announcement-pulse relative z-30">
+      <div className="container-wide px-4 py-3 flex items-center justify-center gap-3 relative">
+        <p className="text-center font-bold text-base md:text-lg">
           {promo.message}{' '}
           {promo.link_url && (
-            <a href={promo.link_url} className="underline font-bold">
+            <a href={promo.link_url} className="underline decoration-2 font-extrabold">
               {promo.link_text || 'Learn More'}
             </a>
           )}
@@ -57,7 +57,7 @@ export default function AnnouncementBar() {
           aria-label="Dismiss announcement"
           className="absolute right-4 text-black/70 hover:text-black"
         >
-          <X size={16} />
+          <X size={18} />
         </button>
       </div>
     </div>

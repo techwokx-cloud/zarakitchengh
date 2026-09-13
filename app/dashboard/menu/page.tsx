@@ -25,6 +25,7 @@ export default function ManagerMenuPage() {
   const [loading, setLoading] = useState(true)
   const [tableMissing, setTableMissing] = useState(false)
   const [activeCategory, setActiveCategory] = useState('All')
+  const [view, setView] = useState<'items' | 'slideshow'>('items')
   const [editingId, setEditingId] = useState<string | null>(null)
   const [showForm, setShowForm] = useState(false)
   const [showBatchUpload, setShowBatchUpload] = useState(false)
@@ -155,6 +156,33 @@ export default function ManagerMenuPage() {
     setItems((prev) => prev.filter((i) => i.id !== id))
   }
 
+  const toggleHero = async (item: MenuItem) => {
+    await supabase.from('menu_items').update({ is_featured_hero: !item.is_featured_hero }).eq('id', item.id)
+    setItems((prev) => prev.map((i) => (i.id === item.id ? { ...i, is_featured_hero: !i.is_featured_hero } : i)))
+  }
+
+  const moveHeroItem = async (item: MenuItem, direction: 'up' | 'down') => {
+    const heroItems = items.filter((i) => i.is_featured_hero).sort((a, b) => a.display_order - b.display_order)
+    const index = heroItems.findIndex((i) => i.id === item.id)
+    const swapIndex = direction === 'up' ? index - 1 : index + 1
+    if (swapIndex < 0 || swapIndex >= heroItems.length) return
+
+    const other = heroItems[swapIndex]
+    const itemOrder = item.display_order
+    const otherOrder = other.display_order
+
+    await supabase.from('menu_items').update({ display_order: otherOrder }).eq('id', item.id)
+    await supabase.from('menu_items').update({ display_order: itemOrder }).eq('id', other.id)
+
+    setItems((prev) =>
+      prev.map((i) => {
+        if (i.id === item.id) return { ...i, display_order: otherOrder }
+        if (i.id === other.id) return { ...i, display_order: itemOrder }
+        return i
+      })
+    )
+  }
+
   if (tableMissing) {
     return (
       <div>
@@ -171,14 +199,92 @@ export default function ManagerMenuPage() {
 
   const categories = ['All', ...CATEGORY_OPTIONS]
   const visibleItems = activeCategory === 'All' ? items : items.filter((i) => i.category === activeCategory)
+  const heroItems = items.filter((i) => i.is_featured_hero).sort((a, b) => a.display_order - b.display_order)
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between mb-4">
         <div>
           <h1 className="text-2xl font-bold text-white">Menu</h1>
           <p className="text-gray-400 text-sm">{items.length} items across {CATEGORY_OPTIONS.length} categories</p>
         </div>
+      </div>
+
+      {/* View switcher */}
+      <div className="flex gap-2 mb-6">
+        <button
+          onClick={() => setView('items')}
+          className={`px-4 py-2 rounded-lg text-sm font-bold transition ${
+            view === 'items' ? 'bg-zara-gold text-black' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+          }`}
+        >
+          All Items
+        </button>
+        <button
+          onClick={() => setView('slideshow')}
+          className={`px-4 py-2 rounded-lg text-sm font-bold transition flex items-center gap-1.5 ${
+            view === 'slideshow' ? 'bg-zara-gold text-black' : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+          }`}
+        >
+          <Star size={14} /> Hero Slideshow ({heroItems.length})
+        </button>
+      </div>
+
+      {view === 'slideshow' ? (
+        <div>
+          <p className="text-gray-400 text-sm mb-4">
+            These images rotate on the homepage hero, in this order. Use the arrows to reorder, or remove
+            an item to take it out of rotation. To add more, go to All Items and check &quot;Show in
+            homepage hero slideshow&quot; on any dish.
+          </p>
+          {heroItems.length === 0 ? (
+            <div className="bg-gray-800 border border-gray-700 rounded-lg p-8 text-center text-gray-400">
+              No items in the slideshow yet.
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {heroItems.map((item, i) => (
+                <div key={item.id} className="bg-gray-800 border border-gray-700 rounded-lg p-3 flex items-center gap-4">
+                  <span className="text-gray-500 font-bold w-6 text-center">{i + 1}</span>
+                  {item.image_url && (
+                    <img src={item.image_url} alt={item.name} className="w-20 h-14 object-cover rounded" />
+                  )}
+                  <div className="flex-1">
+                    <p className="text-white font-semibold">{item.name}</p>
+                    <p className="text-gray-500 text-xs">{item.category}</p>
+                  </div>
+                  <div className="flex gap-1">
+                    <button
+                      onClick={() => moveHeroItem(item, 'up')}
+                      disabled={i === 0}
+                      className="px-2 py-1 bg-gray-700 hover:bg-gray-600 text-white rounded disabled:opacity-30"
+                    >
+                      ↑
+                    </button>
+                    <button
+                      onClick={() => moveHeroItem(item, 'down')}
+                      disabled={i === heroItems.length - 1}
+                      className="px-2 py-1 bg-gray-700 hover:bg-gray-600 text-white rounded disabled:opacity-30"
+                    >
+                      ↓
+                    </button>
+                    <button
+                      onClick={() => toggleHero(item)}
+                      className="px-2 py-1 bg-gray-700 hover:bg-red-700 text-white rounded"
+                      title="Remove from slideshow"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      ) : (
+      <>
+      <div className="flex items-center justify-between mb-6">
+        <div />
         <div className="flex gap-2">
           <button
             onClick={() => { setShowBatchUpload(true); setBatchResult(null) }}
@@ -409,6 +515,8 @@ export default function ManagerMenuPage() {
             </div>
           ))}
         </div>
+      )}
+      </>
       )}
     </div>
   )

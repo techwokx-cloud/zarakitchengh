@@ -9,6 +9,17 @@ type ContentType = 'text' | 'image' | 'video' | 'carousel'
 type ContentCategory = 'happy-month' | 'holiday' | 'promotion' | 'event' | 'engagement'
 type ImageStyle = 'dalle3' | 'stable-diffusion'
 
+// Sensible default prompts per category, used when the Content field is
+// left blank -- keeps this fully automatable rather than requiring a
+// prompt to be typed in every time.
+const DEFAULT_PROMPTS: Record<ContentCategory, string> = {
+  'happy-month': 'A vibrant, appetizing spread of Zara Kitchen\'s signature Ghanaian & Continental dishes, celebrating the season',
+  holiday: 'A festive Zara Kitchen dish styled for an upcoming Ghanaian holiday, warm and celebratory',
+  promotion: 'An inviting, mouth-watering shot of a popular Zara Kitchen dish designed to drive orders',
+  event: 'A lively shot capturing the energy of dining or catering with Zara Kitchen',
+  engagement: 'A fun, shareable graphic encouraging people to follow and engage with Zara Kitchen on social media',
+}
+
 export default function GenerateContent() {
   const [formData, setFormData] = useState({
     type: 'image' as ContentType,
@@ -74,7 +85,7 @@ export default function GenerateContent() {
         },
         body: JSON.stringify({
           type: formData.type,
-          prompt: formData.prompt,
+          prompt: formData.prompt.trim() || DEFAULT_PROMPTS[formData.category],
           contentType: formData.category,
           imageStyle: formData.imageStyle,
           scheduledDate: formData.scheduledDate,
@@ -198,19 +209,18 @@ export default function GenerateContent() {
             {/* Prompt */}
             <div>
               <label className="block text-sm font-medium text-gray-300 mb-2">
-                Content Prompt
+                Content Prompt <span className="text-gray-500 font-normal">(optional)</span>
               </label>
               <textarea
                 name="prompt"
                 value={formData.prompt}
                 onChange={handleInputChange}
-                placeholder="E.g., 'Eid celebration dinner specials with traditional Ghanaian food'"
+                placeholder="Leave blank to auto-fill a sensible default based on the category selected above"
                 rows={4}
                 className="w-full bg-gray-700 text-white px-4 py-2 rounded border border-gray-600 focus:border-zara-gold focus:outline-none"
-                required
               />
               <p className="text-xs text-gray-500 mt-1">
-                Be specific for better results. Include mood, style, and key details.
+                Be specific for better results, or leave blank to auto-fill based on category.
               </p>
             </div>
 

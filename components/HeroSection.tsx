@@ -51,29 +51,6 @@ export default function HeroSection() {
         />
       ))}
 
-      {/* Scrim for text legibility on the left */}
-      <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/40 to-transparent" />
-
-      {/* Overlaid content */}
-      <div className="relative z-10 h-full container-wide px-4 flex items-center">
-        <div className="max-w-md">
-          <p className="text-sm md:text-base tracking-wide text-gray-200 mb-2">
-            Authentic Ghanaian &amp; Continental Cuisine
-          </p>
-          <h1 className="font-display text-4xl md:text-5xl font-bold leading-[1.05] mb-1 text-white">
-            Zara <span className="text-zara-gold">Kitchen</span>
-          </h1>
-          <p className="font-display italic text-2xl md:text-3xl text-white mb-1">
-            Made with Love <span className="text-zara-gold">♡</span>
-          </p>
-          <p className="text-sm md:text-base text-gray-200 mb-5">
-            Fresh. Tasty. Satisfying.
-          </p>
-        </div>
-      </div>
-
-      {/* "Delicious Meals" tag -- baked into the current photo already; only add a fallback badge if a future slide doesn't have one */}
-
       {/* Floating Install App button, right corner of hero */}
       <div className="absolute right-4 top-4 md:right-6 md:top-6 z-20">
         <InstallAppButton className="flex items-center gap-1.5 bg-zara-gold hover:bg-zara-orange text-black font-bold text-xs md:text-sm px-3 md:px-4 py-2 rounded-full shadow-lg" />
