@@ -174,32 +174,40 @@ async function generateDALLE3Image(prompt: string, shortcut: string): Promise<{ 
 // predictable than a paid provider, but it's genuinely free and simple:
 // the image lives directly at the constructed URL, no JSON parsing needed.
 export async function generatePollinationsImage(prompt: string, shortcut: string): Promise<{ url: string; error?: string }> {
-  try {
-    const enhancedPrompt = `${shortcut} style, ${prompt}, professional food photography, vibrant colors, Zara Kitchen branding`;
-    const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(enhancedPrompt)}?width=1200&height=630&model=flux&nologo=true`;
+  const enhancedPrompt = `${shortcut} style, ${prompt}, professional food photography, vibrant colors, Zara Kitchen branding`;
+  const maxAttempts = 3;
+  let lastError = "";
 
-    // Verify it actually resolves by doing a real GET (not HEAD) and
-    // checking the body has actual bytes. A HEAD request here was
-    // causing a real bug: HEAD responses have no body, and some CDN in
-    // front of Pollinations was caching that empty HEAD response, then
-    // serving it back for the real GET request later (same URL) --
-    // showing up as "200 OK, image/jpeg, but 0 bytes". Doing a real GET
-    // up front (and reusing its bytes) avoids that entirely instead of
-    // making a second, separately-cacheable request.
-    const response = await fetch(url);
-    if (!response.ok) {
-      return { url: "", error: `Pollinations HTTP ${response.status}` };
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      // A random seed makes each attempt's URL genuinely unique, so a
+      // failed/cached attempt can't interfere with the retry (unlike
+      // retrying the identical URL, which could hit the same cache
+      // entry or rate limit).
+      const seed = Math.floor(Math.random() * 1_000_000);
+      const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(enhancedPrompt)}?width=1200&height=630&model=flux&nologo=true&seed=${seed}`;
+
+      const response = await fetch(url);
+      if (!response.ok) {
+        lastError = `HTTP ${response.status}`;
+      } else {
+        const buffer = Buffer.from(await response.arrayBuffer());
+        if (buffer.length > 0) {
+          return { url };
+        }
+        lastError = "Empty image body";
+      }
+    } catch (error) {
+      lastError = error instanceof Error ? error.message : String(error);
     }
-    const buffer = Buffer.from(await response.arrayBuffer());
-    if (buffer.length === 0) {
-      return { url: "", error: "Pollinations returned an empty image body" };
+
+    if (attempt < maxAttempts) {
+      await new Promise((resolve) => setTimeout(resolve, 2000 * attempt));
     }
-    return { url };
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error);
-    console.error("Pollinations image generation failed:", error);
-    return { url: "", error: message };
   }
+
+  console.error(`Pollinations image generation failed after ${maxAttempts} attempts:`, lastError);
+  return { url: "", error: `Failed after ${maxAttempts} attempts: ${lastError}` };
 }
 
 async function generateStableDiffusionImage(prompt: string, shortcut: string): Promise<{ url: string; error?: string }> {
