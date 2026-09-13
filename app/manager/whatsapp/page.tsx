@@ -3,7 +3,7 @@
 
 import { useEffect, useState, useRef } from 'react'
 import { supabase } from '@/lib/supabase/client'
-import { MessageCircle, CheckCircle2, Loader2, XCircle } from 'lucide-react'
+import { CheckCircle2, Loader2, XCircle } from 'lucide-react'
 
 interface BotStatus {
   configured: boolean
@@ -115,20 +115,10 @@ export default function WhatsAppPage() {
         </div>
       </div>
 
-      <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-5 text-amber-300 text-sm mb-4">
+      <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-5 text-amber-300 text-sm">
         Conversation activity, quick replies, and automated order/status notifications depend on the bot
         being connected above, and on the messaging logic being built on the bot server itself.
       </div>
-
-      <a
-        href="https://wa.me/233591599629"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="inline-flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white font-bold px-4 py-2 rounded-lg transition"
-      >
-        <MessageCircle size={18} />
-        Open WhatsApp Chat
-      </a>
     </div>
   )
 }
