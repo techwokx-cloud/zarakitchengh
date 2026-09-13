@@ -1,11 +1,22 @@
 'use client'
 
 import { useState } from 'react'
-import { X, MessageCircle, CheckCircle2 } from 'lucide-react'
+import { X, MessageCircle, CheckCircle2, MapPin, Loader2 } from 'lucide-react'
 
 interface QuickOrderItem {
   name: string
   price: number
+}
+
+// Auto-formats Ghana phone numbers as the customer types: converts
+// local format (0264375628) to international (233264375628) live,
+// so what's shown matches exactly what gets sent to WhatsApp.
+function formatGhanaPhone(raw: string): string {
+  const digits = raw.replace(/[^\d]/g, '')
+  if (digits.startsWith('0') && digits.length <= 10) {
+    return digits.length > 1 ? '233' + digits.slice(1) : digits
+  }
+  return digits
 }
 
 export default function QuickOrderModal({
@@ -21,12 +32,49 @@ export default function QuickOrderModal({
   const [deliveryType, setDeliveryType] = useState<'delivery' | 'pickup'>('delivery')
   const [address, setAddress] = useState('')
   const [ghanaPostGps, setGhanaPostGps] = useState('')
+  const [locating, setLocating] = useState(false)
+  const [locationError, setLocationError] = useState('')
   const [paymentMethod, setPaymentMethod] = useState<'momo' | 'card' | 'cash'>('momo')
   const [whatsappOptIn, setWhatsappOptIn] = useState(true)
   const [submitting, setSubmitting] = useState(false)
   const [result, setResult] = useState<{ success: boolean; customerNotified: boolean; error?: string } | null>(null)
 
   const total = item.price * quantity
+
+  const handleUseLocation = () => {
+    setLocationError('')
+    if (!navigator.geolocation) {
+      setLocationError('Location is not supported on this device/browser.')
+      return
+    }
+
+    setLocating(true)
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords
+        try {
+          // Free reverse-geocoding, no API key needed
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&addressdetails=1`,
+            { headers: { 'Accept-Language': 'en' } }
+          )
+          const data = await res.json()
+          if (data?.display_name) {
+            setAddress(data.display_name)
+          } else {
+            setLocationError('Could not resolve an address for this location -- please type it manually.')
+          }
+        } catch {
+          setLocationError('Could not look up your address -- please type it manually.')
+        }
+        setLocating(false)
+      },
+      () => {
+        setLocationError('Location permission denied -- please type your address manually.')
+        setLocating(false)
+      }
+    )
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -112,9 +160,9 @@ export default function QuickOrderModal({
             <input
               type="tel"
               required
-              placeholder="Phone Number"
+              placeholder="Phone (e.g. 0264375628)"
               value={phone}
-              onChange={(e) => setPhone(e.target.value)}
+              onChange={(e) => setPhone(formatGhanaPhone(e.target.value))}
               className="px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-black placeholder-gray-400 focus:outline-none focus:border-zara-gold"
             />
           </div>
@@ -166,13 +214,24 @@ export default function QuickOrderModal({
 
           {deliveryType === 'delivery' && (
             <>
-              <input
-                type="text"
+              <button
+                type="button"
+                onClick={handleUseLocation}
+                disabled={locating}
+                className="w-full flex items-center justify-center gap-2 bg-blue-50 hover:bg-blue-100 text-blue-700 text-sm font-medium py-2 rounded-lg transition disabled:opacity-50"
+              >
+                {locating ? <Loader2 size={16} className="animate-spin" /> : <MapPin size={16} />}
+                {locating ? 'Finding your location...' : 'Use My Current Location'}
+              </button>
+              {locationError && <p className="text-xs text-red-600">{locationError}</p>}
+
+              <textarea
                 required
                 placeholder="Delivery Address (street, landmark, area)"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
-                className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-black placeholder-gray-400 focus:outline-none focus:border-zara-gold"
+                rows={2}
+                className="w-full px-3 py-2 bg-gray-50 border border-gray-200 rounded-lg text-black placeholder-gray-400 focus:outline-none focus:border-zara-gold resize-none"
               />
               <input
                 type="text"
