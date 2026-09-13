@@ -13,7 +13,7 @@ interface PopupPromo {
   image_url: string | null
 }
 
-const AUTO_DISMISS_MS = 15000 // 15 seconds
+const AUTO_DISMISS_MS = 30000 // 30 seconds
 
 export default function FirstVisitPopup() {
   const [visible, setVisible] = useState(false)
@@ -56,14 +56,20 @@ export default function FirstVisitPopup() {
   if (!visible || !promo) return null
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-4 bg-black/40">
-      <div className="relative bg-white rounded-xl shadow-2xl max-w-sm w-full overflow-hidden animate-float">
+    <div
+      className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center p-4 bg-black/40"
+      onClick={() => setVisible(false)}
+    >
+      <div
+        className="relative bg-white rounded-xl shadow-2xl max-w-sm w-full overflow-hidden animate-float"
+        onClick={(e) => e.stopPropagation()}
+      >
         <button
           onClick={() => setVisible(false)}
           aria-label="Close"
-          className="absolute right-3 top-3 z-10 text-white bg-black/40 hover:bg-black/60 rounded-full p-1"
+          className="absolute right-3 top-3 z-10 text-white bg-black/40 hover:bg-black/60 rounded-full p-1.5"
         >
-          <X size={18} />
+          <X size={20} />
         </button>
 
         {promo.image_url && (
@@ -72,21 +78,21 @@ export default function FirstVisitPopup() {
 
         <div className="p-6">
           {promo.title && (
-            <h3 className="font-display text-2xl font-semibold text-black mb-2">{promo.title}</h3>
+            <h3 className="font-display text-3xl font-semibold text-black mb-3">{promo.title}</h3>
           )}
-          <p className="text-gray-600 text-sm mb-4">{promo.message}</p>
+          <p className="text-gray-700 text-base leading-relaxed mb-4">{promo.message}</p>
 
           {promo.promo_code && (
-            <div className="bg-[#FFF8E7] border border-dashed border-zara-gold rounded-lg px-4 py-2 text-center mb-4">
-              <span className="text-xs text-gray-500">Use code</span>
-              <p className="font-bold text-lg tracking-wide text-black">{promo.promo_code}</p>
+            <div className="bg-[#FFF8E7] border border-dashed border-zara-gold rounded-lg px-4 py-3 text-center mb-4">
+              <span className="text-sm text-gray-500">Use code</span>
+              <p className="font-bold text-2xl tracking-wide text-black">{promo.promo_code}</p>
             </div>
           )}
 
           {promo.link_url && (
             <a
               href={promo.link_url}
-              className="block w-full text-center bg-zara-gold hover:bg-zara-orange text-black font-bold py-2.5 rounded-lg transition"
+              className="block w-full text-center bg-zara-gold hover:bg-zara-orange text-black font-bold text-lg py-3 rounded-lg transition"
             >
               {promo.link_text || 'Learn More'}
             </a>
