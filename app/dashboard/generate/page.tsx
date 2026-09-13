@@ -3,6 +3,7 @@
 
 import { useState } from 'react'
 import { Zap, Loader2, CheckCircle, AlertCircle } from 'lucide-react'
+import { supabase } from '@/lib/supabase/client'
 
 type ContentType = 'text' | 'image' | 'video' | 'carousel'
 type ContentCategory = 'happy-month' | 'holiday' | 'promotion' | 'event' | 'engagement'
@@ -64,12 +65,12 @@ export default function GenerateContent() {
     setStatus({ type: null, message: '' })
 
     try {
-      const token = localStorage.getItem('adminToken')
+      const { data: { session } } = await supabase.auth.getSession()
       const response = await fetch('/api/dashboard/generate-content', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'x-user-id': token || '',
+          'x-user-id': session?.user?.id || '',
         },
         body: JSON.stringify({
           type: formData.type,

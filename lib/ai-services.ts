@@ -89,22 +89,44 @@ function generateFallbackCaption(
 // 2. IMAGE GENERATION (DALL-E 3 + Stable Diffusion)
 // ============================================
 
+// Informal AI image-prompt shortcuts (the "/productshot", "/exploded"
+// style convention -- not an official API feature, just a proven way
+// of getting more consistent, specific-looking results out of
+// image-generation models by naming a style directly). Picked
+// automatically based on content category, so nothing has to be
+// chosen manually per post.
+const IMAGE_SHORTCUTS: Record<string, string[]> = {
+  promotion: ['/productshot', '/heroshot', '/badges'],
+  holiday: ['/poster', '/badges', '/heroshot'],
+  'happy-month': ['/flatlay', '/heroshot', '/macro'],
+  event: ['/poster', '/diorama', '/typographic'],
+  engagement: ['/miniature', '/toy', '/iconset'],
+}
+
+function pickImageShortcut(category: string): string {
+  const options = IMAGE_SHORTCUTS[category] ?? ['/productshot']
+  return options[Math.floor(Math.random() * options.length)]
+}
+
 export async function generateImage(
   prompt: string,
-  style: "dalle3" | "stable-diffusion" = "stable-diffusion"
+  style: "dalle3" | "stable-diffusion" = "stable-diffusion",
+  category: string = "promotion"
 ): Promise<string> {
+  const shortcut = pickImageShortcut(category)
   if (style === "dalle3") {
-    return generateDALLE3Image(prompt);
+    return generateDALLE3Image(prompt, shortcut);
   } else {
-    return generateStableDiffusionImage(prompt);
+    return generateStableDiffusionImage(prompt, shortcut);
   }
 }
 
-async function generateDALLE3Image(prompt: string): Promise<string> {
+async function generateDALLE3Image(prompt: string, shortcut: string): Promise<string> {
   try {
-    const enhancedPrompt = `Professional food photography for restaurant: ${prompt}
+    const enhancedPrompt = `Create image ${shortcut} of: ${prompt}
+    Professional food photography for a restaurant.
     Style: Vibrant, appetizing, professional lighting
-    Background: Blurred green and gold (Zara Kitchen brand colors)
+    Background: Blurred, warm gold and black tones (Zara Kitchen brand colors)
     Quality: High resolution, Instagram-ready`;
 
     const response = await fetch("https://api.openai.com/v1/images/generations", {
@@ -130,9 +152,9 @@ async function generateDALLE3Image(prompt: string): Promise<string> {
   }
 }
 
-async function generateStableDiffusionImage(prompt: string): Promise<string> {
+async function generateStableDiffusionImage(prompt: string, shortcut: string): Promise<string> {
   try {
-    const enhancedPrompt = `${prompt}, professional food photography, vibrant colors, golden hour lighting, Instagram aesthetic, Zara Kitchen branding`;
+    const enhancedPrompt = `${shortcut} style: ${prompt}, professional food photography, vibrant colors, golden hour lighting, Instagram aesthetic, Zara Kitchen branding`;
 
     const response = await fetch("https://api.falai.com/v1/fal-ai/flux-pro/inpaint", {
       method: "POST",

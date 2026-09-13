@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
 
     // 2. Generate Image
     if (["image", "video", "carousel"].includes(type)) {
-      const imageUrl = await generateImage(prompt, imageStyle);
+      const imageUrl = await generateImage(prompt, imageStyle, contentType);
       generatedContent.imageUrl = imageUrl;
     }
 
