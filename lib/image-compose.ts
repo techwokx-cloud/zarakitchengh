@@ -44,12 +44,39 @@ export async function composePosterImage({
     const WIDTH = 1200
     const HEIGHT = 630
 
-    // Download the base (plain) generated photo
-    const imgResponse = await fetch(imageUrl)
-    if (!imgResponse.ok) {
-      return { url: '', error: `Failed to download base image: HTTP ${imgResponse.status}` }
+    // Download the base (plain) generated photo. Some providers
+    // (notably Pollinations) can be slow/flaky on a given request --
+    // retry once after a short delay rather than failing outright.
+    const downloadImage = async (): Promise<Buffer> => {
+      const imgResponse = await fetch(imageUrl)
+      if (!imgResponse.ok) {
+        throw new Error(`Failed to download base image: HTTP ${imgResponse.status}`)
+      }
+      const buffer = Buffer.from(await imgResponse.arrayBuffer())
+      if (buffer.length === 0) {
+        throw new Error(
+          `Downloaded image was empty (0 bytes). Status: ${imgResponse.status}, ` +
+          `Content-Type: ${imgResponse.headers.get('content-type')}, ` +
+          `Content-Length header: ${imgResponse.headers.get('content-length')}`
+        )
+      }
+      return buffer
     }
-    const imgBuffer = Buffer.from(await imgResponse.arrayBuffer())
+
+    let imgBuffer: Buffer
+    try {
+      imgBuffer = await downloadImage()
+    } catch (firstError) {
+      // One retry after a short delay -- covers transient slowness on
+      // the image-generation provider's side
+      await new Promise((resolve) => setTimeout(resolve, 3000))
+      try {
+        imgBuffer = await downloadImage()
+      } catch (secondError) {
+        const msg = secondError instanceof Error ? secondError.message : String(secondError)
+        return { url: '', error: `Failed after retry: ${msg}` }
+      }
+    }
 
     // Resize/crop to a standard poster size
     const baseImage = await sharp(imgBuffer)
