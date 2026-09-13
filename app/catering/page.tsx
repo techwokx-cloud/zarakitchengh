@@ -198,9 +198,20 @@ export default function CateringPage() {
               Events & Catering 🎉
             </h1>
             <p className="text-xl text-gray-300 mb-4">Make Every Occasion Special</p>
-            <p className="text-gray-400">
+            <p className="text-gray-400 mb-6">
               From corporate lunches to weddings, we provide comprehensive catering services that exceed expectations. Our expert team ensures your event is memorable.
             </p>
+
+            <div className="bg-zara-gold/10 border border-zara-gold rounded-xl p-5">
+              <p className="text-zara-gold font-bold text-lg mb-2">🎁 Corporate Catering Offer</p>
+              <ul className="text-gray-200 text-sm space-y-1.5">
+                <li>✓ Free consultation &amp; custom quote for your event</li>
+                <li>✓ Free menu tasting before you book</li>
+                <li>✓ 10% off your first corporate catering order</li>
+                <li>✓ Free delivery + a complimentary drinks upgrade included</li>
+              </ul>
+              <p className="text-gray-400 text-xs mt-3">Just fill in the form below to get started -- no obligation.</p>
+            </div>
           </div>
         </div>
       </section>
