@@ -86,13 +86,22 @@ export async function GET(request: NextRequest) {
   const caption = await generatePostCaption(captionPrompt)
   const hashtags = await generateHashtags(focus.category)
 
+  // menu_items.image_url is a relative path (e.g. /images/menu/...) --
+  // fine for a browser <img> tag, but Node's server-side fetch() can't
+  // resolve a relative URL without a domain. Make it absolute before
+  // compositing.
+  const SITE_URL = 'https://zarakitchen.online'
+  const absoluteImageUrl = dish.image_url
+    ? (dish.image_url.startsWith('http') ? dish.image_url : `${SITE_URL}${dish.image_url}`)
+    : null
+
   // Composite the poster: real dish photo + headline banner + caption
-  let finalImageUrl: string | null = dish.image_url
+  let finalImageUrl: string | null = absoluteImageUrl
   let posterComposited = false
   let posterError: string | undefined
-  if (dish.image_url) {
+  if (absoluteImageUrl) {
     const posterResult = await composePosterImage({
-      imageUrl: dish.image_url,
+      imageUrl: absoluteImageUrl,
       headline: focus.theme,
       subtext: dish.name,
     })
