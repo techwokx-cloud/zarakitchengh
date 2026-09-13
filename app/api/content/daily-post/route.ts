@@ -15,7 +15,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import { getServiceSupabase } from '@/lib/supabase/server'
-import { generatePostCaption, generateImage, generateHashtags } from '@/lib/ai-services'
+import { generatePostCaption, generateImage, generateHashtags, generatePollinationsImage, pickImageShortcut } from '@/lib/ai-services'
 import { sendWhatsAppMessage, getManagerWhatsAppNumber } from '@/lib/whatsapp'
 
 // Rotates daily through the three agreed focus areas
@@ -61,7 +61,9 @@ export async function GET(request: NextRequest) {
   const focus = FOCUS_ROTATION[dayOfYear % FOCUS_ROTATION.length]
 
   const caption = await generatePostCaption(focus.prompt)
-  // Try FAL.ai first (cheaper), fall back to OpenAI's DALL-E 3 if that fails
+  // Try FAL.ai first (cheaper), then OpenAI DALL-E 3, then Pollinations.ai
+  // (free, keyless -- last resort so daily posting still works even if
+  // both paid providers have account issues)
   let imageResult = await generateImage(focus.prompt, 'stable-diffusion', focus.category)
   let imageProvider = 'fal.ai'
   if (!imageResult.url) {
@@ -69,7 +71,12 @@ export async function GET(request: NextRequest) {
     imageResult = await generateImage(focus.prompt, 'dalle3', focus.category)
     imageProvider = 'openai-dalle3'
     if (!imageResult.url) {
-      imageResult.error = `fal.ai: ${falError} | openai: ${imageResult.error}`
+      const openaiError = imageResult.error
+      imageResult = await generatePollinationsImage(focus.prompt, pickImageShortcut(focus.category))
+      imageProvider = 'pollinations'
+      if (!imageResult.url) {
+        imageResult.error = `fal.ai: ${falError} | openai: ${openaiError} | pollinations: ${imageResult.error}`
+      }
     }
   }
   const imageUrl = imageResult.url

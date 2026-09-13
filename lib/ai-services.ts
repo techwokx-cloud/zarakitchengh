@@ -103,7 +103,7 @@ const IMAGE_SHORTCUTS: Record<string, string[]> = {
   engagement: ['/miniature', '/toy', '/iconset'],
 }
 
-function pickImageShortcut(category: string): string {
+export function pickImageShortcut(category: string): string {
   const options = IMAGE_SHORTCUTS[category] ?? ['/productshot']
   return options[Math.floor(Math.random() * options.length)]
 }
@@ -136,11 +136,17 @@ async function generateDALLE3Image(prompt: string, shortcut: string): Promise<{ 
         Authorization: `Bearer ${OPENAI_API_KEY}`,
       },
       body: JSON.stringify({
-        model: "dall-e-3",
+        // "dall-e-3" no longer exists on newer OpenAI accounts/orgs --
+        // gpt-image-1 is the current model, same endpoint and response
+        // shape, just a different model name and quality values
+        // ("high" instead of "hd"). Note: gpt-image-1 may require
+        // completing API Organization Verification in the OpenAI
+        // developer console before it works.
+        model: "gpt-image-1",
         prompt: enhancedPrompt,
         n: 1,
         size: "1024x1024",
-        quality: "hd",
+        quality: "high",
       }),
     });
 
@@ -150,12 +156,38 @@ async function generateDALLE3Image(prompt: string, shortcut: string): Promise<{ 
       return { url: "", error: `HTTP ${response.status}: ${errorText.slice(0, 300)}` };
     }
 
-    const data = (await response.json()) as { data: { url: string }[] };
-    const url = data.data[0]?.url || "";
-    return url ? { url } : { url: "", error: "No image URL in response" };
+    const data = (await response.json()) as { data: { url?: string; b64_json?: string }[] };
+    const first = data.data?.[0];
+    const url = first?.url || (first?.b64_json ? `data:image/png;base64,${first.b64_json}` : "");
+    return url ? { url } : { url: "", error: "No image URL or base64 data in response" };
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     console.error("DALL-E 3 generation failed:", error);
+    return { url: "", error: message };
+  }
+}
+
+// Pollinations.ai -- free, keyless image generation. No account, no
+// API key, no billing. Used as a last-resort fallback so daily posting
+// still works even if FAL.ai/OpenAI keys are misconfigured or the
+// account lacks access to a given model. Quality/consistency is less
+// predictable than a paid provider, but it's genuinely free and simple:
+// the image lives directly at the constructed URL, no JSON parsing needed.
+export async function generatePollinationsImage(prompt: string, shortcut: string): Promise<{ url: string; error?: string }> {
+  try {
+    const enhancedPrompt = `${shortcut} style, ${prompt}, professional food photography, vibrant colors, Zara Kitchen branding`;
+    const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(enhancedPrompt)}?width=1200&height=630&model=flux&nologo=true`;
+
+    // Verify it actually resolves before returning it as "success" --
+    // otherwise a broken URL would silently end up as the post's image.
+    const check = await fetch(url, { method: 'HEAD' });
+    if (!check.ok) {
+      return { url: "", error: `Pollinations HTTP ${check.status}` };
+    }
+    return { url };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    console.error("Pollinations image generation failed:", error);
     return { url: "", error: message };
   }
 }
