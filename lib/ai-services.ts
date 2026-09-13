@@ -178,11 +178,21 @@ export async function generatePollinationsImage(prompt: string, shortcut: string
     const enhancedPrompt = `${shortcut} style, ${prompt}, professional food photography, vibrant colors, Zara Kitchen branding`;
     const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(enhancedPrompt)}?width=1200&height=630&model=flux&nologo=true`;
 
-    // Verify it actually resolves before returning it as "success" --
-    // otherwise a broken URL would silently end up as the post's image.
-    const check = await fetch(url, { method: 'HEAD' });
-    if (!check.ok) {
-      return { url: "", error: `Pollinations HTTP ${check.status}` };
+    // Verify it actually resolves by doing a real GET (not HEAD) and
+    // checking the body has actual bytes. A HEAD request here was
+    // causing a real bug: HEAD responses have no body, and some CDN in
+    // front of Pollinations was caching that empty HEAD response, then
+    // serving it back for the real GET request later (same URL) --
+    // showing up as "200 OK, image/jpeg, but 0 bytes". Doing a real GET
+    // up front (and reusing its bytes) avoids that entirely instead of
+    // making a second, separately-cacheable request.
+    const response = await fetch(url);
+    if (!response.ok) {
+      return { url: "", error: `Pollinations HTTP ${response.status}` };
+    }
+    const buffer = Buffer.from(await response.arrayBuffer());
+    if (buffer.length === 0) {
+      return { url: "", error: "Pollinations returned an empty image body" };
     }
     return { url };
   } catch (error) {
