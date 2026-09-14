@@ -6,14 +6,20 @@ import Footer from '@/components/Footer'
 import { fetchAvailableMenuItems } from '@/lib/menuItemsApi'
 import { supabase } from '@/lib/supabase/client'
 
-const GALLERY_CATEGORIES = [
-  { id: 'all', name: 'All', emoji: '🖼️' },
-  { id: 'food', name: 'Our Food', emoji: '🍽️' },
-  { id: 'ambiance', name: 'Ambiance', emoji: '🏛️' },
-  { id: 'events', name: 'Events', emoji: '🎉' },
-  { id: 'drinks', name: 'Drinks', emoji: '🥤' },
-  { id: 'customers', name: 'Happy Customers', emoji: '😊' },
-]
+const CATEGORY_META: Record<string, { name: string; emoji: string }> = {
+  food: { name: 'Our Food', emoji: '🍽️' },
+  ambiance: { name: 'Ambiance', emoji: '🏛️' },
+  events: { name: 'Events', emoji: '🎉' },
+  drinks: { name: 'Drinks', emoji: '🥤' },
+  customers: { name: 'Happy Customers', emoji: '😊' },
+}
+
+function labelizeCategory(id: string): string {
+  return CATEGORY_META[id]?.name ?? id
+    .split(/[-_\s]+/)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ')
+}
 
 export default function GalleryPage() {
   const [activeCategory, setActiveCategory] = useState('all')
@@ -26,8 +32,9 @@ export default function GalleryPage() {
   }>>([])
 
   // Food photos come from menu_items (stays in sync automatically);
-  // Ambiance/Events/Drinks/Happy Customers come from real uploads via
-  // the Admin dashboard's Gallery page.
+  // every other category comes from real uploads via the Admin
+  // dashboard's Gallery page -- including any custom categories added
+  // there, which show up here automatically.
   useEffect(() => {
     const load = async () => {
       const items = await fetchAvailableMenuItems()
@@ -56,6 +63,16 @@ export default function GalleryPage() {
     }
     load()
   }, [])
+
+  const dynamicCategoryIds = Array.from(new Set(galleryImages.map((img) => img.category)))
+  const galleryCategories = [
+    { id: 'all', name: 'All', emoji: '🖼️' },
+    ...dynamicCategoryIds.map((id) => ({
+      id,
+      name: labelizeCategory(id),
+      emoji: CATEGORY_META[id]?.emoji ?? '📷',
+    })),
+  ]
 
   const filteredImages = activeCategory === 'all'
     ? galleryImages
@@ -95,7 +112,7 @@ export default function GalleryPage() {
       <section className="py-8 px-4 bg-[#FFF8E7] border-b border-gray-200">
         <div className="container-wide">
           <div className="flex gap-2 md:gap-3 overflow-x-auto pb-2">
-            {GALLERY_CATEGORIES.map((category) => (
+            {galleryCategories.map((category) => (
               <button
                 key={category.id}
                 onClick={() => setActiveCategory(category.id)}
