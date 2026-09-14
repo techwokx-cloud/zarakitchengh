@@ -119,6 +119,7 @@ export default function DashboardLayout({
           <SidebarLink href="/dashboard/menu" icon={UtensilsCrossed} label="Menu" pathname={pathname} />
           <SidebarLink href="/dashboard/promotions" icon={Megaphone} label="Promotions" pathname={pathname} />
           <SidebarLink href="/dashboard/settings" icon={Settings} label="Settings" pathname={pathname} />
+          <SidebarLink href="/dashboard/gallery" icon={ImageIcon} label="Gallery" pathname={pathname} />
 
           <p className="px-4 pt-4 pb-1 text-[10px] font-bold uppercase tracking-wider text-gray-500">Marketing</p>
           <SidebarLink href="/dashboard/generate" icon={FileText} label="Generate Content" pathname={pathname} />

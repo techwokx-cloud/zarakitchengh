@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Header from '@/components/Header'
 import Footer from '@/components/Footer'
 import { fetchAvailableMenuItems } from '@/lib/menuItemsApi'
+import { supabase } from '@/lib/supabase/client'
 
 const GALLERY_CATEGORIES = [
   { id: 'all', name: 'All', emoji: '🖼️' },
@@ -14,38 +15,22 @@ const GALLERY_CATEGORIES = [
   { id: 'customers', name: 'Happy Customers', emoji: '😊' },
 ]
 
-const AMBIANCE_IMAGES = [
-  {
-    id: 'amb-1',
-    category: 'ambiance',
-    title: 'Zara Kitchen Dining Room',
-    image: '/images/about/restaurant-interior.png',
-    description: 'Our warm, welcoming dining space',
-  },
-  {
-    id: 'amb-2',
-    category: 'ambiance',
-    title: 'Brunch Buffet Spread',
-    image: '/images/about/buffet-spread.png',
-    description: 'Our well-curated brunch buffet, laid out fresh',
-  },
-]
-
 export default function GalleryPage() {
   const [activeCategory, setActiveCategory] = useState('all')
-  const [galleryImages, setGalleryImages] = useState(AMBIANCE_IMAGES as Array<{
+  const [galleryImages, setGalleryImages] = useState<Array<{
     id: string
     category: string
     title: string
     image: string
     description: string
-  }>)
+  }>>([])
 
-  // Every dish photo from the real menu, pushed into the gallery automatically --
-  // stays in sync with the menu_items table rather than needing a separately
-  // maintained list.
+  // Food photos come from menu_items (stays in sync automatically);
+  // Ambiance/Events/Drinks/Happy Customers come from real uploads via
+  // the Admin dashboard's Gallery page.
   useEffect(() => {
-    fetchAvailableMenuItems().then((items) => {
+    const load = async () => {
+      const items = await fetchAvailableMenuItems()
       const foodImages = items.map((item) => ({
         id: item.id,
         category: 'food',
@@ -53,8 +38,23 @@ export default function GalleryPage() {
         image: item.image_url ?? '',
         description: item.description ?? '',
       }))
-      setGalleryImages([...foodImages, ...AMBIANCE_IMAGES])
-    })
+
+      const { data: uploaded } = await supabase
+        .from('gallery_images')
+        .select('id, category, title, description, image_url')
+        .order('display_order', { ascending: true })
+
+      const uploadedImages = (uploaded ?? []).map((img) => ({
+        id: img.id,
+        category: img.category,
+        title: img.title ?? '',
+        image: img.image_url,
+        description: img.description ?? '',
+      }))
+
+      setGalleryImages([...foodImages, ...uploadedImages])
+    }
+    load()
   }, [])
 
   const filteredImages = activeCategory === 'all'
