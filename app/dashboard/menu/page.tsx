@@ -1,11 +1,12 @@
 // app/manager/menu/page.tsx
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
+import * as XLSX from 'xlsx'
 import { supabase } from '@/lib/supabase/client'
 import { fetchAllMenuItems, MenuItem } from '@/lib/menuItemsApi'
 import { MENU_CATEGORIES } from '@/lib/menuData'
-import { Plus, Pencil, Trash2, Star, EyeOff, Eye, Upload } from 'lucide-react'
+import { Plus, Pencil, Trash2, Star, EyeOff, Eye, Upload, Download, ImageOff, AlertTriangle, FileSpreadsheet, X } from 'lucide-react'
 
 const CATEGORY_OPTIONS = MENU_CATEGORIES.filter((c) => c.name !== 'All Categories').map((c) => c.name)
 
@@ -20,6 +21,33 @@ const emptyForm = {
   is_featured_hero: false,
 }
 
+interface ParsedRow {
+  name: string
+  category: string
+  price: string
+  description: string
+  image_url: string
+  is_spicy: string
+  is_vegetarian: string
+  issues: string[]
+}
+
+function truthy(val: unknown): boolean {
+  const s = String(val ?? '').trim().toLowerCase()
+  return s === 'true' || s === 'yes' || s === '1'
+}
+
+function downloadTemplate() {
+  const headers = ['name', 'category', 'price', 'description', 'image_url', 'is_spicy', 'is_vegetarian']
+  const example = [
+    'Kelewele', 'Appetisers', 35, 'Spicy fried plantain', '/images/menu/appetisers/kelewele.jpg', 'true', 'false',
+  ]
+  const ws = XLSX.utils.aoa_to_sheet([headers, example])
+  const wb = XLSX.utils.book_new()
+  XLSX.utils.book_append_sheet(wb, ws, 'Menu Items')
+  XLSX.writeFile(wb, 'zara-kitchen-menu-template.xlsx')
+}
+
 export default function ManagerMenuPage() {
   const [items, setItems] = useState<MenuItem[]>([])
   const [loading, setLoading] = useState(true)
@@ -29,11 +57,14 @@ export default function ManagerMenuPage() {
   const [editingId, setEditingId] = useState<string | null>(null)
   const [showForm, setShowForm] = useState(false)
   const [showBatchUpload, setShowBatchUpload] = useState(false)
-  const [batchCsv, setBatchCsv] = useState('')
-  const [batchResult, setBatchResult] = useState<{ success: number; failed: number } | null>(null)
+  const [parsedRows, setParsedRows] = useState<ParsedRow[]>([])
+  const [dragActive, setDragActive] = useState(false)
+  const [batchResult, setBatchResult] = useState<{ success: number; skipped: number } | null>(null)
   const [batchSaving, setBatchSaving] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const [form, setForm] = useState(emptyForm)
   const [saving, setSaving] = useState(false)
+  const [nameWarning, setNameWarning] = useState('')
 
   const load = async () => {
     setLoading(true)
@@ -57,43 +88,102 @@ export default function ManagerMenuPage() {
   const openNew = () => {
     setEditingId(null)
     setForm(emptyForm)
+    setNameWarning('')
     setShowForm(true)
   }
 
-  const handleBatchUpload = async () => {
+  const checkDuplicateName = (name: string, excludeId?: string) => {
+    const match = items.find(
+      (i) => i.id !== excludeId && i.name.trim().toLowerCase() === name.trim().toLowerCase()
+    )
+    setNameWarning(match ? `An item named "${match.name}" already exists (GHS ${match.price.toFixed(0)}, ${match.category}).` : '')
+  }
+
+  const parseFile = (file: File) => {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      const data = e.target?.result
+      const workbook = XLSX.read(data, { type: 'binary' })
+      const sheet = workbook.Sheets[workbook.SheetNames[0]]
+      // Reads by HEADER NAME (case-insensitive), not column position -- much
+      // more forgiving than a strict comma-order format, and works
+      // identically whether the file is .xlsx, .xls, or .csv
+      const rows = XLSX.utils.sheet_to_json<Record<string, unknown>>(sheet, { defval: '' })
+
+      const existingNames = new Set(items.map((i) => i.name.trim().toLowerCase()))
+      const seenInFile = new Set<string>()
+
+      const parsed: ParsedRow[] = rows.map((row) => {
+        const get = (key: string) => {
+          const foundKey = Object.keys(row).find((k) => k.trim().toLowerCase() === key)
+          return String(row[foundKey ?? ''] ?? '').trim()
+        }
+        const name = get('name')
+        const category = get('category')
+        const price = get('price')
+        const description = get('description')
+        const image_url = get('image_url')
+        const is_spicy = get('is_spicy')
+        const is_vegetarian = get('is_vegetarian')
+
+        const issues: string[] = []
+        if (!name) issues.push('Missing name')
+        if (!category) issues.push('Missing category')
+        else if (!CATEGORY_OPTIONS.includes(category)) issues.push(`Unrecognized category "${category}"`)
+        if (!price || isNaN(parseFloat(price))) issues.push('Missing/invalid price')
+        if (!image_url) issues.push('No image path -- item will show with no photo')
+        if (name) {
+          const lower = name.trim().toLowerCase()
+          if (existingNames.has(lower)) issues.push('Duplicate -- already exists in your menu')
+          else if (seenInFile.has(lower)) issues.push('Duplicate -- appears twice in this file')
+          seenInFile.add(lower)
+        }
+
+        return { name, category, price, description, image_url, is_spicy, is_vegetarian, issues }
+      })
+
+      setParsedRows(parsed)
+      setBatchResult(null)
+    }
+    reader.readAsBinaryString(file)
+  }
+
+  const handleFileSelect = (files: FileList | null) => {
+    const file = files?.[0]
+    if (file) parseFile(file)
+  }
+
+  const handleConfirmBatchUpload = async () => {
     setBatchSaving(true)
-    setBatchResult(null)
-
-    // Expected format, one dish per line:
-    // name,category,price,description,image_url,is_spicy,is_vegetarian
-    const lines = batchCsv.split('\n').map((l) => l.trim()).filter(Boolean)
     let success = 0
-    let failed = 0
+    let skipped = 0
 
-    for (const line of lines) {
-      const parts = line.split(',').map((p) => p.trim())
-      const [name, category, price, description, image_url, isSpicy, isVegetarian] = parts
-
-      if (!name || !category || !price) {
-        failed++
+    for (const row of parsedRows) {
+      // Only block on issues that would actually break the record --
+      // a missing image is allowed through (just flagged), everything
+      // else (missing name/category/price, duplicates, bad category)
+      // is skipped rather than silently creating bad data
+      const blockingIssues = row.issues.filter((i) => i !== 'No image path -- item will show with no photo')
+      if (blockingIssues.length > 0) {
+        skipped++
         continue
       }
 
       const { error } = await supabase.from('menu_items').insert([{
-        name,
-        category,
-        price: parseFloat(price) || 0,
-        description: description || null,
-        image_url: image_url || null,
-        is_spicy: (isSpicy ?? '').toLowerCase() === 'true',
-        is_vegetarian: (isVegetarian ?? '').toLowerCase() === 'true',
+        name: row.name,
+        category: row.category,
+        price: parseFloat(row.price) || 0,
+        description: row.description || null,
+        image_url: row.image_url || null,
+        is_spicy: truthy(row.is_spicy),
+        is_vegetarian: truthy(row.is_vegetarian),
       }])
 
-      if (error) failed++
+      if (error) skipped++
       else success++
     }
 
-    setBatchResult({ success, failed })
+    setBatchResult({ success, skipped })
     setBatchSaving(false)
     if (success > 0) load()
   }
@@ -110,6 +200,7 @@ export default function ManagerMenuPage() {
       is_vegetarian: item.is_vegetarian,
       is_featured_hero: item.is_featured_hero,
     })
+    setNameWarning('')
     setShowForm(true)
   }
 
@@ -198,7 +289,17 @@ export default function ManagerMenuPage() {
   }
 
   const categories = ['All', ...CATEGORY_OPTIONS]
-  const visibleItems = activeCategory === 'All' ? items : items.filter((i) => i.category === activeCategory)
+  const duplicateNames = new Set(
+    items
+      .map((i) => i.name.trim().toLowerCase())
+      .filter((name, idx, arr) => arr.indexOf(name) !== arr.lastIndexOf(name))
+  )
+  const issueCount = items.filter((i) => !i.image_url || duplicateNames.has(i.name.trim().toLowerCase())).length
+  const visibleItems = (
+    activeCategory === '__issues__'
+      ? items.filter((i) => !i.image_url || duplicateNames.has(i.name.trim().toLowerCase()))
+      : activeCategory === 'All' ? items : items.filter((i) => i.category === activeCategory)
+  )
   const heroItems = items.filter((i) => i.is_featured_hero).sort((a, b) => a.display_order - b.display_order)
 
   return (
@@ -287,11 +388,11 @@ export default function ManagerMenuPage() {
         <div />
         <div className="flex gap-2">
           <button
-            onClick={() => { setShowBatchUpload(true); setBatchResult(null) }}
+            onClick={() => { setShowBatchUpload(true); setBatchResult(null); setParsedRows([]) }}
             className="flex items-center gap-2 bg-gray-700 hover:bg-gray-600 text-white font-bold px-4 py-2 rounded-lg transition"
           >
             <Upload size={18} />
-            Batch Upload
+            Import from Excel/CSV
           </button>
           <button
             onClick={openNew}
@@ -306,43 +407,114 @@ export default function ManagerMenuPage() {
       {/* Batch upload modal */}
       {showBatchUpload && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60">
-          <div className="bg-gray-800 border border-gray-700 rounded-lg p-6 max-w-2xl w-full max-h-[85vh] overflow-y-auto">
-            <h2 className="font-bold text-white text-lg mb-2">Batch Upload Menu Items</h2>
-            <p className="text-gray-400 text-sm mb-3">
-              One dish per line, comma-separated, in this exact order:
-            </p>
-            <code className="block bg-black/40 text-gray-300 text-xs p-2 rounded mb-4">
-              name,category,price,description,image_url,is_spicy,is_vegetarian
-            </code>
-            <p className="text-gray-500 text-xs mb-3">
-              Example: <code className="bg-black/40 px-1 rounded">Kelewele,Appetisers,35,Spicy fried plantain,/images/menu/appetisers/kelewele.jpg,true,false</code>
-              <br />Category must exactly match one of the existing category names. Leave description/image_url blank if unknown -- don&apos;t skip the commas.
-            </p>
+          <div className="bg-gray-800 border border-gray-700 rounded-lg p-6 max-w-4xl w-full max-h-[85vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-bold text-white text-lg">Import Menu Items</h2>
+              <button onClick={() => setShowBatchUpload(false)} className="text-gray-400 hover:text-white">
+                <X size={20} />
+              </button>
+            </div>
 
-            <textarea
-              value={batchCsv}
-              onChange={(e) => setBatchCsv(e.target.value)}
-              rows={8}
-              placeholder="Kelewele,Appetisers,35,Spicy fried plantain,/images/menu/appetisers/kelewele.jpg,true,false&#10;Jollof Rice,Rice Dishes,40,Classic Ghanaian jollof,,false,true"
-              className="w-full px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white placeholder-gray-600 font-mono text-xs"
-            />
+            <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
+              <p className="text-gray-400 text-sm">
+                Upload an Excel (.xlsx) or CSV file. Columns can be in any order -- they&apos;re matched by
+                header name: <code className="bg-black/40 px-1 rounded text-xs">name, category, price, description, image_url, is_spicy, is_vegetarian</code>
+              </p>
+              <button
+                onClick={downloadTemplate}
+                className="flex items-center gap-1.5 text-zara-gold hover:underline text-sm whitespace-nowrap"
+              >
+                <Download size={14} /> Download template
+              </button>
+            </div>
+
+            {/* Drag and drop zone */}
+            <div
+              onDragOver={(e) => { e.preventDefault(); setDragActive(true) }}
+              onDragLeave={() => setDragActive(false)}
+              onDrop={(e) => {
+                e.preventDefault()
+                setDragActive(false)
+                handleFileSelect(e.dataTransfer.files)
+              }}
+              onClick={() => fileInputRef.current?.click()}
+              className={`border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition ${
+                dragActive ? 'border-zara-gold bg-zara-gold/10' : 'border-gray-600 hover:border-gray-500'
+              }`}
+            >
+              <FileSpreadsheet size={32} className="mx-auto mb-2 text-gray-400" />
+              <p className="text-gray-300 text-sm font-medium">Drag and drop your file here, or click to browse</p>
+              <p className="text-gray-500 text-xs mt-1">.xlsx, .xls, or .csv</p>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".xlsx,.xls,.csv"
+                className="hidden"
+                onChange={(e) => handleFileSelect(e.target.files)}
+              />
+            </div>
+
+            {/* Preview table */}
+            {parsedRows.length > 0 && (
+              <div className="mt-5">
+                <p className="text-sm text-gray-300 mb-2">
+                  {parsedRows.length} row{parsedRows.length === 1 ? '' : 's'} found --{' '}
+                  {parsedRows.filter((r) => r.issues.every((i) => i === 'No image path -- item will show with no photo')).length} ready to import,{' '}
+                  {parsedRows.filter((r) => r.issues.some((i) => i !== 'No image path -- item will show with no photo')).length} will be skipped
+                </p>
+                <div className="max-h-64 overflow-y-auto border border-gray-700 rounded-lg">
+                  <table className="w-full text-xs">
+                    <thead className="bg-gray-900 sticky top-0">
+                      <tr className="text-left text-gray-400">
+                        <th className="p-2">Name</th>
+                        <th className="p-2">Category</th>
+                        <th className="p-2">Price</th>
+                        <th className="p-2">Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {parsedRows.map((row, i) => {
+                        const blocking = row.issues.filter((iss) => iss !== 'No image path -- item will show with no photo')
+                        const hasImageWarningOnly = row.issues.length > 0 && blocking.length === 0
+                        return (
+                          <tr key={i} className="border-t border-gray-700">
+                            <td className="p-2 text-white">{row.name || '--'}</td>
+                            <td className="p-2 text-gray-300">{row.category || '--'}</td>
+                            <td className="p-2 text-gray-300">{row.price || '--'}</td>
+                            <td className="p-2">
+                              {blocking.length > 0 ? (
+                                <span className="text-red-400 flex items-center gap-1"><AlertTriangle size={12} /> {blocking.join('; ')}</span>
+                              ) : hasImageWarningOnly ? (
+                                <span className="text-amber-400 flex items-center gap-1"><ImageOff size={12} /> No image</span>
+                              ) : (
+                                <span className="text-green-400">Ready</span>
+                              )}
+                            </td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            )}
 
             {batchResult && (
-              <div className={`mt-3 text-sm rounded-lg p-3 ${batchResult.failed > 0 ? 'bg-amber-500/10 text-amber-300' : 'bg-green-500/10 text-green-400'}`}>
-                ✓ {batchResult.success} added{batchResult.failed > 0 ? `, ${batchResult.failed} failed (check the format on those lines)` : ''}
+              <div className={`mt-4 text-sm rounded-lg p-3 ${batchResult.skipped > 0 ? 'bg-amber-500/10 text-amber-300' : 'bg-green-500/10 text-green-400'}`}>
+                ✓ {batchResult.success} added{batchResult.skipped > 0 ? `, ${batchResult.skipped} skipped (see status column above)` : ''}
               </div>
             )}
 
             <div className="flex gap-2 mt-4">
               <button
-                onClick={handleBatchUpload}
-                disabled={batchSaving || !batchCsv.trim()}
+                onClick={handleConfirmBatchUpload}
+                disabled={batchSaving || parsedRows.length === 0}
                 className="bg-zara-gold hover:bg-zara-orange text-black font-bold px-4 py-2 rounded-lg transition disabled:opacity-50"
               >
-                {batchSaving ? 'Uploading...' : 'Upload All'}
+                {batchSaving ? 'Uploading...' : `Import ${parsedRows.filter((r) => r.issues.every((i) => i === 'No image path -- item will show with no photo')).length} Items`}
               </button>
               <button
-                onClick={() => { setShowBatchUpload(false); setBatchCsv(''); setBatchResult(null) }}
+                onClick={() => setShowBatchUpload(false)}
                 className="text-gray-400 hover:text-white px-4 py-2"
               >
                 Close
@@ -354,6 +526,16 @@ export default function ManagerMenuPage() {
 
       {/* Category filter */}
       <div className="flex gap-2 mb-6 overflow-x-auto pb-1">
+        {issueCount > 0 && (
+          <button
+            onClick={() => setActiveCategory('__issues__')}
+            className={`px-3 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition flex items-center gap-1 ${
+              activeCategory === '__issues__' ? 'bg-red-600 text-white' : 'bg-red-500/20 text-red-400 hover:bg-red-500/30'
+            }`}
+          >
+            <AlertTriangle size={12} /> Issues ({issueCount})
+          </button>
+        )}
         {categories.map((c) => (
           <button
             key={c}
@@ -387,10 +569,18 @@ export default function ManagerMenuPage() {
               required
               placeholder="Dish name"
               value={form.name}
-              onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
+              onChange={(e) => {
+                setForm((f) => ({ ...f, name: e.target.value }))
+                checkDuplicateName(e.target.value, editingId ?? undefined)
+              }}
               className="px-3 py-2 bg-gray-900 border border-gray-600 rounded-lg text-white placeholder-gray-500"
             />
           </div>
+          {nameWarning && (
+            <p className="text-amber-400 text-xs flex items-center gap-1.5">
+              <AlertTriangle size={12} /> {nameWarning}
+            </p>
+          )}
 
           <textarea
             placeholder="Description"
@@ -477,12 +667,22 @@ export default function ManagerMenuPage() {
               }`}
             >
               <div className="aspect-[4/3] bg-gray-900 relative">
-                {item.image_url && (
+                {item.image_url ? (
                   <img src={item.image_url} alt={item.name} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full flex flex-col items-center justify-center text-gray-600">
+                    <ImageOff size={24} />
+                    <span className="text-[10px] mt-1">No image</span>
+                  </div>
                 )}
                 {item.is_featured_hero && (
                   <span className="absolute top-2 left-2 bg-zara-gold text-black text-[10px] font-bold px-1.5 py-0.5 rounded flex items-center gap-1">
                     <Star size={10} /> Hero
+                  </span>
+                )}
+                {duplicateNames.has(item.name.trim().toLowerCase()) && (
+                  <span className="absolute top-2 right-2 bg-red-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded flex items-center gap-1">
+                    <AlertTriangle size={10} /> Duplicate
                   </span>
                 )}
               </div>
